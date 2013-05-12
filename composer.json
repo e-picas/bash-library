@@ -1,0 +1,25 @@
+{
+    "name": "atelierspierrot/bash-library",
+    "type": "library",
+    "description": "The Bash library package of Les Ateliers Pierrot",
+    "keywords": [ "bash", "library" ],
+    "homepage": "https://github.com/atelierspierrot/bash-library",
+    "version": "0.0.1-dev",
+    "license": "GPL-3.0",
+    "authors": [
+        {
+            "name": "Les Ateliers Pierrot & contributors",
+            "email": "contact@ateliers-pierrot.fr",
+            "homepage": "http://www.ateliers-pierrot.fr/"
+        },{
+            "name": "Pierre Cassat",
+            "email": "piero.wbmstr@gmail.com",
+            "homepage": "https://github.com/PieroWbmstr"
+        }
+    ],
+    "config": {
+        "vendor-dir": "vendor",
+        "bin-dir": "bin/vendor"
+    },
+    "bin": [ "src/library.sh" ]
+}
