@@ -65,10 +65,10 @@ declare -rx libcolors_codes_background=(49 40 41 42 43 44 45 46 100 107 101 102 
 
 ### getcolorcode ( name , background=false )
 getcolorcode () {
-    if `inarray $1 ${libcolors[@]}`; then
+    if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
-            then echo "${libcolors_codes_background[`getindex $1 ${libcolors[@]}`]}"
-            else echo "${libcolors_codes_foreground[`getindex $1 ${libcolors[@]}`]}"
+            then echo "${libcolors_codes_background[`array_search $1 ${libcolors[@]}`]}"
+            else echo "${libcolors_codes_foreground[`array_search $1 ${libcolors[@]}`]}"
         fi
     else return 1
     fi
@@ -76,10 +76,10 @@ getcolorcode () {
 
 ### getcolortag ( name , background=false )
 getcolortag () {
-    if `inarray $1 ${libcolors[@]}`; then
+    if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
-            then echo $(gettextformattag "${libcolors_codes_background[`getindex $1 ${libcolors[@]}`]}")
-            else echo $(gettextformattag "${libcolors_codes_foreground[`getindex $1 ${libcolors[@]}`]}")
+            then echo $(gettextformattag "${libcolors_codes_background[`array_search $1 ${libcolors[@]}`]}")
+            else echo $(gettextformattag "${libcolors_codes_foreground[`array_search $1 ${libcolors[@]}`]}")
         fi
     else return 1
     fi
@@ -91,24 +91,24 @@ declare -rx libtextoptions_codes=(0 1 2 4 5 7 8)
 
 ### gettextoptioncode ( name )
 gettextoptioncode () {
-    if `inarray $1 ${libtextoptions[@]}`
-        then echo "${libtextoptions_codes[`getindex $1 ${libtextoptions[@]}`]}"
+    if `in_array $1 ${libtextoptions[@]}`
+        then echo "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}"
         else return 1
     fi
 }
 
 ### gettextoptiontag ( name )
 gettextoptiontag () {
-    if `inarray $1 ${libtextoptions[@]}`
-        then echo $(gettextformattag "${libtextoptions_codes[`getindex $1 ${libtextoptions[@]}`]}")
+    if `in_array $1 ${libtextoptions[@]}`
+        then echo $(gettextformattag "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
         else return 1
     fi
 }
 
 ### gettextoptiontagclose ( name )
 gettextoptiontagclose () {
-    if `inarray $1 ${libtextoptions[@]}`
-        then echo $(gettextformattag "2${libtextoptions_codes[`getindex $1 ${libtextoptions[@]}`]}")
+    if `in_array $1 ${libtextoptions[@]}`
+        then echo $(gettextformattag "2${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
         else return 1
     fi
 }
@@ -138,25 +138,25 @@ colorize () {
     fi
 }
 
-#### parsecolor ( string with <bold>tags</bold> )
+#### parsecolortags ( string with <bold>tags</bold> )
 # parse in-text tags like:
 #     ... <bold>my text</bold> ...
 #     ... <red>my text</red> ...
 #     ... <bgred>my text</bgred> ...
-parsecolor () {
+parsecolortags () {
     transformed=""
     while read -r line; do
         doneopts=()
         transformedline="$line"
         for opt in $(echo "$line" | grep -Po '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
             opt="${opt/\//}"
-            if `inarray "$opt" ${doneopts[@]}`; then continue; fi
+            if `in_array "$opt" ${doneopts[@]}`; then continue; fi
             doneopts+=($opt)
-            if `inarray $opt ${libtextoptions[@]}`; then
+            if `in_array $opt ${libtextoptions[@]}`; then
                 code=$(gettextoptioncode $opt)
                 tag=$(gettextoptiontag $opt)
                 normaltag=$(gettextoptiontag normal)
-            elif `inarray $opt ${libcolors[@]}`; then
+            elif `in_array $opt ${libcolors[@]}`; then
                 code=$(getcolorcode $opt)
                 tag=$(getcolortag $opt)
                 normaltag=$(getcolortag default)
@@ -179,9 +179,9 @@ parsecolor () {
 
 #### ARRAY #############################################################################
 
-#### getindex ( item , $array[@] )
+#### array_search ( item , $array[@] )
 # returns the index of an array item
-getindex () {
+array_search () {
     local i=0 search=$1; shift
     while [ $search != $1 ]
     do ((i++)); shift
@@ -191,9 +191,9 @@ getindex () {
     return 1
 }
 
-#### inarray ( item , $array[@] )
+#### in_array ( item , $array[@] )
 # returns 0 if item is found in array
-inarray () {
+in_array () {
   needle=$1; shift
   for item; do
     [[ "$needle" = $item ]] && return 0
@@ -248,21 +248,25 @@ _echo () {
     return 0
 }
 
-#### verecho ( string )
+#### verbose_echo ( string )
 # echo the string if "verbose" is "on"
-verecho () {
+verbose_echo () {
     if $VERBOSE; then _echo "$*"; fi; return 0;
 }
+#### verecho ( string )
+alias verecho='verbose_echo'
 
-#### quietecho ( string )
+#### quiet_echo ( string )
 # echo the string if "quiet" is "off"
-quietecho () {
+quiet_echo () {
     if $QUIET; then _echo "$*"; fi; return 0;
 }
+#### quietecho ( string )
+alias quietecho='quiet_echo'
 
-#### iexec ( command , debexec = true )
+#### interactive_exec ( command , debug_exec = true )
 # execute the command after user confirmation if "interactive" is "on"
-iexec () {
+interactive_exec () {
     local DEBEXECUTION=${2:-true}
     if $INTERACTIVE; then
         prompt "Run command: \"$1\"" "y" "Y/n"
@@ -273,13 +277,15 @@ iexec () {
             esac
         done
     fi
-    if $DEBEXECUTION; then debexec "$1"; else eval $1; fi
+    if $DEBEXECUTION; then debug_exec "$1"; else eval $1; fi
     return 0
 }
+#### iexec ( command , debug_exec = true )
+alias iexec='interactive_exec'
 
-#### debexec ( command )
+#### debug_exec ( command )
 # execute the command if "debug" is "off", just write it on screen otherwise
-debexec () {
+debug_exec () {
     if $DEBUG; then
         _echo "$(colorize 'debug >>' bold) $1"
     else
@@ -287,6 +293,8 @@ debexec () {
     fi
     return 0
 }
+#### debexec ( command )
+alias debexec='debug_exec'
 
 #### info ( string, bold = true )
 # writes the string on screen and return

@@ -40,31 +40,42 @@ and use '--' to explicitly specify the end of the script options.
 parsecomomnoptions "$@"
 quietecho "_ go"
 
-# getindex
+# array_search
 declare -a arrayname=(element1 element2 element3)
-echo "index of 'element2' in array '${arrayname[@]}' : `getindex element2 \"${arrayname[@]}\"`"
+echo "## tests of fct 'array_search':"
+echo "index of 'element2' in array '${arrayname[@]}' : `array_search element2 \"${arrayname[@]}\"`"
 echo 
 
-# inarray
-echo "tests of fct 'inarray':"
-if `inarray black ${libcolors[@]}`; then echo "- black is in array"; else echo "- black is NOT in array"; fi
-if `inarray mlk ${libcolors[@]}`; then echo "- mlk is in array"; else echo "- mlk is NOT in array"; fi
+# in_array
+echo "## tests of fct 'in_array':"
+if `in_array black ${libcolors[@]}`; then echo "- black is in array"; else echo "- black is NOT in array"; fi
+if `in_array mlk ${libcolors[@]}`; then echo "- mlk is in array"; else echo "- mlk is NOT in array"; fi
 echo 
 
 # strlen
 teststr="my test string"
+echo "## tests of fct 'strlen':"
 echo "strlen of test string '$teststr' : `strlen \"$teststr\"`"
 echo 
 
+# isgitclone
+echo "## test of fct 'isgitclone' on current dir:"
+if isgitclone; then echo "=> is git clone"; else echo "=> is NOT git clone"; fi
+echo
+
 # color codes
+echo "## tests of fct 'getcolorcode':"
 echo "color code for 'black': `getcolorcode black`"
 echo "color code for 'black' background: `getcolorcode black true`"
+echo "color code for 'abcd': `getcolorcode abcd`"
+echo "tests of fct 'gettextoptioncode':"
 echo "text option code for 'bold': `gettextoptioncode bold`"
 echo "text option code for 'normal': `gettextoptioncode normal`"
-echo "color code for 'abcd': `getcolorcode abcd`"
+echo "text options code for 'abcd': `gettextoptioncode abcd`"
 echo 
 
 # colorize
+echo "## tests of fct 'colorize':"
 colorize "my string to colorize" bold green red
 echo $(colorize " My string in normal red " normal red)
 echo $(colorize " My string in bold grey black" bold grey black)
@@ -73,11 +84,6 @@ echo $(colorize " My string in underline red green" underline red green)
 echo $(colorize " My string in blink yellow cyan" blink yellow cyan)
 echo $(colorize " My string in reverse magenta blue" reverse magenta blue)
 echo $(colorize " My string in bold" bold)
-echo
-
-# isgitclone
-echo "test of fct 'isgitclone' on current dir:"
-if isgitclone; then echo "=> is git clone"; else echo "=> is NOT git clone"; fi
 echo
 
 TESTSTR1="my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred> to test <bgred>some <bold>imbricated</bold> tags</bgred>"
@@ -90,26 +96,27 @@ TESTSTR7="
 my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred>
 with multi-line to test <bgred>some</bgred> <bold>tags</bold>
 "
+echo "## tests of fct 'parsecolortags':"
 echo $TESTSTR1
-parsecolor "$TESTSTR1"
+parsecolortags "$TESTSTR1"
 echo
 echo $TESTSTR2
-parsecolor "$TESTSTR2"
+parsecolortags "$TESTSTR2"
 echo
 echo $TESTSTR3
-parsecolor "$TESTSTR3"
+parsecolortags "$TESTSTR3"
 echo
 echo $TESTSTR4
-parsecolor "$TESTSTR4"
+parsecolortags "$TESTSTR4"
 echo
 echo $TESTSTR5
-parsecolor "$TESTSTR5"
+parsecolortags "$TESTSTR5"
 echo
 echo $TESTSTR6
-parsecolor "$TESTSTR6"
+parsecolortags "$TESTSTR6"
 echo
 echo "$TESTSTR7"
-parsecolor "$TESTSTR7"
+parsecolortags "$TESTSTR7"
 
 # verecho() usage
 verecho "test of verecho() : this must be seen only with option '-v'"
