@@ -8,6 +8,17 @@
 #     ~$ sh bin/test.sh -h
 # 
 
+######## Inclusion of the lib
+libfile="`dirname $0`/../src/library.sh"
+if [ -f "$libfile" ]; then source "$libfile"; else
+    padder=$(printf '%0.1s' "#"{1..1000})
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $padder" \
+        "Unable to find required library file '$libfile'!" "Sent in '$0' by '`whoami`' - pwd is '`pwd`'" \
+        0 $(tput cols) "$padder";
+    exit 1
+fi
+######## !Inclusion of the lib
+
 NAME="Test file for the Shell-Library"
 SDUSAGE="
 Usage:
@@ -26,7 +37,6 @@ and use '--' to explicitly specify the end of the script options.
 
 "
 
-. src/library.sh
 parsecomomnoptions "$@"
 quietecho "_ go"
 
