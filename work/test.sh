@@ -19,9 +19,7 @@ if [ -f "$libfile" ]; then source "$libfile"; else
 fi
 ######## !Inclusion of the lib
 
-NAME="Bash-Lib-Test"
-VERSION="0.0.1-dev"
-DESCRIPTION="A global test file for the Bash-Library"
+NAME="Test file for the Shell-Library"
 SDUSAGE="
 Usage:
     ~\$ sh ${0} -[options [=value]] action
@@ -105,25 +103,25 @@ with multi-line to test <bgred>some</bgred> <bold>tags</bold>
 "
 echo "## tests of fct 'parsecolortags':"
 echo $TESTSTR1
-parsecolortags "$TESTSTR1"
+_echo $(parsecolortags "$TESTSTR1")
 echo
 echo $TESTSTR2
-parsecolortags "$TESTSTR2"
+_echo $(parsecolortags "$TESTSTR2")
 echo
 echo $TESTSTR3
-parsecolortags "$TESTSTR3"
+_echo $(parsecolortags "$TESTSTR3")
 echo
 echo $TESTSTR4
-parsecolortags "$TESTSTR4"
+_echo $(parsecolortags "$TESTSTR4")
 echo
 echo $TESTSTR5
-parsecolortags "$TESTSTR5"
+_echo $(parsecolortags "$TESTSTR5")
 echo
 echo $TESTSTR6
-parsecolortags "$TESTSTR6"
+_echo $(parsecolortags "$TESTSTR6")
 echo
 echo "$TESTSTR7"
-parsecolortags "$TESTSTR7"
+_echo $(parsecolortags "$TESTSTR7")
 
 # verecho() usage
 verecho "test of verecho() : this must be seen only with option '-v'"

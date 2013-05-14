@@ -14,17 +14,27 @@
 
 #### SCRIPT SETTINGS #####################################################################
 
-declare -rx LIB_NAME="Bash shell library"
 declare -rx LIB_VERSION="0.0.1"
-declare -rx LIB_DATE="2013-14-05"
-declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot."
+declare -rx LIB_NAME="Bash shell library"
 declare -rx LIB_AUTHOR="Les Ateliers Pierrot"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
-declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
-# see http://en.wikipedia.org/wiki/Man_page
-declare -ra MANPAGE_INFOS=(NAME VERSION DATE PRESENTATION SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEEALSO)
+
+#### GLOBAL INFOS #####################################################################
+
+declare -rx COMMON_OPTS_INFO="\t<bold>-h, --help</bold>\tshow this information message
+\t<bold>-v, --verbose</bold>\tincrease script verbosity
+\t<bold>-q, --quiet</bold>\tdecrease script verbosity, nothing will be written unless errors
+\t<bold>-f, --force</bold>\tforce some commands to not prompt confirmation
+\t<bold>-i, --interactive</bold>\task for confirmation before any action
+\t<bold>-x, --debug</bold>\tsee commands to run but not run them actually"
+
+declare -rx OPTS_INFO="You can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>'
+or '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options."
+
+declare -rx USAGE_INFO="~\$ <bold>${0}</bold> -[<underline>OPTION</underline> [=<underline>VALUE</underline>]] <underline>ARGUMENT</underline> --"
+
 
 #### COMMON OPTIONS #############################################################################
 
@@ -41,54 +51,11 @@ declare -rx USEROS="$(uname)"
 #### LOREM IPSUM #############################################################################
 
 declare -rx LOREMIPSUM="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
-declare -rx LOREMIPSUM_SHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
-declare -rx LOREMIPSUM_MULTILINE="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi. \
-Sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. \
-Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus \
-autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, \
-ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.";
-
-
-#### GLOBAL INFOS #####################################################################
-
-declare -rx LIB_OPTIONS="\t<bold>-h, --help</bold>\tshow this information message \
-\t<bold>-v, --verbose</bold>\tincrease script verbosity \
-\t<bold>-q, --quiet</bold>\tdecrease script verbosity, nothing will be written unless errors \
-\t<bold>-f, --force</bold>\tforce some commands to not prompt confirmation \
-\t<bold>-i, --interactive</bold>\task for confirmation before any action \
-\t<bold>-x, --debug</bold>\tsee commands to run but not run them actually \
-\t<bold>--libvers</bold>\tsee the library version informations";
-
-declare -rx LIB_OPTIONS_INFO="You can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>' \
-or '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options.";
-
-declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold> -[<underline>OPTION</underline> [=<underline>VALUE</underline>]] <underline>ARGUMENT</underline> --"
-
-declare -rx LIB_SEEALSO="<bold>bash</bold>"
+declare -rx LOREMIPSUMSHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 
 #### COLORS #############################################################################
 
-#### common colors
-case $USEROS in
-    Linux|FreeBSD|OpenBSD|SunOS) 
-        declare -x COLOR_LIGHT=yellow
-        declare -x COLOR_DARK=lightgrey
-        declare -x COLOR_INFO=green
-        declare -x COLOR_NOTICE=blue
-        declare -x COLOR_WARNING=magenta
-        declare -x COLOR_ERROR=red
-        ;;
-    *) 
-        declare -x COLOR_LIGHT=yellow
-        declare -x COLOR_DARK=lightgrey
-        declare -x COLOR_INFO=green
-        declare -x COLOR_NOTICE=lightyellow
-        declare -x COLOR_WARNING=lightcyan
-        declare -x COLOR_ERROR=red
-        ;;
-esac
-
-#### gettextformattag ( code )
+### gettextformattag ( code )
 gettextformattag () {
     case $USEROS in
         Linux|FreeBSD|OpenBSD|SunOS) echo "\033[${1}m";;
@@ -102,7 +69,7 @@ declare -ra libcolors=(default black red green yellow blue magenta cyan grey whi
 declare -rx libcolors_codes_foreground=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
 declare -rx libcolors_codes_background=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
 
-#### getcolorcode ( name , background=false )
+### getcolorcode ( name , background=false )
 getcolorcode () {
     if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
@@ -113,7 +80,7 @@ getcolorcode () {
     fi
 }
 
-#### getcolortag ( name , background=false )
+### getcolortag ( name , background=false )
 getcolortag () {
     if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
@@ -128,7 +95,7 @@ getcolortag () {
 declare -ra libtextoptions=(normal bold small underline blink reverse hidden)
 declare -rx libtextoptions_codes=(0 1 2 4 5 7 8)
 
-#### gettextoptioncode ( name )
+### gettextoptioncode ( name )
 gettextoptioncode () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}"
@@ -136,7 +103,7 @@ gettextoptioncode () {
     fi
 }
 
-#### gettextoptiontag ( name )
+### gettextoptiontag ( name )
 gettextoptiontag () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo $(gettextformattag "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
@@ -144,7 +111,7 @@ gettextoptiontag () {
     fi
 }
 
-#### gettextoptiontagclose ( name )
+### gettextoptiontagclose ( name )
 gettextoptiontagclose () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo $(gettextformattag "2${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
@@ -193,36 +160,28 @@ parsecolortags () {
             doneopts+=($opt)
             if `in_array $opt ${libtextoptions[@]}`; then
                 code=$(gettextoptioncode $opt)
-#                 tag=$(printf '\%s' "$(gettextoptiontag $opt)")
-#                 normaltag=$(printf '\%s' "$(gettextoptiontagclose $opt)")
-                tag=$(gettextoptiontag $opt)
-                normaltag=$(gettextoptiontag normal)
+                tag=$(printf '\%s' "$(gettextoptiontag $opt)")
+                normaltag=$(printf '\%s' "$(gettextoptiontagclose $opt)")
             elif `in_array $opt ${libcolors[@]}`; then
                 code=$(getcolorcode $opt)
-#                 tag=$(printf '\%s' "$(getcolortag $opt)")
-#                 normaltag=$(printf '\%s' "$(getcolortag default)")
-                tag=$(getcolortag $opt)
-                normaltag=$(getcolortag default)
+                tag=$(printf '\%s' "$(getcolortag $opt)")
+                normaltag=$(printf '\%s' "$(getcolortag default)")
             else
                 code=$(getcolorcode ${opt/bg/} true)
-#                 tag=$(printf '\%s' "$(getcolortag ${opt/bg/} true)")
-#                 normaltag=$(printf '\%s' "$(getcolortag default true)")
-                 tag=$(getcolortag ${opt/bg/} true)
-                normaltag=$(getcolortag default true)
-           fi
+                tag=$(printf '\%s' "$(getcolortag ${opt/bg/} true)")
+                normaltag=$(printf '\%s' "$(getcolortag default true)")
+            fi
             if [ ! -z $tag ]; then
-#                strsubstituted=$(echo "$transformedline" | sed "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g");
-                strsubstituted=$(echo "$transformedline" | sed "s/<${opt}>/${tag}/g;s/.*\n//g;s/<\/${opt}>/${normaltag}/g;s/\n.*//g");
+                strsubstituted=$(echo "$transformedline" | sed -r "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g");
                 if [ ! -z "$strsubstituted" ]; then transformedline="${strsubstituted}"; fi
             fi
         done
         if [ `strlen "$transformed"` != 0 ]; then transformed="${transformed}\n"; fi
         transformed="${transformed}${transformedline}"
     done <<< "$1"
-    _echo "$transformed"
+    echo "$transformed"
     return 0
 }
-
 
 #### ARRAY #############################################################################
 
@@ -247,7 +206,6 @@ in_array () {
   done
   return 1
 }
-
 
 #### STRING #############################################################################
 
@@ -281,7 +239,6 @@ ucfirst () {
 	echo "`strtoupper ${1:0:1}`${1:1:${#1}}"
 	return 0
 }
-
 
 #### UTILS #############################################################################
 
@@ -361,7 +318,7 @@ prompt () {
 info () {
     local USEBOLD=${2:-true}
     if $USEBOLD; then
-        _echo $(colorize "   >> $1" bold "$COLOR_INFO")
+        _echo $(colorize "   >> $1" bold blue)
     else
         _echo "$(colorize '   >>' bold) $1"
     fi
@@ -372,10 +329,10 @@ info () {
 # writes the error string on screen and return
 warning () {
 	local TMPSTR="
-<bold><${COLOR_WARNING}>!! >> ${1:-unknown warning} </${COLOR_WARNING}></bold>
-\tat <${COLOR_INFO}>${3:-${FUNCNAME[1]}}</${COLOR_INFO}> line <${COLOR_INFO}>${4:-${BASH_LINENO[1]}}</${COLOR_INFO}>
+<bold><magenta>!! >> ${1:-unknown warning} </magenta></bold>
+\tat <green>${3:-${FUNCNAME[1]}}</green> line <green>${4:-${BASH_LINENO[0]}}</green>
 "
-    parsecolortags "$TMPSTR"
+    _echo $(parsecolortags "$TMPSTR")
     return 0
 }
 
@@ -383,14 +340,13 @@ warning () {
 # writes the error string on screen and then exit with an error status, default is 1
 error () {
 	local TMPSTR="
-<bold><${COLOR_ERROR}>!! >> ${1:-unknown error} </${COLOR_ERROR}></bold>
-\tat <${COLOR_INFO}>${3:-${FUNCNAME[1]}}</${COLOR_INFO}> line <${COLOR_INFO}>${4:-${BASH_LINENO[1]}}</${COLOR_INFO}>
-\tto get help, try option '<${COLOR_DARK}>-h</${COLOR_DARK}>'
+<bold><red>!! >> ${1:-unknown error} </red></bold>
+\tat <green>${3:-${FUNCNAME[1]}}</green> line <green>${4:-${BASH_LINENO[0]}}</green>
+\tto get help, try option '<lightgrey>-h</lightgrey>'
 "
-    parsecolortags "$TMPSTR"
+    _echo $(parsecolortags "$TMPSTR")
     exit ${2:-1}
 }
-
 
 #### VARIOUS #####################################################################
 
@@ -401,7 +357,6 @@ isgitclone () {
     local gitpath="${1:-${curpath}}/.git"
     if [ -d "$gitpath" ]; then return 0; else return 1; fi;
 }
-
 
 #### OPTIONS #############################################################################
 
@@ -452,7 +407,6 @@ parsecomomnoptions () {
     return 0
 }
 
-
 #### INFOS #####################################################################
 
 #### getscriptpath ( script=$0 )
@@ -485,20 +439,17 @@ usage () {
     if [ ! "x${USAGE}" = 'x' ]; then
         echo "$USAGE" >&2
     else
-        local TMP_TITLE="${NAME:-?}"
-        if [ "x$VERSION" != 'x' ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
-        local TMP_DESCRIPTION="${DESCRIPTION}"
-        local TMP_SYNOPSIS="${SYNOPSIS}"
         local TMP_USAGE="
 <bold>NAME</bold>
-\t<bold>${TMP_TITLE}</bold>
-\t${TMP_DESCRIPTION}
+\t<bold>${NAME:-?} - v. [${VERSION:-?}]</bold>
 
-<bold>SYNOPSIS</bold>
-\t${TMP_SYNOPSIS}
+<bold>USAGE</bold>
+\t${USAGE_INFO}
 
 <bold>DESCRIPTION</bold>
-${TMP_DESCRIPTION}
+${COMMON_OPTS_INFO}
+
+${OPTS_INFO}
 
 <bold>DEPENDENCIES</bold>
 \tThis script is based on the <bold>${LIB_NAME}</bold>.
@@ -541,35 +492,34 @@ libtitle () {
 # see all common options flags values
 scriptdebug () {
     _echo "---- DEBUG -------------------------------------------------------------"
-    _echo " \$ $0 $*"
+    _echo " $0 $*"
     _echo "------------------------------------------------------------------------"
-    _echo "- `colorize USEROS bold` is `colorize ${USEROS} bold \"${COLOR_INFO}\"`"
+    _echo "- `colorize USEROS bold` is `colorize ${USEROS} bold green`"
     if $VERBOSE
-        then _echo "- `colorize VERBOSE bold` mode is `colorize on bold \"${COLOR_INFO}\"`"
-        else _echo "- `colorize VERBOSE bold` mode is `colorize off bold \"${COLOR_INFO}\"`"
+        then _echo "- `colorize VERBOSE bold` mode is `colorize on bold green`"
+        else _echo "- `colorize VERBOSE bold` mode is `colorize off bold green`"
     fi
     if $INTERACTIVE
-        then _echo "- `colorize INTERACTIVE bold` mode is `colorize on bold \"${COLOR_INFO}\"`"
-        else _echo "- `colorize INTERACTIVE bold` mode is `colorize off bold \"${COLOR_INFO}\"`"
+        then _echo "- `colorize INTERACTIVE bold` mode is `colorize on bold green`"
+        else _echo "- `colorize INTERACTIVE bold` mode is `colorize off bold green`"
     fi
     if $FORCED
-        then _echo "- `colorize FORCED bold` mode is `colorize on bold \"${COLOR_INFO}\"`"
-        else _echo "- `colorize FORCED bold` mode is `colorize off bold \"${COLOR_INFO}\"`"
+        then _echo "- `colorize FORCED bold` mode is `colorize on bold green`"
+        else _echo "- `colorize FORCED bold` mode is `colorize off bold green`"
     fi
     if $DEBUG
-        then _echo "- `colorize DEBUG bold` mode is `colorize on bold \"${COLOR_INFO}\"`"
-        else _echo "- `colorize DEBUG bold` mode is `colorize off bold \"${COLOR_INFO}\"`"
+        then _echo "- `colorize DEBUG bold` mode is `colorize on bold green`"
+        else _echo "- `colorize DEBUG bold` mode is `colorize off bold green`"
     fi
     if $QUIET
-        then _echo "- `colorize QUIET bold` mode is `colorize on bold \"${COLOR_INFO}\"`"
-        else _echo "- `colorize QUIET bold` mode is `colorize off bold \"${COLOR_INFO}\"`"
+        then _echo "- `colorize QUIET bold` mode is `colorize on bold green`"
+        else _echo "- `colorize QUIET bold` mode is `colorize off bold green`"
     fi
-    _echo "- `colorize LASTARG bold` is set on `colorize \"${LASTARG:--}\" bold \"${COLOR_INFO}\"`"
+    _echo "- `colorize LASTARG bold` is set on `colorize \"${LASTARG:--}\" bold green`"
     _echo "------------------------------------------------------------------------"
     _echo " status: $? - pid: $$ - user: `whoami`"
 #    _echo " pwd: `pwd`"
-    _echo " `uname -osr`" #Linux
-    _echo " `uname -vsr`" #BSD: Darwin 11.4.2 Darwin Kernel Version 11.4.2: Thu Aug 23 16:25:48 PDT 2012; root:xnu-1699.32.7~1/RELEASE_X86_64
+    _echo " `uname -osr`"
     _echo "------------------------------------------------------------------------"
     return 0
 }
