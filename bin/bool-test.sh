@@ -2,7 +2,7 @@
 # bool tests
 
 ######## Inclusion of the lib
-libfile="`dirname $0`/../src/library.sh"
+libfile="`dirname $0`/../src/bash-library.sh"
 if [ -f "$libfile" ]; then source "$libfile"; else
     padder=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $padder" \
@@ -13,37 +13,50 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash boolean tests"
-parsecomomnoptions "$@"
+VERSION="0.0.1-test"
+PRESENTATION="Script to test boolean values manipulations and equalities in bash."
+parsecomonoptions "$@"
 quietecho "_ go"
 
-export YOTRUE=false
-export YOFALSE=true
-YOTRUE=true
-YOFALSE=false
+export TRUEVAL=false
+export FALSEVAL=true
+TRUEVAL=true
+FALSEVAL=false
 
-if $YOTRUE; then echo "YOTRUE is true"; else echo "YOTRUE is false"; fi
-if $YOFALSE; then echo "YOFALSE is true"; else echo "YOFALSE is false"; fi
+echo "# test like 'if \$var ...'"
+if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
+echo
 
-if ! $YOTRUE; then echo "YOTRUE is false"; else echo "YOTRUE is true"; fi
-if ! $YOFALSE; then echo "YOFALSE is false"; else echo "YOFALSE is true"; fi
+echo "# test like 'if ! \$var ...'"
+if ! $TRUEVAL; then echo "TRUEVAL is false"; else echo "TRUEVAL is true"; fi
+if ! $FALSEVAL; then echo "FALSEVAL is false"; else echo "FALSEVAL is true"; fi
+echo
 
-export YOTRUE=false
-export YOFALSE=true
+export TRUEVAL=false
+export FALSEVAL=true
 
 testbool () {
-    export YOTRUE=true
-    export YOFALSE=false
+    export TRUEVAL=true
+    export FALSEVAL=false
 }
 
-if $YOTRUE; then echo "YOTRUE is true"; else echo "YOTRUE is false"; fi
-if $YOFALSE; then echo "YOFALSE is true"; else echo "YOFALSE is false"; fi
+echo "# manipulation ..."
+if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 
 testbool
-if $YOTRUE; then echo "YOTRUE is true"; else echo "YOTRUE is false"; fi
-if $YOFALSE; then echo "YOFALSE is true"; else echo "YOFALSE is false"; fi
+if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
+echo
+
+# onoffbit
+echo "# test of the fct 'onoffbit'"
+echo "TRUEVAL is `onoffbit $TRUEVAL`"
+echo "FALSEVAL is `onoffbit $FALSEVAL`"
 
 quietecho "_ ok"
-scriptdebug
+libdebug "$*"
 exit 0
 
 # Endfile

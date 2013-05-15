@@ -1,8 +1,8 @@
 #!/bin/bash
-# colors tests
+# colors test
 
 ######## Inclusion of the lib
-libfile="`dirname $0`/../src/library.sh"
+libfile="`dirname $0`/../src/bash-library.sh"
 if [ -f "$libfile" ]; then source "$libfile"; else
     padder=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $padder" \
@@ -12,60 +12,80 @@ if [ -f "$libfile" ]; then source "$libfile"; else
 fi
 ######## !Inclusion of the lib
 
-NAME="Bash colors tests"
-parsecomomnoptions "$@"
+NAME="Bash-Lib colors test"
+VERSION="0.0.1-dev"
+DESCRIPTION="A script to test colorized functions of the Bash-Library"
+
+parsecomonoptions "$@"
 quietecho "_ go"
+
+# color codes
+echo 
+echo "## tests of fct 'getcolorcode':"
+echo "color code for 'black': `getcolorcode black`"
+echo "color code for 'black' background: `getcolorcode black true`"
+echo "color code for 'abcd': `getcolorcode abcd`"
+echo 
+echo "# tests of fct 'gettextoptioncode':"
+echo "text option code for 'bold': `gettextoptioncode bold`"
+echo "text option code for 'normal': `gettextoptioncode normal`"
+echo "text options code for 'abcd': `gettextoptioncode abcd`"
+echo 
+
+# colorize
+echo "## tests of fct 'colorize':"
+_echo $(colorize "my string to colorize" bold green red)
+_echo $(colorize " My string in normal red " normal red)
+_echo $(colorize " My string in bold grey black" bold grey black)
+_echo $(colorize " My string in bold black grey" bold black grey)
+_echo $(colorize " My string in underline red green" underline red green)
+_echo $(colorize " My string in blink yellow cyan" blink yellow cyan)
+_echo $(colorize " My string in reverse magenta blue" reverse magenta blue)
+_echo $(colorize " My string in bold" bold)
+_echo
+
+TESTSTR1="my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred> to test <bgred>some <bold>imbricated</bold> tags</bgred>"
+TESTSTR2="my <green>test text</green> to test"
+TESTSTR3="my <bold>tags</bold> to test"
+TESTSTR4="my <bgred>sample text</bgred> to test"
+TESTSTR5="my test with <bgred>some <bold>imbricated</bold> tags</bgred> to test"
+TESTSTR6="my test text with tags and sample text to test some imbricated tags"
+TESTSTR7="
+my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred>
+with multi-line to test <bgred>some</bgred> <bold>tags</bold>
+"
+echo "## tests of fct 'parsecolortags':"
+echo $TESTSTR1
+parsecolortags "$TESTSTR1"
 echo
+echo $TESTSTR2
+parsecolortags "$TESTSTR2"
+echo
+echo $TESTSTR3
+parsecolortags "$TESTSTR3"
+echo
+echo $TESTSTR4
+parsecolortags "$TESTSTR4"
+echo
+echo $TESTSTR5
+parsecolortags "$TESTSTR5"
+echo
+echo $TESTSTR6
+parsecolortags "$TESTSTR6"
+echo
+echo "$TESTSTR7"
+parsecolortags "$TESTSTR7"
 
-linelg=$(tput cols)
-normalcode=$(gettextoptiontag normal)
-padder=$(printf '%0.1s' "-"{1..1000})
-
-colorstr=""
-col1lg=$(( ($linelg-4)/5 ))
-col2lg=$(( 2*$col1lg ))
-printf -v line "+%*.*s+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder"  0 $col2lg "$padder";
-colorstr="${colorstr}${line}"
-for col in ${libcolors[@]}; do
-    fgcolor=$(getcolorcode $col)
-    bgcolor=$(getcolorcode $col true)
-    fgcolorcode=$(gettextformattag $fgcolor)
-    bgcolorcode=$(gettextformattag $bgcolor)
-    printf -v line \
-        "|%-*s|%-*s|%-*s|\n" \
-        $col1lg " color ${col} " \
-        $(($col2lg+`strlen "$fgcolorcode"`+`strlen "$normalcode"`)) " ${fgcolorcode} foreground code=${fgcolor} ${normalcode} " \
-        $(($col2lg+`strlen "$bgcolorcode"`+`strlen "$normalcode"`)) " ${bgcolorcode} background code=${bgcolor} ${normalcode} ";
-    colorstr="${colorstr}${line}"
+echo
+echo "## tests of 'COLOR_*' variables:"
+TESTSTR_VAR="<%s>my test text for constant %s</%s>"
+for col in "${LIB_COLORS[@]}"; do
+    eval "colcode=\$$col"
+    parsecolortags "`printf \"$TESTSTR_VAR\" \"${colcode}\" \"${col}\" \"${colcode}\"`"
 done
-printf -v line "+%*.*s+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder"  0 $col2lg "$padder";
-colorstr="${colorstr}${line}"
-echo "## Text colors demo:"
-_echo "$colorstr"
-
-txtoptstr=""
-col1lg=$(( ($linelg-3)/5 ))
-col2lg=$(( 4*$col1lg ))
-printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
-txtoptstr="${txtoptstr}${line}"
-for col in ${libtextoptions[@]}; do
-    txtopt=$(gettextoptioncode $col)
-    txtoptcode=$(gettextformattag $txtopt)
-    cell="using code=${txtopt}: ${txtoptcode}%-.*s${normalcode}";
-    printf -v cuttedcell "$cell" $(($col2lg-`strlen "$cell"`+`strlen "$txtoptcode"`+`strlen "$normalcode"`)) "$LOREMIPSUM"
-    printf -v line \
-        "|%-*s|%-*s|\n" \
-        $col1lg " text option ${col} " \
-        $(($col2lg+`strlen "$txtoptcode"`+`strlen "$normalcode"`-6)) " $cuttedcell ";
-    txtoptstr="${txtoptstr}${line}"
-done
-printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
-txtoptstr="${txtoptstr}${line}"
-echo "## Text options demo:"
-_echo "$txtoptstr"
 
 quietecho "_ ok"
-scriptdebug
+libdebug "$*"
 exit 0
 
 # Endfile
