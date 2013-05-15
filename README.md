@@ -22,7 +22,7 @@ file to your project directory and begin to use it ...
 
 For a global usage on your machine, you can copy the library in your `bin/` directory.
 
-As for any script file, it must have execution rights for any users.
+As for any script file, it must have execution rights for all users.
 
 A direct installation, including download the sources could be:
 
