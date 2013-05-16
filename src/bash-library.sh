@@ -420,7 +420,7 @@ iexec () { interactive_exec "$*"; }
 ## execute the command if "debug" is "off", just write it on screen otherwise
 debug_exec () {
     if $DEBUG; then
-        _echo "$(colorize 'debug >>' bold) $1"
+        _echo "$(colorize 'debug >>' bold) \"$1\""
     else
         eval $1
     fi
@@ -577,7 +577,7 @@ parsecomonoptions () {
             i) export INTERACTIVE=true; export QUIET=false;;
             v) export VERBOSE=true; export QUIET=false;;
             f) export FORCED=true;;
-            x) export DEBUG=true; quietecho "  -  debug option enabled: commands shown as 'debug >> cmd' are not executed";;
+            x) export DEBUG=true; verecho "-  debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             -) case $OPTARG in
         # common options
@@ -586,7 +586,7 @@ parsecomonoptions () {
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
-                    debug) export DEBUG=true; quietecho "  -  debug option enabled: commands shown as 'debug >> cmd' are not executed";;
+                    debug) export DEBUG=true; verecho "-  debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
