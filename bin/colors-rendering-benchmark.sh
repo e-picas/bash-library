@@ -33,7 +33,7 @@ col1lg=$(( ($linelg-4)/5 ))
 col2lg=$(( 2*$col1lg ))
 printf -v line "+%*.*s+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder"  0 $col2lg "$padder";
 colorstr="${colorstr}${line}"
-for col in ${libcolors[@]}; do
+for col in ${LIBCOLORS[@]}; do
     fgcolor=$(getcolorcode $col)
     bgcolor=$(getcolorcode $col true)
     fgcolorcode=$(gettextformattag $fgcolor)
@@ -56,7 +56,7 @@ col1lg=$(( ($linelg-3)/5 ))
 col2lg=$(( 4*$col1lg ))
 printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
 txtoptstr="${txtoptstr}${line}"
-for col in ${libtextoptions[@]}; do
+for col in ${LIBTEXTOPTIONS[@]}; do
     txtopt=$(gettextoptioncode $col)
     txtoptcode=$(gettextformattag $txtopt)
     cell="using code=${txtopt}: ${txtoptcode}%-.*s${normalcode}";

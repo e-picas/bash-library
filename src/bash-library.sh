@@ -23,17 +23,17 @@ declare -x E_OPTS=81
 declare -x E_CMD=82
 declare -x E_PATH=83
 
-##@ SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
+##@ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOME )
 # see http://en.wikipedia.org/wiki/Man_page
 declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
 
-##@ MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
+##@ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO )
 declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
 
-##@ LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
+##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
 declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
 
-##@ LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+##@ LIB_COLORS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
 # common colors
 declare -rxa LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
 case $USEROS in
@@ -57,6 +57,17 @@ case $USEROS in
         ;;
 esac
 
+##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey )
+## terminal colors
+declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
+declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
+declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
+
+##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden )
+## terminal text options
+declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
+declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
+
 
 #### COMMON OPTIONS #############################################################################
 
@@ -68,7 +79,7 @@ declare -x FORCED=false
 declare -x DEBUG=false
 declare -x LASTARG=""
 
-##@ COMMON_OPTIONS_ARGS="hfiqvx-:"
+##@ COMMON_OPTIONS_ARGS = "hfiqvx-:"
 declare -rx COMMON_OPTIONS_ARGS="hfiqvx-:"
 
 declare -rx USEROS="$(uname)"
@@ -152,7 +163,7 @@ getsysteminfo () {
 }
 
 #### addpath ( path )
-## add a path to global $PATH
+## add a path to global environment PATH
 add_path () {
 	if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
 }
@@ -160,6 +171,7 @@ add_path () {
 #### COLORIZED CONTENTS #############################################################################
 
 #### gettextformattag ( code )
+## echoes the terminal tag code for color: "\ 033[CODEm"
 gettextformattag () {
     if `in_array $USEROS ${LINUX_OS[@]}`
 		then echo "\033[${1}m"
@@ -168,73 +180,62 @@ gettextformattag () {
     return 0
 }
 
-##@ libcolors=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-## terminal colors
-declare -rxa libcolors=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-declare -rxa libcolors_codes_foreground=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
-declare -rxa libcolors_codes_background=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
-
-#### getcolorcode ( name , background=false )
-##@param name must be in $libcolors
+#### getcolorcode ( name , background = false )
+##@param name must be in LIBCOLORS
 getcolorcode () {
-    if `in_array $1 ${libcolors[@]}`; then
+    if `in_array $1 ${LIBCOLORS[@]}`; then
         if [ ! -z $2 ]
-            then echo "${libcolors_codes_background[`array_search $1 ${libcolors[@]}`]}"
-            else echo "${libcolors_codes_foreground[`array_search $1 ${libcolors[@]}`]}"
+            then echo "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}"
+            else echo "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}"
         fi
     else return 1
     fi
 }
 
-#### getcolortag ( name , background=false )
-##@param name must be in $libcolors
+#### getcolortag ( name , background = false )
+##@param name must be in LIBCOLORS
 getcolortag () {
-    if `in_array $1 ${libcolors[@]}`; then
+    if `in_array $1 ${LIBCOLORS[@]}`; then
         if [ ! -z $2 ]
-            then echo $(gettextformattag "${libcolors_codes_background[`array_search $1 ${libcolors[@]}`]}")
-            else echo $(gettextformattag "${libcolors_codes_foreground[`array_search $1 ${libcolors[@]}`]}")
+            then echo $(gettextformattag "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
+            else echo $(gettextformattag "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
         fi
     else return 1
     fi
 }
-
-##@ libtextoptions=(normal bold small underline blink reverse hidden)
-## terminal text options
-declare -rxa libtextoptions=(normal bold small underline blink reverse hidden)
-declare -rxa libtextoptions_codes=(0 1 2 4 5 7 8)
 
 #### gettextoptioncode ( name )
-#@param name must be in $libtextoptions
+##@param name must be in LIBTEXTOPTIONS
 gettextoptioncode () {
-    if `in_array $1 ${libtextoptions[@]}`
-        then echo "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}"
+    if `in_array $1 ${LIBTEXTOPTIONS[@]}`
+        then echo "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}"
         else return 1
     fi
 }
 
 #### gettextoptiontag ( name )
-##@param name must be in $libtextoptions
+##@param name must be in LIBTEXTOPTIONS
 gettextoptiontag () {
-    if `in_array $1 ${libtextoptions[@]}`
-        then echo $(gettextformattag "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
+    if `in_array $1 ${LIBTEXTOPTIONS[@]}`
+        then echo $(gettextformattag "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
         else return 1
     fi
 }
 
 #### gettextoptiontagclose ( name )
-##@param name must be in $libtextoptions
+##@param name must be in LIBTEXTOPTIONS
 gettextoptiontagclose () {
-    if `in_array $1 ${libtextoptions[@]}`
-        then echo $(gettextformattag "2${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
+    if `in_array $1 ${LIBTEXTOPTIONS[@]}`
+        then echo $(gettextformattag "2${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
         else return 1
     fi
 }
 
 #### colorize ( string , text_option , foreground , background )
-##@param text_option must be in $libtextoptions
-##@param foreground must be in $libcolors
-##@param background must be in $libcolors
-## echo a colorized string ; all arguments are optional except `string`
+##@param text_option must be in LIBTEXTOPTIONS
+##@param foreground must be in LIBCOLORS
+##@param background must be in LIBCOLORS
+## echoes a colorized string ; all arguments are optional except `string`
 colorize () {
     local textopt
     if [ ! -z $2 ]; then textopt=`gettextoptioncode "$2"`; fi
@@ -258,11 +259,11 @@ colorize () {
     fi
 }
 
-#### parsecolortags ( string with <bold>tags</bold> )
+#### parsecolortags ( "string with <bold>tags</bold>" )
 ## parse in-text tags like:
-##     ... <bold>my text</bold> ...
-##     ... <red>my text</red> ...
-##     ... <bgred>my text</bgred> ...
+##     ... <bold>my text</bold> ...     // "tag" in LIBTEXTOPTIONS
+##     ... <red>my text</red> ...       // "tag" in LIBCOLORS
+##     ... <bgred>my text</bgred> ...   // "tag" in LIBCOLORS, constructed as "bgTAG"
 parsecolortags () {
     transformed=""
     while read -r line; do
@@ -272,14 +273,14 @@ parsecolortags () {
             opt="${opt/\//}"
             if `in_array "$opt" ${doneopts[@]}`; then continue; fi
             doneopts+=($opt)
-            if `in_array $opt ${libtextoptions[@]}`; then
+            if `in_array $opt ${LIBTEXTOPTIONS[@]}`; then
                 code=$(gettextoptioncode $opt)
                 tag=$(gettextoptiontag $opt)
 			    if `in_array $USEROS ${LINUX_OS[@]}`
 					then normaltag=$(gettextoptiontagclose $opt)
 	                else normaltag=$(gettextoptiontag normal)
 				fi
-            elif `in_array $opt ${libcolors[@]}`; then
+            elif `in_array $opt ${LIBCOLORS[@]}`; then
                 code=$(getcolorcode $opt)
                 tag=$(getcolortag $opt)
                 normaltag=$(getcolortag default)
@@ -344,17 +345,17 @@ getextension () {
 	if test "x$1" != 'x'; then echo "${1##*.}"; fi; return 0;
 }
 
-#### strtoupper ( text )
+#### strtoupper ( string )
 strtoupper () {
 	echo "$1" | tr '[:lower:]' '[:upper:]'; return 0;
 }
 
-#### strtolower ( text )
+#### strtolower ( string )
 strtolower () {
 	echo "$1" | tr '[:upper:]' '[:lower:]'; return 0;
 }
 
-#### ucfirst ( text )
+#### ucfirst ( string )
 ucfirst () {
 	echo "`strtoupper ${1:0:1}`${1:1:${#1}}"; return 0;
 }
@@ -363,7 +364,7 @@ ucfirst () {
 #### UTILS #############################################################################
 
 #### _echo ( string )
-## echo the string with the true 'echo -e' command
+## echoes the string with the true 'echo -e' command
 ## use this for colorization
 _echo () {
     tput sgr0
@@ -375,7 +376,7 @@ _echo () {
 }
 
 #### verbose_echo ( string )
-## echo the string if "verbose" is "on"
+## echoes the string if "verbose" is "on"
 verbose_echo () {
     if $VERBOSE; then _echo "$*"; fi; return 0;
 }
@@ -385,7 +386,7 @@ verbose_echo () {
 verecho () { verbose_echo "$*"; }
 
 #### quiet_echo ( string )
-## echo the string if "quiet" is "off"
+## echoes the string if "quiet" is "off"
 quiet_echo () {
     if ! $QUIET; then _echo "$*"; fi; return 0;
 }
@@ -395,7 +396,7 @@ quiet_echo () {
 quietecho () { quiet_echo "$*"; }
 
 #### interactive_exec ( command , debug_exec = true )
-## execute the command after user confirmation if "interactive" is "on"
+## executes the command after user confirmation if "interactive" is "on"
 interactive_exec () {
     local DEBEXECUTION=${2:-true}
     if $INTERACTIVE; then
@@ -432,7 +433,7 @@ debexec () { debug_exec "$*"; }
 
 #### prompt ( string , default = y , options = Y/n )
 ## prompt user a string proposing different response options and selecting a default one
-## final user fill is loaded in $USERRESPONSE
+## final user fill is loaded in USERRESPONSE
 prompt () {
     local add=""
     if test "x${3}" != 'x'; then add="[${3}] "; fi
@@ -453,7 +454,7 @@ info () {
     return 0
 }
 
-#### warning ( string , funcname=FUNCNAME[1] , line=BASH_LINENO[1] )
+#### warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
 ## writes the error string on screen and return
 warning () {
 	local TMPSTR="\n\
@@ -463,7 +464,7 @@ warning () {
     return 0
 }
 
-#### error ( string , status=90 , funcname=FUNCNAME[1] , line=BASH_LINENO[1] )
+#### error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
 ## writes the error string on screen and then exit with an error status
 ##@error default status is E_ERROR (90)
 error () {
@@ -516,7 +517,7 @@ isgitclone () {
     if [ -d "$gitpath" ]; then return 0; else return 1; fi;
 }
 
-#### getscriptpath ( script=$0 )
+#### getscriptpath ( script = $0 )
 ## get the full real path of a script (passed as argument) or from current executed script
 getscriptpath () {
 	local arg="${1:-${0}}"
@@ -549,12 +550,13 @@ getscriptoptions () {
 }
 
 #### getlongoptionarg ( "$x" )
-##@return the argument of a long option
+## echoes the argument of a long option
 getlongoptionarg () {
 	echo "${1#*=}"; return 0;
 }
 
 #### getlastargument ( "$x" )
+## echoes the last argument, useful for script.sh --options action (will echo "action")
 getlastargument () {
 	echo "${@: -1}"; return 0;
 }
@@ -617,7 +619,7 @@ version () {
 	return 0
 }
 
-#### title ( lib=false )
+#### title ( lib = false )
 ## this function must echo an information about script NAME and VERSION
 ## setting `$lib` on true will add the library infos
 title () {
@@ -636,7 +638,7 @@ title () {
     return 0
 }
 
-#### usage ( lib_info=true )
+#### usage ( lib_info = true )
 ## this function must echo the usage information USAGE (with option "-h")
 usage () {
 	local lib_info="${1:-true}"
@@ -784,19 +786,25 @@ libdoc () {
             line_str="$fct_line"
             intag=true
         elif $indoc; then
-            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n## \1 (line ${i})|g")
+            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
             if [ `strlen $title_line` != 0 ]; then
                 line_str="$title_line"
             elif $intag; then
-                if [ $VERBOSE ]; then
-                    arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
+                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
+                comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
+                if $VERBOSE; then
                     if [ `strlen $arg_line` != 0 ]; then
                         line_str="$arg_line"
                     else
-                        comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
                         if [ `strlen $comm_line` != 0 ]; then
                             line_str="$comm_line"
+                        else
+                            intag=false;
                         fi
+                    fi
+                else
+                    if [ `strlen $arg_line` == 0 -a `strlen $comm_line` == 0 ]; then
+                        intag=false
                     fi
                 fi
             else
