@@ -127,7 +127,7 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 <underline>Common options</underline> (to use first):\n\
 \t${LIB_OPTIONS}";
 
-declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold> -[<underline>COMMON OPTIONS</underline>] -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]] [<underline>ARGUMENTS</underline>] --";
+declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ARGUMENTS</underline>]  --";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -633,7 +633,7 @@ title () {
         fi
     fi
     if [ ! -z "$1" ]; then
-        _echo "[using `library_version`]"
+        _echo "[using `library_version` - ${LIBRARY_HOME}]"
     fi
     return 0
 }
