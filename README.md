@@ -6,11 +6,10 @@ The Bash library package of Les Ateliers Pierrot
 
 ## What is *bash* ?
 
-**Bash**, the "*Bourne-Again-SHell*", is a Unix shell written for the GNU Project as a free
+**Bash**, the "Bourne-Again-SHell", is a Unix shell written for the GNU Project as a free
 software replacement for the original Bourne shell (sh). The present library is a tool for
-Bash scripts facilities.
-
-Bash is the language mostly used by Linux/Unix devices terminal or console.
+Bash scripts facilities. Bash is the language mostly used by Linux/Unix devices terminal or
+console.
 
 
 ## Usage of the library
@@ -24,7 +23,7 @@ For a global usage on your machine, you can copy the library in your `bin/` dire
 
 As for any script file, it must have execution rights for all users.
 
-A direct installation, including download the sources could be:
+A direct and complete installation, including download the sources could be:
 
     ~$ wget --no-check-certificate https://github.com/atelierspierrot/bash-library/archive/master.tar.gz
     ~$ tar -xvf master.tar.gz
@@ -33,19 +32,21 @@ A direct installation, including download the sources could be:
 
 ### Usage
 
-To use the library in a bash script, just `source` it at the top of your code:
+To use the library in a bash script, just `source` it at the top of your code or before any
+call of its methods or variables:
 
     #!/bin/bash
     source path/to/bash-library.sh
 
-For a complete loading writing an error if the library is not found, you can use:
+For a complete loading writing an error if the library is not found, use the following:
 
-    libfile="path/to/bash-library.sh"
-    if [ -f "$libfile" ]; then source "$libfile"; else
-        padder=$(printf '%0.1s' "#"{1..1000})
-        printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $padder" \
-            "Unable to find required library file '$libfile'!" "Sent in '$0' by '`whoami`' - pwd is '`pwd`'" \
-            0 $(tput cols) "$padder";
+    LIBFILE="path/to/bash-library.sh"
+    if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+        PADDER=$(printf '%0.1s' "#"{1..1000})
+        printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
+            "Unable to find required library file '$LIBFILE'!" \
+            "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
+            0 $(tput cols) "$PADDER";
         exit 1
     fi
 
@@ -53,7 +54,7 @@ This way, if the library was not found, your script will end with an error and w
 
     ### ERROR! ###########################################################
         Unable to find required library file 'path/to/bash-library.sh'!
-        Sent in 'current-file.sh' by 'username' - pwd is '...'
+        Sent in 'current-file.sh' line '0' by 'username' - pwd is '...'
     ######################################################################
 
 ### Developer documentation
@@ -81,9 +82,9 @@ You can use the `-h` option to get help or info:
 
 ## Author & License
 
->    CarteBlanche - PHP framework package
+>    Bash Library - The open source bash library of Les Ateliers Pierrot
 
->    https://github.com/atelierspierrot/carte-blanche
+>    https://github.com/atelierspierrot/bash-library
 
 >    Copyleft 2013, Pierre Cassat and contributors
 

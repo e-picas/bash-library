@@ -4,7 +4,7 @@
     "description": "The Bash library package of Les Ateliers Pierrot",
     "keywords": [ "bash", "library" ],
     "homepage": "https://github.com/atelierspierrot/bash-library",
-    "version": "0.0.1-dev",
+    "version": "0.0.2-dev",
     "license": "GPL-3.0",
     "authors": [
         {

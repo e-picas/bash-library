@@ -8,12 +8,13 @@
 # 
 # bin/bash-library.sh
 # 
+##@!@##
 
 #### SETTINGS #####################################################################
 
 #set -e
 
-#### lib error codes
+# lib error codes
 # Error codes in Bash must return an exit code between 0 and 255
 #+ In the library, to be conform with C/C++ programs, we will try to use codes from 80 to 120
 #+ (error codes in C/C++ begin at 64 but the recent evolutions of Bash reserved codes 64 to 78).
@@ -22,8 +23,19 @@ declare -x E_OPTS=81
 declare -x E_CMD=82
 declare -x E_PATH=83
 
-#### common colors
-declare -ra LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+##@ SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
+# see http://en.wikipedia.org/wiki/Man_page
+declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
+
+##@ MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
+declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
+
+##@ LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
+declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
+
+##@ LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+# common colors
+declare -rxa LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
 case $USEROS in
     Linux|FreeBSD|OpenBSD|SunOS) 
         declare -x COLOR_LIGHT=yellow
@@ -46,37 +58,26 @@ case $USEROS in
 esac
 
 
-#### SCRIPT SETTINGS #####################################################################
-
-declare -rx LIB_NAME="Bash shell library"
-declare -rx LIB_VERSION="0.0.1"
-declare -rx LIB_DATE="2013-05-14"
-declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
-declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
-declare -rx LIB_LICENSE="GPL-3.0"
-declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
-declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
-declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
-# see http://en.wikipedia.org/wiki/Man_page
-declare -ra SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
-declare -ra MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
-
 #### COMMON OPTIONS #############################################################################
 
-declare -ra LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
-declare -x LASTARG=""
+##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
 declare -x FORCED=false
 declare -x DEBUG=false
+declare -x LASTARG=""
+
+##@ COMMON_OPTIONS_ARGS="hfiqvx-:"
 declare -rx COMMON_OPTIONS_ARGS="hfiqvx-:"
+
 declare -rx USEROS="$(uname)"
-declare -ra LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
+declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
 
 
 #### LOREM IPSUM #############################################################################
 
+##@ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE
 declare -rx LOREMIPSUM="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
 declare -rx LOREMIPSUM_SHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
 declare -rx LOREMIPSUM_MULTILINE="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi. \n\
@@ -86,7 +87,17 @@ autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet u
 ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.";
 
 
-#### GLOBAL INFOS #####################################################################
+# LIBRARY INFOS #####################################################################
+
+declare -rx LIB_NAME="Bash shell library"
+declare -rx LIB_VERSION="0.0.1"
+declare -rx LIB_DATE="2013-05-15"
+declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
+declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
+declare -rx LIB_LICENSE="GPL-3.0"
+declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
+declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
+declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
 
 declare -rx LIB_OPTIONS="<bold>-h, --help</bold>\tshow this information message \n\
 \t<bold>-v, --verbose</bold>\tincrease script verbosity \n\
@@ -94,6 +105,7 @@ declare -rx LIB_OPTIONS="<bold>-h, --help</bold>\tshow this information message 
 \t<bold>-f, --force</bold>\tforce some commands to not prompt confirmation \n\
 \t<bold>-i, --interactive</bold>\task for confirmation before any action \n\
 \t<bold>-x, --debug</bold>\tsee commands to run but not run them actually \n\
+\t<bold>--vers</bold>\t\tsee the script version when available\n\
 \t<bold>--libvers</bold>\tsee the library version \n\
 \t<bold>--libhelp</bold>\tsee the library manpage \n\
 \n\
@@ -116,14 +128,16 @@ declare -rx LIB_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${
 
 declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<lightgrey>Bourne-Again-SHell</lightgrey>\", is <underline>a Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
-\tTo use the library, just include its source file using: \`<bold>source path/to/bash-library.sh</bold>\` and call its methods.";
+\tTo use the library, just include its source file using: \`<bold>source path/to/bash-library.sh</bold>\` and call its methods.\n\n\
+\tThe library is licensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
+\tFor documentation, sources & updates, see <${LIB_HOME}>.";
 
 declare -rx LIB_FILES="<underline>bash-library.sh</underline>\tthe standalone library source file";
 
 declare -rx LIB_ENVIRONMENT="<lightgrey>${LIB_COLORS[@]}</lightgrey>\ta set of predefined colors\n\
 \t<lightgrey>${LIB_FLAGS[@]}</lightgrey>\tthe library flags, activated by options\n\
 \t<lightgrey>USEROS</lightgrey>\tthe current user operating system\n\
-\t<lightgrey>${SCRIPT_INFOS[@]}</lightgrey>\tthese are used to build man-pages ; can be defined for each script";
+\t<lightgrey>${MANPAGE_INFOS[@]}</lightgrey>\tthese are used to build man-pages ; can be defined for each script";
 
 
 #### SYSTEM #############################################################################
@@ -138,12 +152,12 @@ getsysteminfo () {
 }
 
 #### addpath ( path )
-# add a path to PATH
+## add a path to global $PATH
 add_path () {
 	if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
 }
 
-#### COLORS #############################################################################
+#### COLORIZED CONTENTS #############################################################################
 
 #### gettextformattag ( code )
 gettextformattag () {
@@ -154,12 +168,14 @@ gettextformattag () {
     return 0
 }
 
-#### terminal colors
-declare -ra libcolors=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-declare -ra libcolors_codes_foreground=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
-declare -ra libcolors_codes_background=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
+##@ libcolors=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
+## terminal colors
+declare -rxa libcolors=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
+declare -rxa libcolors_codes_foreground=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
+declare -rxa libcolors_codes_background=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
 
 #### getcolorcode ( name , background=false )
+##@param name must be in $libcolors
 getcolorcode () {
     if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
@@ -171,6 +187,7 @@ getcolorcode () {
 }
 
 #### getcolortag ( name , background=false )
+##@param name must be in $libcolors
 getcolortag () {
     if `in_array $1 ${libcolors[@]}`; then
         if [ ! -z $2 ]
@@ -181,11 +198,13 @@ getcolortag () {
     fi
 }
 
-#### terminal text options
-declare -ra libtextoptions=(normal bold small underline blink reverse hidden)
-declare -ra libtextoptions_codes=(0 1 2 4 5 7 8)
+##@ libtextoptions=(normal bold small underline blink reverse hidden)
+## terminal text options
+declare -rxa libtextoptions=(normal bold small underline blink reverse hidden)
+declare -rxa libtextoptions_codes=(0 1 2 4 5 7 8)
 
 #### gettextoptioncode ( name )
+#@param name must be in $libtextoptions
 gettextoptioncode () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}"
@@ -194,6 +213,7 @@ gettextoptioncode () {
 }
 
 #### gettextoptiontag ( name )
+##@param name must be in $libtextoptions
 gettextoptiontag () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo $(gettextformattag "${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
@@ -202,6 +222,7 @@ gettextoptiontag () {
 }
 
 #### gettextoptiontagclose ( name )
+##@param name must be in $libtextoptions
 gettextoptiontagclose () {
     if `in_array $1 ${libtextoptions[@]}`
         then echo $(gettextformattag "2${libtextoptions_codes[`array_search $1 ${libtextoptions[@]}`]}")
@@ -209,8 +230,11 @@ gettextoptiontagclose () {
     fi
 }
 
-#### colorize ( string , text option , foreground , background )
-# echo a colorized string
+#### colorize ( string , text_option , foreground , background )
+##@param text_option must be in $libtextoptions
+##@param foreground must be in $libcolors
+##@param background must be in $libcolors
+## echo a colorized string ; all arguments are optional except `string`
 colorize () {
     local textopt
     if [ ! -z $2 ]; then textopt=`gettextoptioncode "$2"`; fi
@@ -235,10 +259,10 @@ colorize () {
 }
 
 #### parsecolortags ( string with <bold>tags</bold> )
-# parse in-text tags like:
-#     ... <bold>my text</bold> ...
-#     ... <red>my text</red> ...
-#     ... <bgred>my text</bgred> ...
+## parse in-text tags like:
+##     ... <bold>my text</bold> ...
+##     ... <red>my text</red> ...
+##     ... <bgred>my text</bgred> ...
 parsecolortags () {
     transformed=""
     while read -r line; do
@@ -284,7 +308,7 @@ parsecolortags () {
 #### ARRAY #############################################################################
 
 #### array_search ( item , $array[@] )
-# returns the index of an array item
+##@return the index of an array item
 array_search () {
     local i=0 search=$1; shift
     while [ $search != $1 ]
@@ -296,7 +320,7 @@ array_search () {
 }
 
 #### in_array ( item , $array[@] )
-# returns 0 if item is found in array
+##@return 0 if item is found in array
 in_array () {
   needle=$1; shift
   for item; do
@@ -309,13 +333,13 @@ in_array () {
 #### STRING #############################################################################
 
 #### strlen ( string )
-# returns the number of characters in string
+##@return the number of characters in string
 strlen () {
     echo ${#1}; return 0;
 }
 
 #### getextension ( filename )
-# retrieve a file extension
+## retrieve a file extension
 getextension () {
 	if test "x$1" != 'x'; then echo "${1##*.}"; fi; return 0;
 }
@@ -339,8 +363,8 @@ ucfirst () {
 #### UTILS #############################################################################
 
 #### _echo ( string )
-# echo the string with the true 'echo' command
-# use this for colorization
+## echo the string with the true 'echo -e' command
+## use this for colorization
 _echo () {
     tput sgr0
     case $USEROS in
@@ -351,27 +375,27 @@ _echo () {
 }
 
 #### verbose_echo ( string )
-# echo the string if "verbose" is "on"
+## echo the string if "verbose" is "on"
 verbose_echo () {
     if $VERBOSE; then _echo "$*"; fi; return 0;
 }
 
 #### verecho ( string )
-# alias of 'verbose_echo'
+## alias of 'verbose_echo'
 verecho () { verbose_echo "$*"; }
 
 #### quiet_echo ( string )
-# echo the string if "quiet" is "off"
+## echo the string if "quiet" is "off"
 quiet_echo () {
-    if $QUIET; then _echo "$*"; fi; return 0;
+    if ! $QUIET; then _echo "$*"; fi; return 0;
 }
 
 #### quietecho ( string )
-# alias of 'quiet_echo'
+## alias of 'quiet_echo'
 quietecho () { quiet_echo "$*"; }
 
 #### interactive_exec ( command , debug_exec = true )
-# execute the command after user confirmation if "interactive" is "on"
+## execute the command after user confirmation if "interactive" is "on"
 interactive_exec () {
     local DEBEXECUTION=${2:-true}
     if $INTERACTIVE; then
@@ -388,11 +412,11 @@ interactive_exec () {
 }
 
 #### iexec ( command , debug_exec = true )
-# alias of 'interactive_exec'
+## alias of 'interactive_exec'
 iexec () { interactive_exec "$*"; }
 
 #### debug_exec ( command )
-# execute the command if "debug" is "off", just write it on screen otherwise
+## execute the command if "debug" is "off", just write it on screen otherwise
 debug_exec () {
     if $DEBUG; then
         _echo "$(colorize 'debug >>' bold) $1"
@@ -403,12 +427,12 @@ debug_exec () {
 }
 
 #### debexec ( command )
-# alias of 'debug_exec'
+## alias of 'debug_exec'
 debexec () { debug_exec "$*"; }
 
 #### prompt ( string , default = y , options = Y/n )
-# prompt user a string proposing different response options and selecting a default one
-# final user fill is loaded in $USERRESPONSE
+## prompt user a string proposing different response options and selecting a default one
+## final user fill is loaded in $USERRESPONSE
 prompt () {
     local add=""
     if test "x${3}" != 'x'; then add="[${3}] "; fi
@@ -418,7 +442,7 @@ prompt () {
 }
 
 #### info ( string, bold = true )
-# writes the string on screen and return
+## writes the string on screen and return
 info () {
     local USEBOLD=${2:-true}
     if $USEBOLD; then
@@ -429,8 +453,8 @@ info () {
     return 0
 }
 
-#### warning ( string , funcname , line )
-# writes the error string on screen and return
+#### warning ( string , funcname=FUNCNAME[1] , line=BASH_LINENO[1] )
+## writes the error string on screen and return
 warning () {
 	local TMPSTR="\n\
 <bold><${COLOR_WARNING}>!! >> ${1:-unknown warning} </${COLOR_WARNING}></bold>\n\
@@ -439,9 +463,9 @@ warning () {
     return 0
 }
 
-#### error ( string , status = 1 , funcname , line )
-# writes the error string on screen and then exit with an error status
-# default status is E_ERROR (90)
+#### error ( string , status=90 , funcname=FUNCNAME[1] , line=BASH_LINENO[1] )
+## writes the error string on screen and then exit with an error status
+##@error default status is E_ERROR (90)
 error () {
 	local TMPSTR="\n\
 <bold><${COLOR_ERROR}>!! >> ${1:-unknown error} </${COLOR_ERROR}></bold>\n\
@@ -452,24 +476,24 @@ error () {
 }
 
 #### nooptionerror ()
-# no script option
-# status E_OPTS (81)
+## no script option
+##@error exits with status E_OPTS (81)
 nooptionerror () {
 	error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
 		${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 #### commanderror ( cmd )
-# command not found
-# status E_CMD (82)
+## command not found
+##@error exits with status E_CMD (82)
 commanderror () {
 	error "'$1' command seems not installed on your machine ... The process can't be done !" \
 	    "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 #### patherror ( path )
-# path not found error
-# status E_PATH (83)
+## path not found error
+##@error exits with status E_PATH (83)
 patherror () {
 	error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
 	    ${FUNCNAME[1]} ${BASH_LINENO[0]};
@@ -479,13 +503,13 @@ patherror () {
 #### VARIOUS #####################################################################
 
 #### onoffbit ( bool )
-# returns 'on' if bool=true, 'off' if it is false
+## echoes 'on' if bool=true, 'off' if it is false
 onoffbit () {
     if $1; then echo 'on'; else echo 'off'; fi; return 0;
 }
 
 #### isgitclone ( path )
-# check if a path, or `pwd`, is a git clone
+## check if a path, or `pwd`, is a git clone
 isgitclone () {
     local curpath=$(pwd)
     local gitpath="${1:-${curpath}}/.git"
@@ -493,7 +517,7 @@ isgitclone () {
 }
 
 #### getscriptpath ( script=$0 )
-# get the full real path of a script (passed as argument) or from current executed script
+## get the full real path of a script (passed as argument) or from current executed script
 getscriptpath () {
 	local arg="${1:-${0}}"
 	local relpath=$(dirname "$arg")
@@ -507,7 +531,7 @@ getscriptpath () {
 #### OPTIONS #############################################################################
 
 #### getscriptoptions ( "$@" )
-# this will stop options treatment at '--'
+## this will stop options treatment at '--'
 getscriptoptions () {
     local options=()
     local eoo=false
@@ -515,7 +539,7 @@ getscriptoptions () {
         if ! $eoo; then
             case "$1" in
                 --) eoo=true; shift;;
-                *) options+=("$1"); shift;;
+                *) if [ `strlen "$1"` != 0 ]; then options+=($1); fi; shift;;
             esac
         else shift;
         fi
@@ -525,24 +549,25 @@ getscriptoptions () {
 }
 
 #### getlongoptionarg ( "$x" )
-# return the argument of a long option
+##@return the argument of a long option
 getlongoptionarg () {
 	echo "${1#*=}"; return 0;
 }
 
 #### getlastargument ( "$x" )
-# return the argument of a long option
 getlastargument () {
 	echo "${@: -1}"; return 0;
 }
 
 #### parsecomonoptions ( "$@" )
-# parse common script options as described in $LIB_OPTIONS
-# this will stop options treatment at '--'
+## parse common script options as described in $LIB_OPTIONS
+## this will stop options treatment at '--'
 parsecomonoptions () {
     local oldoptind=$OPTIND
     local options=$(getscriptoptions "$@")
-    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "${options[@]}"; do
+    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION $options; do
+#    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "${options[@]}"; do
+#    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "$@"; do
         OPTARG="${OPTARG#=}"
         case $OPTION in
         # common options
@@ -554,7 +579,8 @@ parsecomonoptions () {
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             -) case $OPTARG in
         # common options
-                    help) clear; usage; exit 0;;
+                    help|man|usage) clear; usage; exit 0;;
+                    vers*) script_version; exit 0;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
@@ -563,6 +589,7 @@ parsecomonoptions () {
         # library options
                     libhelp) clear; library_usage; exit 0;;
                     libvers*) library_version; exit 0;;
+                    libdoc*) libdoc; exit 0;;
         # no error for others
                     *) rien=rien;;
                 esac ;;
@@ -591,8 +618,8 @@ version () {
 }
 
 #### title ( lib=false )
-# this function must echo an information about script NAME and VERSION
-# setting `$lib` on true will add the library infos
+## this function must echo an information about script NAME and VERSION
+## setting `$lib` on true will add the library infos
 title () {
     local TITLE="${NAME}"
     if [ "x$VERSION" != 'x' ]; then TITLE="${TITLE} - v. [${VERSION}]"; fi    
@@ -600,7 +627,7 @@ title () {
     if isgitclone; then
         local gitcmd=$(which git)
         if [ "x$gitcmd" != 'x' ]; then
-            _echo "[`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`]"
+            _echo "[git: `git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`]"
         fi
     fi
     if [ ! -z "$1" ]; then
@@ -610,14 +637,9 @@ title () {
 }
 
 #### usage ( lib_info=true )
-# this function must echo the usage information USAGE (with option "-h")
+## this function must echo the usage information USAGE (with option "-h")
 usage () {
 	local lib_info="${1:-true}"
-#     local TMP_VERS="`version`"
-#     if [ `strlen "$DATE"` != 0 ]
-#         then TMP_VERS="${TMP_VERS} - ${DATE}"
-#         else TMP_VERS="${TMP_VERS} - `date '+%Y-%m-%d'`"
-#     fi
     local TMP_VERS="`library_info`"
     if [ ! "x${USAGE}" = 'x' -a "$lib_info" == 'true' ]; then
         title
@@ -648,6 +670,19 @@ usage () {
     return 0;
 }
 
+#### script_version ()
+script_version () {
+    local TMP_VERS="${VERSION}"
+    if [ `strlen "$VERSION"` != 0 ]; then
+        local TMP_STR="${0} ${TMP_VERS}"
+        if [ `strlen "$DATE"` != 0 ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
+        echo "${TMP_STR}"
+    fi
+    return 0;
+}
+
+#### LIBRARY INFOS #####################################################################
+
 #### library_info ()
 library_info () {
     echo "`library_version` - ${LIB_DATE}"
@@ -655,7 +690,7 @@ library_info () {
 }
 
 #### library_usage ()
-# this function must echo the usage information of the library itself (with option "--libhelp")
+## this function must echo the usage information of the library itself (with option "--libhelp")
 library_usage () {
 	for section in "${MANPAGE_INFOS[@]}"; do
 		eval "old_$section=\$$section"
@@ -675,24 +710,27 @@ library_usage () {
 }
 
 #### library_version ()
-# this function must echo an information about script LIB_NAME and LIB_VERSION
+## this function must echo an information about script LIB_NAME and LIB_VERSION
 library_version () {
-    local add=""
+    local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     if isgitclone; then
         local gitcmd=$(which git)
         if [ "x$gitcmd" != 'x' ]; then
             local gitremote=$(git config --get remote.origin.url)
             if [ "${gitremote}" == "${LIB_HOME}.git" ]; then
                 add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
+                if [ `strlen "$add"` != 0 ]; then
+                    TMP_VERS="${TMP_VERS} ${add}"
+                fi
             fi
         fi
     fi
-    echo "${LIB_NAME} ${LIB_VERSION} ${add}"
+    echo "${TMP_VERS}"
     return 0
 }
 
 #### libdebug ()
-# see all common options flags values
+## see all common options flags values
 libdebug () {
 	OPTIND=1
     local TMP_DEBUG_MASK=" \n\
@@ -720,7 +758,62 @@ libdebug () {
         $(colorize 'LASTARG' bold) $(colorize "${LASTARG:--}" bold $COLOR_INFO) \
         "$?" "$$" "`whoami`" "`getsysteminfo`";
 	_echo "$TMP_DEBUG"
+    parsecolortags "\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
     return 0
 }
 
+#### libdoc ()
+## get the library functions list
+libdoc () {
+    parsecolortags "<bold>Library documentation</bold> (use option '-v' to develop)";
+    local libraryfile=${LIBFILE:-${BASH_SOURCE[0]}}
+    if [ ! -f $libraryfile ]; then patherror $libraryfile; fi
+    i=0
+    old_IFS=$IFS
+    IFS=$'\n'
+    local indoc=false
+    local intag=false
+    for line in $(cat $libraryfile); do
+        if [ "$line" == '##@!@##' ]; then
+            if $indoc; then indoc=false; else indoc=true; fi
+            continue;
+        fi
+        line_str=""
+        fct_line=$(echo "$line" | grep -Po "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
+        if [ $indoc -a `strlen $fct_line` != 0 ]; then
+            line_str="$fct_line"
+            intag=true
+        elif $indoc; then
+            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n## \1 (line ${i})|g")
+            if [ `strlen $title_line` != 0 ]; then
+                line_str="$title_line"
+            elif $intag; then
+                if [ $VERBOSE ]; then
+                    arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
+                    if [ `strlen $arg_line` != 0 ]; then
+                        line_str="$arg_line"
+                    else
+                        comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
+                        if [ `strlen $comm_line` != 0 ]; then
+                            line_str="$comm_line"
+                        fi
+                    fi
+                fi
+            else
+                intag=false;
+                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
+                if [ `strlen $arg_line` != 0 ]; then
+                    line_str="$arg_line"
+                fi
+            fi
+        fi
+        if [ `strlen $line_str` != 0 ]; then _echo "${line_str}"; fi
+        i=$(($i+1))
+    done
+    IFS=$old_IFS
+    parsecolortags "\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
+    return 0
+}
+
+##@!@##
 # Endfile

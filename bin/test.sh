@@ -2,12 +2,13 @@
 # global test
 
 ######## Inclusion of the lib
-libfile="`dirname $0`/../src/bash-library.sh"
-if [ -f "$libfile" ]; then source "$libfile"; else
-    padder=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $padder" \
-        "Unable to find required library file '$libfile'!" "Sent in '$0' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$padder";
+LIBFILE="`dirname $0`/../src/bash-library.sh"
+if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+    PADDER=$(printf '%0.1s' "#"{1..1000})
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
+        "Unable to find required library file '$LIBFILE'!" \
+        "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
+        0 $(tput cols) "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -19,7 +20,7 @@ USAGE="\n\
 This file is the global test script of the library. You can play with options below to modify its behavior.\n\
 Each file of the package like 'bin/***-test.sh' is a demo or test for a specific feature.\n\n\
 <bold>USAGE</bold>\n\
-\t~\$ ${0} -option(s) --longoption\n\n\
+\t~\$ ${0} -option(s) --longoption(s)\n\n\
 <bold>COMMON OPTIONS</bold>\n\
 \t${LIB_OPTIONS}\n\n\
 <bold>LIBRARY</bold>\n\
