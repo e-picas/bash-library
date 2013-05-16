@@ -633,7 +633,7 @@ title () {
         fi
     fi
     if [ ! -z "$1" ]; then
-        _echo "[using `library_version` - ${LIBRARY_HOME}]"
+        _echo "[using `library_version` - ${LIB_HOME}]"
     fi
     return 0
 }
