@@ -518,13 +518,23 @@ isgitclone () {
 }
 
 #### getscriptpath ( script = $0 )
-## get the full real path of a script (passed as argument) or from current executed script
+## get the full real path of a script directory (passed as argument) or from current executed script
 getscriptpath () {
 	local arg="${1:-${0}}"
 	local relpath=$(dirname "$arg")
 	local abspath=$(cd "$relpath" && pwd)
 	if [ -z "$abspath" ]; then return 1; fi
 	echo "$abspath"
+	return 0
+}
+
+#### realpath ( script = $0 )
+## get the real path of a script (passed as argument) or from current executed script
+realpath () {
+	local arg="${1:-${0}}"
+	local dirpath=$(getscriptpath "$arg")
+	if [ -z "$dirpath" ]; then return 1; fi
+	echo "${dirpath}/`basename $arg`"
 	return 0
 }
 
@@ -577,7 +587,7 @@ parsecomonoptions () {
             i) export INTERACTIVE=true; export QUIET=false;;
             v) export VERBOSE=true; export QUIET=false;;
             f) export FORCED=true;;
-            x) export DEBUG=true; verecho "-  debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+            x) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             -) case $OPTARG in
         # common options
@@ -586,7 +596,7 @@ parsecomonoptions () {
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
-                    debug) export DEBUG=true; verecho "-  debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    debug) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
@@ -715,16 +725,19 @@ library_usage () {
 ## this function must echo an information about script LIB_NAME and LIB_VERSION
 library_version () {
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
-    if isgitclone; then
+    local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
+    if isgitclone $LIB_MODULE; then
         local gitcmd=$(which git)
+        local oldpwd=$(pwd)
         if [ "x$gitcmd" != 'x' ]; then
-            local gitremote=$(git config --get remote.origin.url)
+            local gitremote=$(cd $LIB_MODULE && git config --get remote.origin.url)
             if [ "${gitremote}" == "${LIB_HOME}.git" ]; then
                 add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
                 if [ `strlen "$add"` != 0 ]; then
                     TMP_VERS="${TMP_VERS} ${add}"
                 fi
             fi
+            cd $oldpwd
         fi
     fi
     echo "${TMP_VERS}"
@@ -822,6 +835,9 @@ libdoc () {
     parsecolortags "\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
     return 0
 }
+
+##@ LIBRARY_REALPATH
+declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 
 ##@!@##
 # Endfile
