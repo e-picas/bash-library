@@ -730,8 +730,9 @@ library_version () {
         local gitcmd=$(which git)
         local oldpwd=$(pwd)
         if [ "x$gitcmd" != 'x' ]; then
-            local gitremote=$(cd $LIB_MODULE && git config --get remote.origin.url)
-            if [ "${gitremote}" == "${LIB_HOME}.git" ]; then
+            cd $LIB_MODULE
+            local gitremote=$(git config --get remote.origin.url)
+            if [ "${gitremote}" == "${LIB_HOME}.git" -o "${gitremote}" == "${LIB_HOME}" ]; then
                 add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
                 if [ `strlen "$add"` != 0 ]; then
                     TMP_VERS="${TMP_VERS} ${add}"
