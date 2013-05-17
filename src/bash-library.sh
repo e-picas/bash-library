@@ -774,7 +774,7 @@ libdebug () {
         $(colorize 'LASTARG' bold) $(colorize "${LASTARG:--}" bold $COLOR_INFO) \
         "$?" "$$" "`whoami`" "`getsysteminfo`";
 	_echo "$TMP_DEBUG"
-    parsecolortags "\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
+    parsecolortags "<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
     return 0
 }
 
