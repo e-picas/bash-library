@@ -408,7 +408,17 @@ interactive_exec () {
             esac
         done
     fi
-    if $DEBEXECUTION; then debug_exec "$1"; else eval $1; fi
+    if $DEBEXECUTION; then debug_exec "$1"; else
+        cmd_fct=${FUNCNAME[1]}
+        cmd_line=${BASH_LINENO[1]}
+        cmd_out=$( eval $1 2>&1 )
+        cmd_status=$?
+        if [[ $command_rc -ne 0 ]]; then
+            echo "$cmd_out"
+        else
+            error "error on execution: $cmd_out" $cmd_status $cmd_fct $cmd_line
+        fi
+    fi
     return 0
 }
 
@@ -454,25 +464,38 @@ info () {
     return 0
 }
 
-#### warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+#### warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )
 ## writes the error string on screen and return
 warning () {
-	local TMPSTR="\n\
-<bold><${COLOR_WARNING}>!! >> ${1:-unknown warning} </${COLOR_WARNING}></bold>\n\
-\tat <${COLOR_INFO}>${3:-${FUNCNAME[1]}}</${COLOR_INFO}> line <${COLOR_INFO}>${4:-${BASH_LINENO[1]}}</${COLOR_INFO}>\n\n";
-    parsecolortags "$TMPSTR"
+    local TAG="${4:-    }"
+    local PADDER=$(printf '%0.1s' " "{1..1000})
+    local LINELENGTH=$(tput cols)
+    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}]"
+    local SECONDLINE=$(colorize "${TAG}!! >> ${1:-unknown warning}" bold)
+    printf -v TMPSTR \
+        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
+        0 $LINELENGTH "$PADDER" \
+        $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
+        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE";
+    parsecolortags "\n<${COLOR_WARNING}>$TMPSTR</${COLOR_WARNING}>\n"
     return 0
 }
 
-#### error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+#### error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )
 ## writes the error string on screen and then exit with an error status
 ##@error default status is E_ERROR (90)
 error () {
-	local TMPSTR="\n\
-<bold><${COLOR_ERROR}>!! >> ${1:-unknown error} </${COLOR_ERROR}></bold>\n\
-\tat <${COLOR_INFO}>${3:-${FUNCNAME[1]}}</${COLOR_INFO}> line <${COLOR_INFO}>${4:-${BASH_LINENO[1]}}</${COLOR_INFO}>\n\
-\tto get help, try option '<${COLOR_DARK}>-h</${COLOR_DARK}>'\n\n";
-    parsecolortags "$TMPSTR"
+    local TAG="${4:-    }"
+    local PADDER=$(printf '%0.1s' " "{1..1000})
+    local LINELENGTH=$(tput cols)
+    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '-h')"
+    local SECONDLINE=$(colorize "${TAG}!! >> ${1:-unknown error}" bold)
+    printf -v TMPSTR \
+        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
+        0 $LINELENGTH "$PADDER" \
+        $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
+        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE";
+    parsecolortags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n"
     exit ${2:-${E_ERROR}}
 }
 
@@ -538,6 +561,164 @@ realpath () {
 	return 0
 }
 
+
+#### CONFIGURATION FILES #####################################################################
+
+#### getglobalconfigfile ( file_name )
+getglobalconfigfile () {
+    if [ -z $1 ]; then
+        warning "'readconfigfile()' requires a file name as argument"
+        return 0
+    fi
+    local filename="$1"
+    echo "/etc/${filename}.conf"
+    return 0
+}
+
+#### getuserconfigfile ( file_name )
+getuserconfigfile () {
+    if [ -z $1 ]; then
+        warning "'readconfigfile()' requires a file name as argument"
+        return 0
+    fi
+    local filename="$1"
+    echo ~/.${filename}.conf
+    return 0
+}
+
+#### readconfig ( file_name )
+## read a default placed config file with fallback: first in 'etc/' then in '~/'
+readconfig () {
+    if [ -z $1 ]; then
+        warning "'readconfig()' requires a file name as argument"
+        return 0
+    fi
+    local filename="$1"
+    local global_filepath="/etc/${filename}"
+    local user_filepath="~/.${filename}"
+    if [ -r "$global_filepath" ]; then
+        source "$global_filepath"
+    fi
+    if [ -r "$user_filepath" ]; then
+        source "$user_filepath"
+    fi
+    return 0
+}
+
+#### readconfigfile ( file_path )
+## read a config file
+readconfigfile () {
+    if [ -z $1 ]; then
+        warning "'readconfigfile()' requires a file path as argument"
+        return 0
+    fi
+    local filepath="$1"
+    if [ ! -f $filepath ]; then
+        warning "Config file '$1' not found!"
+        return 0
+    fi
+    while read line; do
+        if [[ "$line" =~ ^[^#]*= ]]; then
+            name=${line%%=*}
+            value=${line##*=}
+            export "$name"="$value"
+        fi
+    done < $filepath
+    return 0
+}
+
+#### writeconfigfile ( file_path , array_keys , array_values )
+## array params must be passed as "array[@]" (no dollar sign)
+writeconfigfile () {
+    if [ -z $1 ]; then
+        warning "'writeconfigfile()' requires a file name as 1st argument"
+        return 0
+    fi
+    if [ -z $2 ]; then
+        warning "'writeconfigfile()' requires a configuration keys array as 2nd argument"
+        return 0
+    fi
+    if [ -z $3 ]; then
+        warning "'writeconfigfile()' requires a configuration values array as 3rd argument"
+        return 0
+    fi
+    local filepath="$1"
+    declare -a array_keys=("${!2}")
+    declare -a array_values=("${!3}")
+    touch $filepath
+    cat > $filepath <<EOL
+$(buildconfigstring array_keys[@] array_values[@])
+EOL
+    if [ -f "$filepath" ]
+        then return 0
+        else return 1
+    fi
+}
+
+#### setconfigval ( file_path , key , value )
+setconfigval () {
+    if [ -z "$1" ]; then
+        warning "'setconfigval()' requires a file name as 1st argument"
+        return 0
+    fi
+    if [ -z "$2" ]; then
+        warning "'setconfigval()' requires a configuration key as 2nd argument"
+        return 0
+    fi
+    if [ -z "$3" ]; then
+        warning "'setconfigval()' requires a configuration value as 3rd argument"
+        return 0
+    fi
+    local filepath="$1"
+    local key="$2"
+    local value="$3"
+    touch $filepath
+    if grep -q "$key=*" $filepath; then   
+       sed -i '' -e "s|\($key=\).*|\1$value|" "$filepath"
+    else
+       echo "$key=$value" >> $filepath
+    fi
+    return 0
+}
+
+#### getconfigval ( file_path , key )
+getconfigval () {
+    if [ -z "$1" ]; then
+        warning "'getconfigval()' requires a file name as 1st argument"
+        return 0
+    fi
+    if [ -z "$2" ]; then
+        warning "'getconfigval()' requires a configuration key as 2nd argument"
+        return 0
+    fi
+    local filepath="$1"
+    local key="$2"
+    if [ -f $filepath ]; then
+        if grep -q "$key=*" $filepath; then   
+           local line=$(grep "^$key=" $filepath)
+           echo ${line##*=}
+        fi
+    fi
+    return 0
+}
+
+#### buildconfigstring ( array_keys , array_values )
+## params must be passed as "array[@]" (no dollar sign)
+buildconfigstring () {
+    declare -a array_keys=("${!1}")
+    declare -a array_values=("${!2}")
+    local i=0
+    local CONFIG_STR=""
+    for key in "${array_keys[@]}"; do
+        value="${array_values[${i}]}"
+        sep=""
+        if [ `strlen $CONFIG_STR` != 0 ]; then sep="\n"; fi
+        CONFIG_STR="${CONFIG_STR}${sep}${key}=${value}"
+       ((i++))
+    done
+    echo "$CONFIG_STR"
+    return 0
+}
 
 #### OPTIONS #############################################################################
 
