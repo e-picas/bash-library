@@ -30,6 +30,11 @@ parsecomonoptions "$@"
 quietecho "_ go"
 
 # getscriptpath
+echo "## pwd is:"
+echo "`pwd`"
+echo
+
+# getscriptpath
 echo "## getscriptpath:"
 echo "`getscriptpath`"
 echo

@@ -72,15 +72,17 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 #### COMMON OPTIONS #############################################################################
 
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
+##@ WORKINGDIR = pwd
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
 declare -x FORCED=false
 declare -x DEBUG=false
 declare -x LASTARG=""
+declare -x WORKINGDIR=$(pwd)
 
 ##@ COMMON_OPTIONS_ARGS = "hfiqvx-:"
-declare -rx COMMON_OPTIONS_ARGS="hfiqvx-:"
+declare -rx COMMON_OPTIONS_ARGS="hfiqvxVd:-:"
 
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
@@ -110,18 +112,21 @@ declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
 declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
 
-declare -rx LIB_OPTIONS="<bold>-h, --help</bold>\tshow this information message \n\
-\t<bold>-v, --verbose</bold>\tincrease script verbosity \n\
-\t<bold>-q, --quiet</bold>\tdecrease script verbosity, nothing will be written unless errors \n\
-\t<bold>-f, --force</bold>\tforce some commands to not prompt confirmation \n\
+declare -rx OPTIONS_USAGE_INFOS="\tYou can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>' \n\
+\tor '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options.";
+
+declare -rx COMMON_OPTIONS_LIST="<bold>-h, --help</bold>\t\tshow this information message \n\
+\t<bold>-v, --verbose</bold>\t\tincrease script verbosity \n\
+\t<bold>-q, --quiet</bold>\t\tdecrease script verbosity, nothing will be written unless errors \n\
+\t<bold>-f, --force</bold>\t\tforce some commands to not prompt confirmation \n\
 \t<bold>-i, --interactive</bold>\task for confirmation before any action \n\
-\t<bold>-x, --debug</bold>\tsee commands to run but not run them actually \n\
-\t<bold>--vers</bold>\t\tsee the script version when available\n\
-\t<bold>--libvers</bold>\tsee the library version \n\
-\t<bold>--libhelp</bold>\tsee the library manpage \n\
-\n\
-You can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>' \n\
-or '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options.";
+\t<bold>-x, --debug</bold>\t\tsee commands to run but not run them actually \n\
+\t<bold>-V, --version</bold>\t\tsee the script version when available\n\
+\t<bold>-d, --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>--libvers</bold>\t\tsee the library version \n\
+\t<bold>--libhelp</bold>\t\tsee the library manpage";
+
+declare -rx LIB_OPTIONS="${COMMON_OPTIONS_LIST}\n\n${OPTIONS_USAGE_INFOS}";
 
 declare -rx COMMON_OPTIONS_INFO="\n\
 <underline>Common options</underline> (to use first):\n\
@@ -167,6 +172,22 @@ getsysteminfo () {
 add_path () {
 	if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
 }
+
+#### setworkingdir ( path )
+## throws an error if 'path' does not exist
+setworkingdir () {
+    if [ "$1" = "~" ]; then
+        export WORKINGDIR=$HOME
+    else
+        if [ -d $1 ]
+            then export WORKINGDIR=$1
+            else patherror "$1"
+        fi
+    fi
+    cd $WORKINGDIR
+    return 0
+}
+
 
 #### COLORIZED CONTENTS #############################################################################
 
@@ -485,7 +506,7 @@ warning () {
 ## writes the error string on screen and then exit with an error status
 ##@error default status is E_ERROR (90)
 error () {
-    local TAG="${4:-    }"
+    local TAG="${5:-    }"
     local PADDER=$(printf '%0.1s' " "{1..1000})
     local LINELENGTH=$(tput cols)
     local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '-h')"
@@ -770,6 +791,8 @@ parsecomonoptions () {
             f) export FORCED=true;;
             x) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
+            d) setworkingdir $OPTARG;;
+            V) script_version; exit 0;;
             -) case $OPTARG in
         # common options
                     help|man|usage) clear; usage; exit 0;;
@@ -779,6 +802,7 @@ parsecomonoptions () {
                     force) export FORCED=true;;
                     debug) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
+                    working-dir*) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"; setworkingdir $LONGOPTARG;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
                     libvers*) library_version; exit 0;;
@@ -934,7 +958,8 @@ libdebug () {
 ---- DEBUG -------------------------------------------------------------\n\
  \$ $0 $*\n\
 ------------------------------------------------------------------------\n\
-- %s is %s\n\
+- %s is set on %s\n\
+- %s is set on %s\n\
 - %s mode is %s (option '%s')\n\
 - %s mode is %s (option '%s')\n\
 - %s mode is %s (option '%s')\n\
@@ -947,6 +972,7 @@ libdebug () {
 ------------------------------------------------------------------------";
     printf -v TMP_DEBUG "$TMP_DEBUG_MASK" \
         $(colorize 'USEROS' bold) $(colorize "${USEROS}" bold $COLOR_INFO) \
+        $(colorize 'WORKINGDIR' bold) $(colorize "${WORKINGDIR}" bold $COLOR_INFO) \
         $(colorize 'VERBOSE' bold) $(colorize "$(onoffbit $VERBOSE)" bold $COLOR_INFO) "-v" \
         $(colorize 'INTERACTIVE' bold) $(colorize "$(onoffbit $INTERACTIVE)" bold $COLOR_INFO) "-i" \
         $(colorize 'FORCED' bold) $(colorize "$(onoffbit $FORCED)" bold $COLOR_INFO) "-f" \

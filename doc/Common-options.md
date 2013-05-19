@@ -53,7 +53,8 @@ command line arguments), you can use:
 -   **-x | --debug**: drastically increase verbosity of the script,
 -   **-q | --quiet**: drastically decrease verbosity of the script, only errors are shown,
 -   **-i | --interactive**: the script will ask confirmation before some actions,
--   **-f | --force**: force actions to execute, no confirmation is asked when possible.
+-   **-f | --force**: force actions to execute, no confirmation is asked when possible,
+-   **-d | --working-dir=PATH**: redefine the working directory (default is the current directory).
 
 These options just enables or disables a constant flag in the environment ; to make
 them really "works", you will need to use some of the related functions of the library.
@@ -62,7 +63,7 @@ See the [Global documentation](Global-doc.md) to learn more.
 ### Man-page for each script
 
 -   **-h | --help | --man | --usage**: get a sort of man-page about current script,
--   **--vers | --version**: get the script version if available.
+-   **-V | --vers | --version**: get the script version if available.
 
 See the specific [Man-pages](Man-pages.md) and [Versioning](Versioning.md) documentation for more infos.
 
