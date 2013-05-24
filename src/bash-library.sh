@@ -175,6 +175,7 @@ add_path () {
 }
 
 #### setworkingdir ( path )
+## handles the '-d' option for instance
 ## throws an error if 'path' does not exist
 setworkingdir () {
     if [ "$1" = "~" ]; then
@@ -193,6 +194,7 @@ setworkingdir () {
 #### COLORIZED CONTENTS #############################################################################
 
 #### gettextformattag ( code )
+##@param code must be one of the library colors or text-options codes
 ## echoes the terminal tag code for color: "\ 033[CODEm"
 gettextformattag () {
     if `in_array $USEROS ${LINUX_OS[@]}`
@@ -522,7 +524,7 @@ error () {
 }
 
 #### nooptionerror ()
-## no script option
+## no script option error
 ##@error exits with status E_OPTS (81)
 nooptionerror () {
 	error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
@@ -530,7 +532,7 @@ nooptionerror () {
 }
 
 #### commanderror ( cmd )
-## command not found
+## command not found error
 ##@error exits with status E_CMD (82)
 commanderror () {
 	error "'$1' command seems not installed on your machine ... The process can't be done !" \
@@ -554,7 +556,7 @@ onoffbit () {
     if $1; then echo 'on'; else echo 'off'; fi; return 0;
 }
 
-#### isgitclone ( path )
+#### isgitclone ( path = pwd )
 ## check if a path, or `pwd`, is a git clone
 isgitclone () {
     local curpath=$(pwd)
@@ -928,7 +930,7 @@ library_usage () {
 }
 
 #### library_version ()
-## this function must echo an information about script LIB_NAME and LIB_VERSION
+## this function must echo an information about library name & version (with option "--libvers")
 library_version () {
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
@@ -952,7 +954,7 @@ library_version () {
 }
 
 #### libdebug ()
-## see all common options flags values
+## see all common options flags values & some debug infos
 libdebug () {
 	OPTIND=1
     local TMP_DEBUG_MASK=" \n\
@@ -987,9 +989,14 @@ libdebug () {
 }
 
 #### libdoc ()
-## get the library functions list
+## get the library functions list (with option "--libdoc")
+## expend the doc with option '-v'
 libdoc () {
-    parsecolortags "<bold>Library documentation</bold> (use option '-v' to develop)";
+    if $VERBOSE; then
+        parsecolortags "<bold>Library documentation</bold> (developed mode)";
+    else
+        parsecolortags "<bold>Library documentation</bold> (use option '-v' to develop)";
+    fi
     local libraryfile=${LIBFILE:-${BASH_SOURCE[0]}}
     if [ ! -f $libraryfile ]; then patherror $libraryfile; fi
     i=0
@@ -1050,3 +1057,4 @@ declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 
 ##@!@##
 # Endfile
+# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh
