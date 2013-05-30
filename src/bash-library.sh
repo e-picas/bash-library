@@ -73,6 +73,7 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
 ##@ WORKINGDIR = pwd
+##@ LOGFILE = bashlib.log
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
@@ -80,10 +81,12 @@ declare -x FORCED=false
 declare -x DEBUG=false
 declare -x LASTARG=""
 declare -x WORKINGDIR=$(pwd)
+declare -x LOGFILE=""
+declare -x LOGFILEPATH=""
 
-##@ COMMON_OPTIONS_ARGS = "hfiqvxVd:-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
-declare -rx COMMON_OPTIONS_ARGS="hfiqvxVd:-:"
-declare -rx COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d"
+##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
+declare -rx COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
+declare -rx COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
 
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
@@ -113,6 +116,8 @@ declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
 declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
 
+declare -rx LIB_LOGFILE="bashlib.log"
+
 declare -rx OPTIONS_USAGE_INFOS="\tYou can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>' \n\
 \tor '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options.";
 
@@ -124,6 +129,7 @@ declare -rx COMMON_OPTIONS_LIST="<bold>-h, --help</bold>\t\tshow this informatio
 \t<bold>-x, --debug</bold>\t\tsee commands to run but not run them actually \n\
 \t<bold>-V, --version</bold>\t\tsee the script version when available\n\
 \t<bold>-d, --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>-l, --log=FILENAME</bold>\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t<bold>--libvers</bold>\t\tsee the library version \n\
 \t<bold>--libhelp</bold>\t\tsee the library manpage";
 
@@ -162,16 +168,25 @@ declare -rx LIB_ENVIRONMENT="<lightgrey>${LIB_COLORS[@]}</lightgrey>\ta set of p
 #### getsysteminfo ()
 getsysteminfo () {
     if `in_array $USEROS ${LINUX_OS[@]}`
-		then uname -osr
-		else uname -vsr
-	fi
+        then uname -osr
+        else uname -vsr
+    fi
+    return 0
+}
+
+#### getmachinename ()
+getmachinename () {
+    if `in_array $USEROS ${LINUX_OS[@]}`
+        then uname -n
+        else uname -n
+    fi
     return 0
 }
 
 #### addpath ( path )
 ## add a path to global environment PATH
 add_path () {
-	if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
+    if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
 }
 
 #### setworkingdir ( path )
@@ -190,6 +205,13 @@ setworkingdir () {
     return 0
 }
 
+#### setlogfilename ( path )
+## handles the '-l' option for instance
+setlogfilename () {
+    if [ ! -z $1 ]; then export LOGFILE=$1; fi
+    return 0
+}
+
 
 #### COLORIZED CONTENTS #############################################################################
 
@@ -198,9 +220,9 @@ setworkingdir () {
 ## echoes the terminal tag code for color: "\ 033[CODEm"
 gettextformattag () {
     if `in_array $USEROS ${LINUX_OS[@]}`
-		then echo "\033[${1}m"
-		else echo "\033[${1}m"
-	fi
+        then echo "\033[${1}m"
+        else echo "\033[${1}m"
+    fi
     return 0
 }
 
@@ -300,10 +322,10 @@ parsecolortags () {
             if `in_array $opt ${LIBTEXTOPTIONS[@]}`; then
                 code=$(gettextoptioncode $opt)
                 tag=$(gettextoptiontag $opt)
-			    if `in_array $USEROS ${LINUX_OS[@]}`
-					then normaltag=$(gettextoptiontagclose $opt)
-	                else normaltag=$(gettextoptiontag normal)
-				fi
+                if `in_array $USEROS ${LINUX_OS[@]}`
+                    then normaltag=$(gettextoptiontagclose $opt)
+                    else normaltag=$(gettextoptiontag normal)
+                fi
             elif `in_array $opt ${LIBCOLORS[@]}`; then
                 code=$(getcolorcode $opt)
                 tag=$(getcolortag $opt)
@@ -313,12 +335,12 @@ parsecolortags () {
                  tag=$(getcolortag ${opt/bg/} true)
                 normaltag=$(getcolortag default true)
            fi
-		    if `in_array $USEROS ${LINUX_OS[@]}`; then
+            if `in_array $USEROS ${LINUX_OS[@]}`; then
                  tag=$(printf '\%s' "$tag")
                  normaltag=$(printf '\%s' "$normaltag")
-			fi
+            fi
             if [ ! -z $tag ]; then
-				strsubstituted=$(echo "$transformedline" | sed "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g");
+                strsubstituted=$(echo "$transformedline" | sed "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g");
                 if [ ! -z "$strsubstituted" ]; then transformedline="${strsubstituted}"; fi
             fi
         done
@@ -366,22 +388,22 @@ strlen () {
 #### getextension ( filename )
 ## retrieve a file extension
 getextension () {
-	if test "x$1" != 'x'; then echo "${1##*.}"; fi; return 0;
+    if test "x$1" != 'x'; then echo "${1##*.}"; fi; return 0;
 }
 
 #### strtoupper ( string )
 strtoupper () {
-	echo "$1" | tr '[:lower:]' '[:upper:]'; return 0;
+    echo "$1" | tr '[:lower:]' '[:upper:]'; return 0;
 }
 
 #### strtolower ( string )
 strtolower () {
-	echo "$1" | tr '[:upper:]' '[:lower:]'; return 0;
+    echo "$1" | tr '[:upper:]' '[:lower:]'; return 0;
 }
 
 #### ucfirst ( string )
 ucfirst () {
-	echo "`strtoupper ${1:0:1}`${1:1:${#1}}"; return 0;
+    echo "`strtoupper ${1:0:1}`${1:1:${#1}}"; return 0;
 }
 
 
@@ -500,7 +522,7 @@ warning () {
         "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
         0 $LINELENGTH "$PADDER" \
         $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
-        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE";
+        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE<${COLOR_WARNING}>";
     parsecolortags "\n<${COLOR_WARNING}>$TMPSTR</${COLOR_WARNING}>\n"
     return 0
 }
@@ -512,39 +534,42 @@ error () {
     local TAG="${5:-    }"
     local PADDER=$(printf '%0.1s' " "{1..1000})
     local LINELENGTH=$(tput cols)
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
     local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '-h')"
-    local SECONDLINE=$(colorize "${TAG}!! >> ${1:-unknown error}" bold)
+    local SECONDLINE=$(colorize "${TAG}!! >> ${ERRSTRING}" bold)
     printf -v TMPSTR \
         "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
         0 $LINELENGTH "$PADDER" \
         $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
-        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE";
+        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE<${COLOR_ERROR}>";
     parsecolortags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n"
-    exit ${2:-${E_ERROR}}
+    exit ${ERRSTATUS}
 }
 
 #### nooptionerror ()
 ## no script option error
 ##@error exits with status E_OPTS (81)
 nooptionerror () {
-	error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
-		${FUNCNAME[1]} ${BASH_LINENO[0]};
+    error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
+        ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 #### commanderror ( cmd )
 ## command not found error
 ##@error exits with status E_CMD (82)
 commanderror () {
-	error "'$1' command seems not installed on your machine ... The process can't be done !" \
-	    "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
+    error "'$1' command seems not installed on your machine ... The process can't be done !" \
+        "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 #### patherror ( path )
 ## path not found error
 ##@error exits with status E_PATH (83)
 patherror () {
-	error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
-	    ${FUNCNAME[1]} ${BASH_LINENO[0]};
+    error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
+        ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 
@@ -567,22 +592,56 @@ isgitclone () {
 #### getscriptpath ( script = $0 )
 ## get the full real path of a script directory (passed as argument) or from current executed script
 getscriptpath () {
-	local arg="${1:-${0}}"
-	local relpath=$(dirname "$arg")
-	local abspath=$(cd "$relpath" && pwd)
-	if [ -z "$abspath" ]; then return 1; fi
-	echo "$abspath"
-	return 0
+    local arg="${1:-${0}}"
+    local relpath=$(dirname "$arg")
+    local abspath=$(cd "$relpath" && pwd)
+    if [ -z "$abspath" ]; then return 1; fi
+    echo "$abspath"
+    return 0
 }
 
 #### realpath ( script = $0 )
 ## get the real path of a script (passed as argument) or from current executed script
 realpath () {
-	local arg="${1:-${0}}"
-	local dirpath=$(getscriptpath "$arg")
-	if [ -z "$dirpath" ]; then return 1; fi
-	echo "${dirpath}/`basename $arg`"
-	return 0
+    local arg="${1:-${0}}"
+    local dirpath=$(getscriptpath "$arg")
+    if [ -z "$dirpath" ]; then return 1; fi
+    echo "${dirpath}/`basename $arg`"
+    return 0
+}
+
+#### LOG FILES #####################################################################
+
+#### getlogfilepath ()
+## this will search for a default $LOGFILE (trying to write in `/var/log` or current dir)
+## the real log file path is loaded in $LOGFILEPATH
+getlogfilepath () {
+    if [ ! -n "$LOGFILE" ]; then export LOGFILE=$LIB_LOGFILE; fi
+    local logsys="/var/log/${LOGFILE}"
+    if [ -w "$logsys" ]
+    then export LOGFILEPATH="$logsys"
+    else export LOGFILEPATH="$LOGFILE"
+    fi
+    return 0
+}
+
+#### log ( message , type='' )
+## this will add an entry in the default $LOGFILE (trying to write in `/var/log` or current dir)
+## the real written log file path is loaded in $LOGFILEPATH
+log () {
+    local add=""
+    if [ ! -z $2 ]; then add=" <${2}>"; fi
+    if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+    echo "`date '+%B %d %T'` `getmachinename` [${USER}] [$$]${add} - ${1}" >> ${LOGFILEPATH}
+    return 0
+}
+
+#### readlog ()
+## this will read the $LOGFILEPATH content
+readlog () {
+    if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+    if [ -r "$LOGFILEPATH" -a -f "$LOGFILEPATH" ]; then cat "$LOGFILEPATH"; fi
+    return 0
 }
 
 
@@ -767,13 +826,18 @@ getscriptoptions () {
 #### getlongoptionarg ( "$x" )
 ## echoes the argument of a long option
 getlongoptionarg () {
-	echo "${1#*=}"; return 0;
+    echo "${1#*=}"; return 0;
 }
 
 #### getlastargument ( "$x" )
 ## echoes the last argument, useful for script.sh --options action (will echo "action")
 getlastargument () {
-	echo "${@: -1}"; return 0;
+    local lastarg="${@: -1}"
+    local first_char="${lastarg:0:1}"
+    if [ ".$first_char" != '.-' ]; then
+        echo "$lastarg"; return 0;
+    fi
+    return 1
 }
 
 #### parsecomonoptions ( "$@" )
@@ -782,6 +846,7 @@ getlastargument () {
 parsecomonoptions () {
     local oldoptind=$OPTIND
     local options=$(getscriptoptions "$@")
+    export LASTARG="${options[@]: -1}"
     while getopts ":${COMMON_OPTIONS_ARGS}" OPTION $options; do
 #    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "${options[@]}"; do
 #    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "$@"; do
@@ -795,6 +860,7 @@ parsecomonoptions () {
             x) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             d) setworkingdir $OPTARG;;
+            l) setlogfilename $OPTARG;;
             V) script_version; exit 0;;
             -) case $OPTARG in
         # common options
@@ -806,6 +872,7 @@ parsecomonoptions () {
                     debug) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
                     working-dir*) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"; setworkingdir $LONGOPTARG;;
+                    log*) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"; setlogfilename $LONGOPTARG;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
                     libvers*) library_version; exit 0;;
@@ -817,7 +884,6 @@ parsecomonoptions () {
         esac
     done
     export OPTIND=$oldoptind
-    export LASTARG="${options[@]: -1}"
     return 0
 }
 
@@ -832,9 +898,9 @@ version () {
             echo "`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
         fi
     else
-		if [ "x$VERSION" != 'x' ]; then echo "${VERSION}"; fi
+        if [ "x$VERSION" != 'x' ]; then echo "${VERSION}"; fi
     fi
-	return 0
+    return 0
 }
 
 #### title ( lib = false )
@@ -859,7 +925,7 @@ title () {
 #### usage ( lib_info = true )
 ## this function must echo the usage information USAGE (with option "-h")
 usage () {
-	local lib_info="${1:-true}"
+    local lib_info="${1:-true}"
     local TMP_VERS="`library_info`"
     if [ ! "x${USAGE}" = 'x' -a "$lib_info" == 'true' ]; then
         title
@@ -870,20 +936,20 @@ usage () {
         if [ "x$VERSION" != 'x' ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
         local TMP_USAGE="\n<bold>NAME</bold>\n\t<bold>${TMP_TITLE}</bold>";
         if [ `strlen "$PRESENTATION"` != 0 ]; then
-			TMP_USAGE="${TMP_USAGE}\n\t${PRESENTATION}";
+            TMP_USAGE="${TMP_USAGE}\n\t${PRESENTATION}";
         fi
-		TMP_USAGE="${TMP_USAGE}\n";
-		for section in "${MANPAGE_INFOS[@]}"; do
-			eval "section_ctt=\"\$$section\""
-			if [ "$section" != 'NAME' -a `strlen "$section_ctt"` != 0 ]; then
-				TMP_USAGE="${TMP_USAGE}\n<bold>${section}</bold>\n\t${section_ctt}\n";
-			fi
-		done
-		if ! ${MANPAGE_NODEPEDENCY:-false}; then
+        TMP_USAGE="${TMP_USAGE}\n";
+        for section in "${MANPAGE_INFOS[@]}"; do
+            eval "section_ctt=\"\$$section\""
+            if [ "$section" != 'NAME' -a `strlen "$section_ctt"` != 0 ]; then
+                TMP_USAGE="${TMP_USAGE}\n<bold>${section}</bold>\n\t${section_ctt}\n";
+            fi
+        done
+        if ! ${MANPAGE_NODEPEDENCY:-false}; then
             if [ "$lib_info" == 'true' ]; then
                 TMP_USAGE="${TMP_USAGE}\n<bold>DEPENDENCIES</bold>\n\t${LIB_INFO}\n";
             fi
-		fi
+        fi
         TMP_USAGE="${TMP_USAGE}\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>";
         parsecolortags "$TMP_USAGE"
     fi
@@ -912,21 +978,21 @@ library_info () {
 #### library_usage ()
 ## this function must echo the usage information of the library itself (with option "--libhelp")
 library_usage () {
-	for section in "${MANPAGE_INFOS[@]}"; do
-		eval "old_$section=\$$section"
-		eval "$section=\$LIB_$section"
-	done
-	for section in "${SCRIPT_INFOS[@]}"; do
-		eval "old_$section=\$$section"
-		eval "$section=\$LIB_$section"
-	done
-	usage false
-	for section in "${MANPAGE_INFOS[@]}"; do
-		eval "$section=\$old_$section"
-	done
-	for section in "${SCRIPT_INFOS[@]}"; do
-		eval "$section=\$old_$section"
-	done
+    for section in "${MANPAGE_INFOS[@]}"; do
+        eval "old_$section=\$$section"
+        eval "$section=\$LIB_$section"
+    done
+    for section in "${SCRIPT_INFOS[@]}"; do
+        eval "old_$section=\$$section"
+        eval "$section=\$LIB_$section"
+    done
+    usage false
+    for section in "${MANPAGE_INFOS[@]}"; do
+        eval "$section=\$old_$section"
+    done
+    for section in "${SCRIPT_INFOS[@]}"; do
+        eval "$section=\$old_$section"
+    done
 }
 
 #### library_version ()
@@ -956,7 +1022,7 @@ library_version () {
 #### libdebug ()
 ## see all common options flags values & some debug infos
 libdebug () {
-	OPTIND=1
+    OPTIND=1
     local TMP_DEBUG_MASK=" \n\
 ---- DEBUG -------------------------------------------------------------\n\
  \$ $0 $*\n\
@@ -983,7 +1049,7 @@ libdebug () {
         $(colorize 'QUIET' bold) $(colorize "$(onoffbit $QUIET)" bold $COLOR_INFO) "-q" \
         $(colorize 'LASTARG' bold) $(colorize "${LASTARG:--}" bold $COLOR_INFO) \
         "$?" "$$" "`whoami`" "`getsysteminfo`";
-	_echo "$TMP_DEBUG"
+    _echo "$TMP_DEBUG"
     parsecolortags "<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
     return 0
 }

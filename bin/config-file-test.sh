@@ -37,9 +37,9 @@ filepath=$(getuserconfigfile $filename)
 actiondone=false
 OPTIND=1
 while getopts "${COMMON_OPTIONS_ARGS}" OPTION; do
-	OPTARG="${OPTARG#=}"
-	case $OPTION in
-		-) case $OPTARG in
+    OPTARG="${OPTARG#=}"
+    case $OPTION in
+        -) case $OPTARG in
             read)
                 verecho "Reading config file '$filepath':"
                 iexec "readconfigfile $filepath"
@@ -89,8 +89,8 @@ while getopts "${COMMON_OPTIONS_ARGS}" OPTION; do
                 verecho "Config file content is:"
                 cat $filepath
                 ;;
-			esac ;;
-	esac
+            esac ;;
+    esac
 done
 
 if ! $actiondone; then
