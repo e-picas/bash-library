@@ -40,19 +40,19 @@ must follow some simple rules of construction:
 
 -   each section of methods or variables has a title:
 
-    \#### TITLE #########################################
+        #### TITLE #########################################
 
 -   each method is preceded by a DocBlock:
 
-    \#### method\_name ( argument1 , argument2=default )
-    \##@param argument1: explanation about argument 1
-    \## information about process ...
-    method\_name () {
+        #### method_name ( argument1 , argument2=default )
+        ##@param argument1: explanation about argument 1
+        ## information about process ...
+        method_name () {
 
 -   when an important variable is defined, use the same DocBlock construction:
 
-    \#### MYVAR=...
-    declare -rx MYVAR=...
+        #### MYVAR=...
+        declare -rx MYVAR=...
 
 ### DocBlocks overview
 
