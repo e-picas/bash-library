@@ -50,7 +50,7 @@ case $USEROS in
         declare -x COLOR_LIGHT=yellow
         declare -x COLOR_DARK=lightgrey
         declare -x COLOR_INFO=green
-        declare -x COLOR_NOTICE=lightyellow
+        declare -x COLOR_NOTICE=cyan
         declare -x COLOR_WARNING=bgcyan
         declare -x COLOR_ERROR=bgred
         declare -x COLOR_COMMENT=grey
@@ -74,6 +74,7 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
 ##@ WORKINGDIR = pwd
 ##@ LOGFILE = bashlib.log
+##@ TEMPDIR = tmp
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
@@ -83,6 +84,7 @@ declare -x LASTARG=""
 declare -x WORKINGDIR=$(pwd)
 declare -x LOGFILE=""
 declare -x LOGFILEPATH=""
+declare -x TEMPDIR=""
 
 ##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
 declare -rx COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
@@ -107,8 +109,8 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 # LIBRARY INFOS #####################################################################
 
 declare -rx LIB_NAME="Bash shell library"
-declare -rx LIB_VERSION="0.0.1"
-declare -rx LIB_DATE="2013-05-15"
+declare -rx LIB_VERSION="0.0.3"
+declare -rx LIB_DATE="2013-05-31"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE="GPL-3.0"
@@ -116,20 +118,24 @@ declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
 declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
 
-declare -rx LIB_LOGFILE="bashlib.log"
+declare -rx LIB_NAME_DEFAULT="bashlib"
+declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
+declare -rx LIB_TEMPDIR="tmp"
 
-declare -rx OPTIONS_USAGE_INFOS="\tYou can group short options like '<lightgrey>-xc</lightgrey>', set an option argument like '<lightgrey>-d(=)value</lightgrey>' \n\
-\tor '<lightgrey>--long=value</lightgrey>' and use '<lightgrey>--</lightgrey>' to explicitly specify the end of the script options.";
+declare -rx OPTIONS_USAGE_INFOS="\tYou can group short options like '<bold>-xc</bold>', \
+set an option argument like '<bold>-d(=)value</bold>' \n\
+\tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
+to explicitly specify the end of the script options.";
 
-declare -rx COMMON_OPTIONS_LIST="<bold>-h, --help</bold>\t\tshow this information message \n\
-\t<bold>-v, --verbose</bold>\t\tincrease script verbosity \n\
-\t<bold>-q, --quiet</bold>\t\tdecrease script verbosity, nothing will be written unless errors \n\
-\t<bold>-f, --force</bold>\t\tforce some commands to not prompt confirmation \n\
-\t<bold>-i, --interactive</bold>\task for confirmation before any action \n\
-\t<bold>-x, --debug</bold>\t\tsee commands to run but not run them actually \n\
-\t<bold>-V, --version</bold>\t\tsee the script version when available\n\
-\t<bold>-d, --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t<bold>-l, --log=FILENAME</bold>\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
+declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\tshow this information message \n\
+\t<bold>-v | --verbose</bold>\t\tincrease script verbosity \n\
+\t<bold>-q | --quiet</bold>\t\tdecrease script verbosity, nothing will be written unless errors \n\
+\t<bold>-f | --force</bold>\t\tforce some commands to not prompt confirmation \n\
+\t<bold>-i | --interactive</bold>\task for confirmation before any action \n\
+\t<bold>-x | --debug</bold>\t\tsee commands to run but not run them actually \n\
+\t<bold>-V | --version</bold>\t\tsee the script version when available\n\
+\t<bold>-d | --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>-l | --log=FILENAME</bold>\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t<bold>--libvers</bold>\t\tsee the library version \n\
 \t<bold>--libhelp</bold>\t\tsee the library manpage";
 
@@ -144,23 +150,24 @@ declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</un
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
 declare -rx LIB_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_PRESENTATION}\". \n\
-\tPackage [<lightgrey>${LIB_PACKAGE}</lightgrey>] version [<lightgrey>${LIB_VERSION}</lightgrey>]. \n\
+\tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>]. \n\
 \tLicensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
 \tFor sources & updates, see <${LIB_HOME}>.\n\
 \tFor bug reports, see <${LIB_BUGS}>.";
 
-declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<lightgrey>Bourne-Again-SHell</lightgrey>\", is <underline>a Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
+declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COLOR_NOTICE}>\", is a <underline>Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
 \tTo use the library, just include its source file using: \`<bold>source path/to/bash-library.sh</bold>\` and call its methods.\n\n\
 \tThe library is licensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
 \tFor documentation, sources & updates, see <${LIB_HOME}>.";
 
-declare -rx LIB_FILES="<underline>bash-library.sh</underline>\tthe standalone library source file";
+declare -rx LIB_FILES="<underline>bash-library.sh</underline>\tthe standalone library source file \n\
+\t<underline>${LIB_LOGFILE}</underline>\tthe default library log file";
 
-declare -rx LIB_ENVIRONMENT="<lightgrey>${LIB_COLORS[@]}</lightgrey>\ta set of predefined colors\n\
-\t<lightgrey>${LIB_FLAGS[@]}</lightgrey>\tthe library flags, activated by options\n\
-\t<lightgrey>USEROS</lightgrey>\tthe current user operating system\n\
-\t<lightgrey>${MANPAGE_INFOS[@]}</lightgrey>\tthese are used to build man-pages ; can be defined for each script";
+declare -rx LIB_ENVIRONMENT="<${COLOR_NOTICE}>${LIB_COLORS[@]}</${COLOR_NOTICE}>\ta set of predefined colors\n\
+\t<${COLOR_NOTICE}>${LIB_FLAGS[@]}</${COLOR_NOTICE}>\tthe library flags, activated by script common options\n\
+\t<${COLOR_NOTICE}>USEROS</${COLOR_NOTICE}>\tthe current user operating system\n\
+\t<${COLOR_NOTICE}>${MANPAGE_INFOS[@]}</${COLOR_NOTICE}>\tthese are used to build man-pages ; can be defined for each script";
 
 
 #### SYSTEM #############################################################################
@@ -186,7 +193,36 @@ getmachinename () {
 #### addpath ( path )
 ## add a path to global environment PATH
 add_path () {
-    if test "x$1" != 'x'; then export PATH=$PATH:$1; fi; return 0;
+    if [ -n "$1" ]; then export PATH=$PATH:$1; fi; return 0;
+}
+
+#### isgitclone ( path = pwd )
+## check if a path, or `pwd`, is a git clone
+isgitclone () {
+    local curpath=$(pwd)
+    local gitpath="${1:-${curpath}}/.git"
+    if [ -d "$gitpath" ]; then return 0; else return 1; fi;
+}
+
+#### getscriptpath ( script = $0 )
+## get the full real path of a script directory (passed as argument) or from current executed script
+getscriptpath () {
+    local arg="${1:-${0}}"
+    local relpath=$(dirname "$arg")
+    local abspath=$(cd "$relpath" && pwd)
+    if [ -z "$abspath" ]; then return 1; fi
+    echo "$abspath"
+    return 0
+}
+
+#### realpath ( script = $0 )
+## get the real path of a script (passed as argument) or from current executed script
+realpath () {
+    local arg="${1:-${0}}"
+    local dirpath=$(getscriptpath "$arg")
+    if [ -z "$dirpath" ]; then return 1; fi
+    echo "${dirpath}/`basename $arg`"
+    return 0
 }
 
 #### setworkingdir ( path )
@@ -292,14 +328,14 @@ colorize () {
     local add=""
     if [ ! -z $textopt ]; then add="${textopt}"; fi
     if [ ! -z $fgopt ]; then
-        if [ `strlen "$add"` != 0 ]; then add="${add};${fgopt}"; else add="${fgopt}"; fi
+        if [ -n "$add" ]; then add="${add};${fgopt}"; else add="${fgopt}"; fi
     fi
     if [ ! -z $bgopt ]; then
-        if [ `strlen "$add"` != 0 ]; then add="${add};${bgopt}"; else add="${bgopt}"; fi
+        if [ -n "$add" ]; then add="${add};${bgopt}"; else add="${bgopt}"; fi
     fi
     opentag=$(gettextformattag "${add}")
     closetag=$(gettextformattag "$(gettextoptioncode normal)")
-    if [ `strlen $add` == 0 ]
+    if [ ! -n "$add" ]
         then echo "${1}"
         else echo "${opentag}${1}${closetag}"
     fi
@@ -344,7 +380,7 @@ parsecolortags () {
                 if [ ! -z "$strsubstituted" ]; then transformedline="${strsubstituted}"; fi
             fi
         done
-        if [ `strlen "$transformed"` != 0 ]; then transformed="${transformed}\n"; fi
+        if [ -n "$transformed" ]; then transformed="${transformed}\n"; fi
         transformed="${transformed}${transformedline}"
     done <<< "$1"
     _echo "$transformed"
@@ -388,7 +424,7 @@ strlen () {
 #### getextension ( filename )
 ## retrieve a file extension
 getextension () {
-    if test "x$1" != 'x'; then echo "${1##*.}"; fi; return 0;
+    if [ -n "$1" ]; then echo "${1##*.}"; fi; return 0;
 }
 
 #### strtoupper ( string )
@@ -404,6 +440,15 @@ strtolower () {
 #### ucfirst ( string )
 ucfirst () {
     echo "`strtoupper ${1:0:1}`${1:1:${#1}}"; return 0;
+}
+
+
+#### BOOLEAN #############################################################################
+
+#### onoffbit ( bool )
+## echoes 'on' if bool=true, 'off' if it is false
+onoffbit () {
+    if $1; then echo 'on'; else echo 'off'; fi; return 0;
 }
 
 
@@ -475,10 +520,9 @@ iexec () { interactive_exec "$*"; }
 #### debug_exec ( command )
 ## execute the command if "debug" is "off", just write it on screen otherwise
 debug_exec () {
-    if $DEBUG; then
-        _echo "$(colorize 'debug >>' bold) \"$1\""
-    else
-        eval $1
+    if $DEBUG
+        then _echo "$(colorize 'debug >>' bold) \"$1\""
+        else eval $1
     fi
     return 0
 }
@@ -492,7 +536,7 @@ debexec () { debug_exec "$*"; }
 ## final user fill is loaded in USERRESPONSE
 prompt () {
     local add=""
-    if test "x${3}" != 'x'; then add="[${3}] "; fi
+    if [ -n "${3}" ]; then add="[${3}] "; fi
     read -p "?  >> ${1} ? ${add}" answer
     export USERRESPONSE=${answer:-$2}
     return 0
@@ -502,10 +546,9 @@ prompt () {
 ## writes the string on screen and return
 info () {
     local USEBOLD=${2:-true}
-    if $USEBOLD; then
-        _echo $(colorize "   >> $1" bold "$COLOR_INFO")
-    else
-        _echo "$(colorize '   >>' bold) $1"
+    if $USEBOLD
+        then _echo $(colorize "   >> $1" bold "$COLOR_INFO")
+        else _echo "$(colorize '   >>' bold) $1"
     fi
     return 0
 }
@@ -573,61 +616,117 @@ patherror () {
 }
 
 
-#### VARIOUS #####################################################################
+#### TEMPORARY FILES #####################################################################
 
-#### onoffbit ( bool )
-## echoes 'on' if bool=true, 'off' if it is false
-onoffbit () {
-    if $1; then echo 'on'; else echo 'off'; fi; return 0;
-}
-
-#### isgitclone ( path = pwd )
-## check if a path, or `pwd`, is a git clone
-isgitclone () {
-    local curpath=$(pwd)
-    local gitpath="${1:-${curpath}}/.git"
-    if [ -d "$gitpath" ]; then return 0; else return 1; fi;
-}
-
-#### getscriptpath ( script = $0 )
-## get the full real path of a script directory (passed as argument) or from current executed script
-getscriptpath () {
-    local arg="${1:-${0}}"
-    local relpath=$(dirname "$arg")
-    local abspath=$(cd "$relpath" && pwd)
-    if [ -z "$abspath" ]; then return 1; fi
-    echo "$abspath"
+#### gettempdirpath ( dirname = "LIB_TEMPDIR" )
+##@param dirname The name of the directory to create (default is `tmp/`)
+## creates a default temporary dir with fallback: first in current dir then in system '/tmp/'
+## the real temporary directory path is loaded in the global `TEMPDIR`
+gettempdirpath () {
+    if [ -n "$TEMPDIR" ]; then return 0; fi
+    local tmpdir="${1:-${LIB_TEMPDIR}}"
+    local tmpsyspath="/tmp/${LIB_NAME_DEFAULT}"
+    local tmppwdpath="${WORKINGDIR}/${tmpdir}"
+    if [ ! -d "$tmppwdpath" ]; then
+        mkdir "$tmppwdpath" && chmod 777 "$tmppwdpath"
+        if [ ! -d "$tmppwdpath" -o ! -w "$tmppwdpath" ]; then
+            if [ ! -d "$tmpsyspath" ]; then
+                mkdir "$tmpsyspath" && chmod 777 "$tmpsyspath"
+                if [ ! -d "$tmpsyspath" -o ! -w "$tmpsyspath" ]
+                    then error "Can not create temporary directory (tries to create '${tmppwdpath}' then '${tmpsyspath}')"
+                    else export TEMPDIR="${tmpsyspath}";
+                fi
+            else export TEMPDIR="${tmpsyspath}";
+            fi
+        else export TEMPDIR="${tmppwdpath}";
+        fi
+    else export TEMPDIR="${tmppwdpath}";
+    fi
     return 0
 }
 
-#### realpath ( script = $0 )
-## get the real path of a script (passed as argument) or from current executed script
-realpath () {
-    local arg="${1:-${0}}"
-    local dirpath=$(getscriptpath "$arg")
-    if [ -z "$dirpath" ]; then return 1; fi
-    echo "${dirpath}/`basename $arg`"
+#### gettempfilepath ( filename , dirname = "LIB_TEMPDIR" )
+##@param filename The temporary filename to use
+##@param dirname The name of the directory to create (default is `tmp/`)
+## this will echoes a unique new temporary file path
+gettempfilepath () {
+    if [ -z "$1" ]; then return 0; fi
+    local tmpfile="$1"
+    if [ ! -z "$2" ]
+        then
+            export TEMPDIR=""
+            gettempdirpath "$2"
+        else gettempdirpath
+    fi
+    local filepath="${TEMPDIR}/${tmpfile}"
+    while [ -f "$filepath" ]; do
+        n=$(( ${n:=0} + 1 ))
+        filepath="${TEMPDIR}/${tmpfile}-${n}"
+    done
+    echo "$filepath"
     return 0
 }
+
+#### createtempdir ( dirname = "LIB_TEMPDIR" )
+##@param dirname The name of the directory to create (default is `tmp/`)
+## this will create a temporary directory in the working directory with full rights
+## use this method to over-write an existing temporary directory
+createtempdir () {
+    if [ ! -z "$1" ]
+        then
+            export TEMPDIR=""
+            gettempdirpath "$1"
+        else gettempdirpath
+    fi
+    return 0
+}
+
+#### cleartempdir ( dirname = "LIB_TEMPDIR" )
+##@param dirname The name of the directory (default is `tmp/`)
+## this will deletes the temporary directory
+cleartempdir () {
+    if [ ! -z "$1" ]
+        then gettempdirpath "$1"
+        else gettempdirpath
+    fi
+    if [ -d "$TEMPDIR" ]; then
+        rm -rf $TEMPDIR
+    fi
+    return 0
+}
+
+#### cleartempfiles ( dirname = "LIB_TEMPDIR" )
+##@param dirname The name of the directory (default is `tmp/`)
+## this will deletes the temporary directory contents (not the directory itself)
+cleartempfiles () {
+    if [ ! -z "$1" ]
+        then gettempdirpath "$1"
+        else gettempdirpath
+    fi
+    if [ -d "$TEMPDIR" ]; then
+        rm -rf ${TEMPDIR}/*
+    fi
+    return 0
+}
+
 
 #### LOG FILES #####################################################################
 
 #### getlogfilepath ()
-## this will search for a default $LOGFILE (trying to write in `/var/log` or current dir)
-## the real log file path is loaded in $LOGFILEPATH
+## creates a default placed log file with fallback: first in '/var/log' then in current dir
+## the real log file path is loaded in the global `LOGFILEPATH
 getlogfilepath () {
     if [ ! -n "$LOGFILE" ]; then export LOGFILE=$LIB_LOGFILE; fi
     local logsys="/var/log/${LOGFILE}"
     if [ -w "$logsys" ]
-    then export LOGFILEPATH="$logsys"
-    else export LOGFILEPATH="$LOGFILE"
+        then export LOGFILEPATH="$logsys"
+        else export LOGFILEPATH="$LOGFILE"
     fi
     return 0
 }
 
 #### log ( message , type='' )
-## this will add an entry in the default $LOGFILE (trying to write in `/var/log` or current dir)
-## the real written log file path is loaded in $LOGFILEPATH
+## this will add an entry in LOGFILEPATH
 log () {
     local add=""
     if [ ! -z $2 ]; then add=" <${2}>"; fi
@@ -637,7 +736,7 @@ log () {
 }
 
 #### readlog ()
-## this will read the $LOGFILEPATH content
+## this will read the LOGFILEPATH content
 readlog () {
     if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
     if [ -r "$LOGFILEPATH" -a -f "$LOGFILEPATH" ]; then cat "$LOGFILEPATH"; fi
@@ -795,7 +894,7 @@ buildconfigstring () {
     for key in "${array_keys[@]}"; do
         value="${array_values[${i}]}"
         sep=""
-        if [ `strlen $CONFIG_STR` != 0 ]; then sep="\n"; fi
+        if [ -n "$CONFIG_STR" ]; then sep="\n"; fi
         CONFIG_STR="${CONFIG_STR}${sep}${key}=${value}"
        ((i++))
     done
@@ -803,7 +902,7 @@ buildconfigstring () {
     return 0
 }
 
-#### OPTIONS #############################################################################
+#### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
 #### getscriptoptions ( "$@" )
 ## this will stop options treatment at '--'
@@ -814,7 +913,7 @@ getscriptoptions () {
         if ! $eoo; then
             case "$1" in
                 --) eoo=true; shift;;
-                *) if [ `strlen "$1"` != 0 ]; then options+=($1); fi; shift;;
+                *) if [ -n "$1" ]; then options+=($1); fi; shift;;
             esac
         else shift;
         fi
@@ -830,7 +929,8 @@ getlongoptionarg () {
 }
 
 #### getlastargument ( "$x" )
-## echoes the last argument, useful for script.sh --options action (will echo "action")
+## echoes the last argument that is not an option
+## for instance 'script.sh --options action' will echo "action"
 getlastargument () {
     local lastarg="${@: -1}"
     local first_char="${lastarg:0:1}"
@@ -846,7 +946,7 @@ getlastargument () {
 parsecomonoptions () {
     local oldoptind=$OPTIND
     local options=$(getscriptoptions "$@")
-    export LASTARG="${options[@]: -1}"
+    export LASTARG=$(getscriptoptions "${options[@]}")
     while getopts ":${COMMON_OPTIONS_ARGS}" OPTION $options; do
 #    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "${options[@]}"; do
 #    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "$@"; do
@@ -888,13 +988,13 @@ parsecomonoptions () {
 }
 
 
-#### INFOS #####################################################################
+#### SCRIPT INFOS #####################################################################
 
 #### version ()
 version () {
     if isgitclone; then
         local gitcmd=$(which git)
-        if [ "x$gitcmd" != 'x' ]; then
+        if [ -n "$gitcmd" ]; then
             echo "`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
         fi
     else
@@ -912,7 +1012,7 @@ title () {
     _echo $(colorize "##  ${TITLE}  ##" bold)
     if isgitclone; then
         local gitcmd=$(which git)
-        if [ "x$gitcmd" != 'x' ]; then
+        if [ -n "$gitcmd" ]; then
             _echo "[git: `git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`]"
         fi
     fi
@@ -933,15 +1033,15 @@ usage () {
         parsecolortags "\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>"
     else
         local TMP_TITLE="${NAME:-?}"
-        if [ "x$VERSION" != 'x' ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
+        if [ -n "$VERSION" ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
         local TMP_USAGE="\n<bold>NAME</bold>\n\t<bold>${TMP_TITLE}</bold>";
-        if [ `strlen "$PRESENTATION"` != 0 ]; then
+        if [ -n "$PRESENTATION" ]; then
             TMP_USAGE="${TMP_USAGE}\n\t${PRESENTATION}";
         fi
         TMP_USAGE="${TMP_USAGE}\n";
         for section in "${MANPAGE_INFOS[@]}"; do
             eval "section_ctt=\"\$$section\""
-            if [ "$section" != 'NAME' -a `strlen "$section_ctt"` != 0 ]; then
+            if [ "$section" != 'NAME' -a -n "$section_ctt" ]; then
                 TMP_USAGE="${TMP_USAGE}\n<bold>${section}</bold>\n\t${section_ctt}\n";
             fi
         done
@@ -959,9 +1059,9 @@ usage () {
 #### script_version ()
 script_version () {
     local TMP_VERS="${VERSION}"
-    if [ `strlen "$VERSION"` != 0 ]; then
+    if [ -n "$VERSION" ]; then
         local TMP_STR="${0} ${TMP_VERS}"
-        if [ `strlen "$DATE"` != 0 ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
+        if [ -n "$DATE" ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
         echo "${TMP_STR}"
     fi
     return 0;
@@ -1003,12 +1103,12 @@ library_version () {
     if isgitclone $LIB_MODULE; then
         local gitcmd=$(which git)
         local oldpwd=$(pwd)
-        if [ "x$gitcmd" != 'x' ]; then
+        if [ -n "$gitcmd" ]; then
             cd $LIB_MODULE
             local gitremote=$(git config --get remote.origin.url)
             if [ "${gitremote}" == "${LIB_HOME}.git" -o "${gitremote}" == "${LIB_HOME}" ]; then
                 add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
-                if [ `strlen "$add"` != 0 ]; then
+                if [ -n "$add" ]; then
                     TMP_VERS="${TMP_VERS} ${add}"
                 fi
             fi
@@ -1077,40 +1177,40 @@ libdoc () {
         fi
         line_str=""
         fct_line=$(echo "$line" | grep -Po "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
-        if [ $indoc -a `strlen $fct_line` != 0 ]; then
+        if [ $indoc -a -n "$fct_line" ]; then
             line_str="$fct_line"
             intag=true
         elif $indoc; then
             title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
-            if [ `strlen $title_line` != 0 ]; then
+            if [ -n "$title_line" ]; then
                 line_str="$title_line"
             elif $intag; then
                 arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
                 comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
                 if $VERBOSE; then
-                    if [ `strlen $arg_line` != 0 ]; then
+                    if [ -n "$arg_line" ]; then
                         line_str="$arg_line"
                     else
-                        if [ `strlen $comm_line` != 0 ]; then
+                        if [ -n "$comm_line" ]; then
                             line_str="$comm_line"
                         else
                             intag=false;
                         fi
                     fi
                 else
-                    if [ `strlen $arg_line` == 0 -a `strlen $comm_line` == 0 ]; then
+                    if [ -n "$arg_line" -a -n "$comm_line" ]; then
                         intag=false
                     fi
                 fi
             else
                 intag=false;
                 arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
-                if [ `strlen $arg_line` != 0 ]; then
+                if [ -n "$arg_line" ]; then
                     line_str="$arg_line"
                 fi
             fi
         fi
-        if [ `strlen $line_str` != 0 ]; then _echo "${line_str}"; fi
+        if [ -n "$line_str" ]; then _echo "${line_str}"; fi
         i=$(($i+1))
     done
     IFS=$old_IFS

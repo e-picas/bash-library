@@ -33,25 +33,25 @@ escape each line by a trailing `\` and finish with a `;`.
 A documentation can be generated parsing the library script using method `libdoc` (called
 by option `--libdoc`). By default, this documentation only contains sections titles and 
 methods names but some more informations like arguments and comments can be shown in
-*verbose* mode (with option `-v').
+*verbose* mode (with option `-v`).
 
 As the automatic documentation is constructed parsing the library file content, this content
 must follow some simple rules of construction:
 
 -   each section of methods or variables has a title:
 
-    #### TITLE #########################################
+    \#### TITLE #########################################
 
 -   each method is preceded by a DocBlock:
 
-    #### method_name ( argument1 , argument2=default )
-    #@param argument1: explanation about argument 1
-    ## information about process ...
-    method_name () {
+    \#### method\_name ( argument1 , argument2=default )
+    \##@param argument1: explanation about argument 1
+    \## information about process ...
+    method\_name () {
 
 -   when an important variable is defined, use the same DocBlock construction:
 
-    #### MYVAR=...
+    \#### MYVAR=...
     declare -rx MYVAR=...
 
 ### DocBlocks overview
@@ -63,10 +63,10 @@ itself surrounded by spaces then one or more sharps.
 four sharps followed by a space, the method name followed by a space, the list of possible
 arguments with their default values if so, between brackets, separated by comas.
 
-. Parameters, errors and return status can be specified using a tag like `#@param|return|error`
+. Parameters, errors and return status can be specified using a tag like `##@param|return|error`
 followed by your comment.
 
-. Other information can be specified using a classic comment form: `# my info`.
+. Other information can be specified using a classic comment form: `## my info`.
 
 . To write a comment that will not be shown in the documentation, use: `#! dev comment`.
 

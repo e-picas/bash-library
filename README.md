@@ -23,12 +23,12 @@ For a global usage on your machine, you can copy the library in your `bin/` dire
 
 As for any script file, it must have execution rights for all users.
 
-A direct and complete installation, including download the sources could be:
+A direct and complete installation, including downloading sources, could be:
 
     ~$ wget --no-check-certificate https://github.com/atelierspierrot/bash-library/archive/master.tar.gz
     ~$ tar -xvf master.tar.gz
     ~$ cp bash-library-master/src/bash-library.sh path/to/your/project/bin/
-    ~$ chmod +x path/to/your/project/bash-library.sh
+    ~$ chmod +x path/to/your/project/bin/bash-library.sh
 
 ### Usage
 
@@ -60,6 +60,12 @@ This way, if the library was not found, your script will end with an error and w
 ### Developer documentation
 
 Documentation files are included in the [`doc/` directory](doc) of the package.
+
+A quick overview of the whole library methods or variables can be written on screen running
+(the `-v` option renders a complete doc with comments for each method):
+
+    ~$ ./path/to/my-script.sh (-v) --libdoc
+
 
 ### Demonstration files
 

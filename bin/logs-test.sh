@@ -40,7 +40,7 @@ while getopts "${COMMON_OPTIONS_ARGS}" OPTION; do
                 write)
                     if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
                     verecho "Writing 10 test messages in log file '$LOGFILEPATH':"
-                    for i in {1..10};do
+                    for i in {1..10}; do
                         log "my test message (item $i)"
                         log "my DEBUG test message (item $i)" "debug"
                         log "my WARNING test message (item $i)" "warning"

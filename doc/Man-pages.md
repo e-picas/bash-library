@@ -1,7 +1,7 @@
 Man pages - Bash-Library
 ========================
 
-The library can construct a king of **manpage** for each script, as the manual string
+The library can construct a kind of **manpage** for each script, as the manual string
 of the library itself.
 
 For a full example, see the `bin/manpage-test.sh` script.
@@ -36,6 +36,9 @@ To define a script description, just write in your script:
 
 Doing so for each `MANPAGE_INFOS` entries, these values will be used to construct the final
 manpage.
+
+NOTE - Please note that the result is NOT a true UNIX manpage but just a string written on
+terminal.
 
 ### Using library defaults
 
