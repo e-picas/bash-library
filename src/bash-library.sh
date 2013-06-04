@@ -114,6 +114,7 @@ declare -rx LIB_DATE="2013-05-31"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE="GPL-3.0"
+declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
 declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
@@ -153,13 +154,15 @@ declare -rx LIB_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${
 \tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>]. \n\
 \tLicensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
 \tFor sources & updates, see <${LIB_HOME}>.\n\
-\tFor bug reports, see <${LIB_BUGS}>.";
+\tFor bug reports, see <${LIB_BUGS}>. \n\
+\tTo read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.";
 
 declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COLOR_NOTICE}>\", is a <underline>Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
 \tTo use the library, just include its source file using: \`<bold>source path/to/bash-library.sh</bold>\` and call its methods.\n\n\
 \tThe library is licensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
-\tFor documentation, sources & updates, see <${LIB_HOME}>.";
+\tFor documentation, sources & updates, see <${LIB_HOME}>. \n\
+\tTo read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.";
 
 declare -rx LIB_FILES="<underline>bash-library.sh</underline>\tthe standalone library source file \n\
 \t<underline>${LIB_LOGFILE}</underline>\tthe default library log file";
