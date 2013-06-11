@@ -72,6 +72,13 @@ while getopts "at:${COMMON_OPTIONS_ARGS}" OPTION; do
 		?) echo " - unknown option '$OPTION'";;
 	esac
 done
+echo
+
+echo "# test for the last 'action' argument";
+echo "# to test it, run:"
+echo "#      ~\$ $0 ... action -- -x"
+echo " - LASTARG is $LASTARG"
+echo
 
 quietecho "_ ok"
 libdebug "$*"
