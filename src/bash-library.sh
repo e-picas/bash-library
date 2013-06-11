@@ -23,6 +23,7 @@ declare -x E_OPTS=81
 declare -x E_CMD=82
 declare -x E_PATH=83
 
+
 ##@ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOME )
 # see http://en.wikipedia.org/wiki/Man_page
 declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
