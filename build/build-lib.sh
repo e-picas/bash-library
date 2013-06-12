@@ -257,8 +257,11 @@ then
             fi;;
         doc)
             targetdir_required
+            oldverbose=$VERBOSE
             export VERBOSE=true
             stripcolors "$(libdoc)" 2&> "${_TARGET}/bin/documentation.txt"
+            export VERBOSE=$oldverbose
+            info "OK - Library's doc generated in '${_TARGET}/bin/documentation.txt'"
             ;;
         *) error "Unknown action '${ACTION}' !";;
     esac
