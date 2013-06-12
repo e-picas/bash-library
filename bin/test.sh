@@ -65,7 +65,7 @@ echo
 
 # colorize
 echo "## tests of fct 'colorize':"
-_echo $(colorize " My string in bold black grey" bold black grey)
+_echo $(colorize " My string in bold black grey" bold green blue)
 echo
 
 TESTSTR1="my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred> to test <bgred>some <bold>imbricated</bold> tags</bgred>"

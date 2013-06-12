@@ -44,19 +44,24 @@ fi
 actiondone=false
 OPTIND=1
 while getopts "${COMMON_OPTIONS_ARGS}" OPTION; do
-	OPTARG="${OPTARG#=}"
-	case $OPTION in
-		-) case $OPTARG in
+    OPTARG="${OPTARG#=}"
+    case $OPTION in
+        -) case $OPTARG in
             library)
                 library_usage
                 actiondone=true
                 ;;
             testusage)
+                USAGE="\n\
+This is a simple test of in-script full 'USAGE' custom string (so automatic manpage construction is avoid).\n\n\
+<bold>USAGE</bold>\n\
+\t~\$ ${0} -option(s) --longoption(s)";
+                usage
                 actiondone=true
                 ;;
-			esac ;;
-		?) echo " - unknown option '$OPTION'";;
-	esac
+            esac ;;
+        ?) echo " - unknown option '$OPTION'";;
+    esac
 done
 
 if ! $actiondone; then
