@@ -395,7 +395,12 @@ parsecolortags () {
 stripcolors () {
     transformed=""
     while read -r line; do
-        stripped_line=$(echo "$line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+        case $USEROS in
+            Linux|FreeBSD|OpenBSD|SunOS)
+                stripped_line=$(echo "$line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g");;
+            *)
+                stripped_line=$(echo "$line" | sed 's|\x1B\[[0-9;]*[a-zA-Z]||g');;
+        esac
         if [ -n "$transformed" ]; then transformed="${transformed}\n"; fi
         transformed="${transformed}${stripped_line}"
     done <<< "$1"
@@ -477,8 +482,28 @@ _echo () {
     case $USEROS in
 #        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*" >&2;;
         Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*";;
-#        *) echo "$*" >&2;;
-        *) echo "$*";;
+        Darwin) echo "$*";;
+        *) if [ -f /bin/echo ]
+            then /bin/echo "$*"
+            else echo "$*"
+        fi;;
+    esac
+    return 0
+}
+
+#### _necho ( string )
+## echoes the string with the true 'echo -en' command
+## use this for colorization and no new line
+_necho () {
+#    tput sgr0
+    case $USEROS in
+#        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -en "$*" >&2;;
+        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -en "$*";;
+#        *) echo -n "$*" >&2;;
+        *) if [ -f /bin/echo ]
+            then /bin/echo -n "$*"
+            else echo "$*"
+        fi;;
     esac
     return 0
 }
@@ -555,7 +580,7 @@ prompt () {
     local add=""
     if [ -n "${3}" ]; then add="[${3}] "; fi
     colored=$(colorize "?  >> ${1} ?" bold)
-    $(which echo) -en "${colored} ${add}" >&2 
+    _necho "${colored} ${add}" >&2 
     read answer
     export USERRESPONSE=${answer:-$2}
     return 0
