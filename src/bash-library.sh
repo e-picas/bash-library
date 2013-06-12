@@ -147,6 +147,7 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 \t${LIB_OPTIONS}";
 
 declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ARGUMENTS</underline>]  --";
+declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ACTION</underline>]  --";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -390,6 +391,17 @@ parsecolortags () {
     return 0
 }
 
+#### stripcolors ( string )
+stripcolors () {
+    transformed=""
+    while read -r line; do
+        stripped_line=$(echo "$line" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g")
+        if [ -n "$transformed" ]; then transformed="${transformed}\n"; fi
+        transformed="${transformed}${stripped_line}"
+    done <<< "$1"
+    _echo "$transformed"
+    return 0
+}
 
 #### ARRAY #############################################################################
 
@@ -461,10 +473,12 @@ onoffbit () {
 ## echoes the string with the true 'echo -e' command
 ## use this for colorization
 _echo () {
-    tput sgr0
+#    tput sgr0
     case $USEROS in
-        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*" >&2;;
-        *) echo "$*" >&2;;
+#        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*" >&2;;
+        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*";;
+#        *) echo "$*" >&2;;
+        *) echo "$*";;
     esac
     return 0
 }
@@ -540,7 +554,9 @@ debexec () { debug_exec "$*"; }
 prompt () {
     local add=""
     if [ -n "${3}" ]; then add="[${3}] "; fi
-    read -p "?  >> ${1} ? ${add}" answer
+    colored=$(colorize "?  >> ${1} ?" bold)
+    $(which echo) -en "${colored} ${add}" >&2 
+    read answer
     export USERRESPONSE=${answer:-$2}
     return 0
 }
@@ -901,7 +917,7 @@ buildconfigstring () {
         CONFIG_STR="${CONFIG_STR}${sep}${key}=${value}"
        ((i++))
     done
-    echo "$CONFIG_STR"
+    _echo "$CONFIG_STR"
     return 0
 }
 

@@ -85,6 +85,20 @@ for col in "${LIB_COLORS[@]}"; do
     parsecolortags "`printf \"$TESTSTR_VAR\" \"${colcode}\" \"${col}\" \"${colcode}\"`"
 done
 
+TESTSTR8="<bold>some bold text</bold>"
+TESTSTR9="<bold>some bold text</bold>\n\
+and <green>multiline</green>";
+echo
+echo "## test of the 'stripcolors' method"
+echo 
+PARSEDTESTSTR8=$(parsecolortags "$TESTSTR8")
+_echo "colorized: ${PARSEDTESTSTR8}"
+stripcolors "stripped: ${PARSEDTESTSTR8}"
+echo 
+PARSEDTESTSTR9=$(parsecolortags "$TESTSTR9")
+_echo "colorized: ${PARSEDTESTSTR9}"
+stripcolors "stripped: ${PARSEDTESTSTR9}"
+
 quietecho "_ ok"
 libdebug "$*"
 exit 0
