@@ -24,7 +24,7 @@ for text.
 
 ### Terminal text options
 
-In the same spririt, recent terminals also allows a set of texts options which are:
+In the same spirit, recent terminals also allows a set of texts options which are:
 
     normal bold small underline blink reverse hidden
 
@@ -37,7 +37,7 @@ options. These codes can be used to build the final terminal colorization tag:
 
 Some helping methods are defined to get these full fromated tags:
 
--    `gettextformattag ( code )` to get a formated tag for its code,
+-    `gettextformattag ( code )` to get a formated tag for this code,
 -    `getcolorcode ( name , background=FALSE )` to get a color code by color name (`foreground`
      by default, set the second argument on `true` to get background code),
 -    `getcolortag ( name , background=FALSE )` to get a color formated tag by color name (`foreground`
