@@ -10,9 +10,9 @@ and try to follow them as possible.
 
 ### Methods
 
-By convention, all methods names are written **lower case**, with underscores to separate
+By convention, all methods names are written in **lower case**, with underscores to separate
 words if necessary. When a method may construct a string, this string is `echo`es. All methods
-must return an integer status ; the classic method's return is `return 0`.
+must return an integer status; the classic method's return is `return 0`.
 
 ### Variables, Constants
 
