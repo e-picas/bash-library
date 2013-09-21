@@ -1,8 +1,8 @@
 Common options - Bash-Library
 =============================
 
-The library handles, if you say so, a set of commonly used arguments that enable/disable
-a set of flags or actions commonly useful.
+The library handles, if you say so, a set of commonly used arguments that enables/disables
+a set of flags or actions commonly used.
 
 For a full example with custom options, see the `bin/getopts-test.sh` script.
 
@@ -21,12 +21,12 @@ Which can be analyzed like:
     to use;
 2.  some short options (one letter) that is/are prefixed by a single dash, can be grouped or not,
     and can have an argument if necessary, using an optional equal sign between the option letter
-    and the arguments; like `-v`, `-vi`, `-vil=myfilename` or `-vi -l myfilename`;
+    and the argument; like `-v`, `-vi`, `-vil=myfilename` or `-vi -l myfilename`;
 3.  some long options that is/are prefixed by a double-dash and can have an argument if necessary,
-    using a required equal sign between the option and the argument ; like `--libhelp` or
+    using a required equal sign between the option and the argument; like `--libhelp` or
     `--log=filename`;
-4.  an optional action which is a simple word, with no prefix and may be present as last script
-    argument;
+4.  an optional action which is a simple word, with no prefix, and may be present as last script
+    argument; a script can accept many actions in a certain order;
 5.  a double-dash alone to precise the end of the script options or arguments; anything present
     after this sign will be ignored for the script;
 6.  anything else, which, if it is present after [5], will be ignored ...
@@ -82,7 +82,7 @@ command line arguments), you can use:
 -   **-d | --working-dir=PATH**: redefine the working directory (default is the current directory),
 -   **-l | --log=FILENAME**: redefine a log filename to use.
 
-These options just enables or disables a constant flag in the environment ; to make
+These options just enables or disables a constant flag in the environment; to make
 them really "works", you will need to use some of the related functions of the library.
 See the [Global documentation](Global-doc.md) to learn more.
 
