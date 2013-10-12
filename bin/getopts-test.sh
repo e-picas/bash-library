@@ -27,8 +27,7 @@ DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \t\t- the custom 't' and 'test' options are parsed and considered by this script and their multi-words arguments are red,\n\
 \t\t- the custom 'a' option is parsed and considered by this script,\n\
 \t\t- the last common option 'x' is NOT parsed at all as it is after '--'.";
-SYNOPSIS="$LIB_SYNOPSIS"
-#MANPAGE_NODEPEDENCY=true
+SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_INFO
@@ -40,7 +39,7 @@ quietecho "_ go"
 
 echo
 echo "common options arguments: '${COMMON_OPTIONS_ARGS}'";
-echo "received arguments: $@";
+echo "received arguments: '$@'";
 echo
 
 echo "# first loop for the 't' or 'test' option"
@@ -48,17 +47,17 @@ echo "# to test it, run:"
 echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
 OPTIND=1
 while getopts "at:${COMMON_OPTIONS_ARGS}" OPTION; do
-	OPTARG="${OPTARG#=}"
-	case $OPTION in
-		t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
-		-)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
-			LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
-			case $OPTARG in
-				test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
-				?) echo " - unknown long option '$OPTARG'";;
-			esac ;;
-		?) echo " - unknown option '$OPTION'";;
-	esac
+    OPTARG="${OPTARG#=}"
+    case $OPTION in
+        t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
+        -)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
+            LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+            case $OPTARG in
+                test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
+                ?) echo " - unknown long option '$OPTARG'";;
+            esac ;;
+        ?) echo " - unknown option '$OPTION'";;
+    esac
 done
 echo
 
@@ -67,17 +66,17 @@ echo "# to test it, run:"
 echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
 OPTIND=1
 while getopts "at:${COMMON_OPTIONS_ARGS}" OPTION; do
-	case $OPTION in
-		a) echo " - test option A";;
-		?) echo " - unknown option '$OPTION'";;
-	esac
+    case $OPTION in
+        a) echo " - test option A";;
+        ?) echo " - unknown option '$OPTION'";;
+    esac
 done
 echo
 
 echo "# test for the last 'action' argument";
 echo "# to test it, run:"
 echo "#      ~\$ $0 ... action -- -x"
-echo " - LASTARG is $LASTARG"
+echo " - LASTARG is '$LASTARG'"
 echo
 
 quietecho "_ ok"
