@@ -162,7 +162,7 @@ isUpToDate () {
     targetdir_required
     getTargetInfos "${_TARGET}"
     getRemoteCommit "${TARGET_BRANCH}"
-    if [ "${SOURCE_LASTCOMMIT}" = "${TARGET_LASTCOMMIT}" ]
+    if [ "${SOURCE_LASTCOMMIT}" == "${TARGET_LASTCOMMIT}" ]
         then export _TARGET_UPTODATE=true
         else export _TARGET_UPTODATE=false
     fi
@@ -175,8 +175,8 @@ makeInstall () {
     targetdir_required
     if [ ! -z "$2" ]; then export _SOURCE="$2"; fi
     sourcedir_required
-    if [ ! -d "${_TARGET}/bin" ]; then
-        iexec "mkdir -p ${_TARGET}/bin"
+    if [ ! -d "${_TARGET}/${_BIN_DIR}" ]; then
+        iexec "mkdir -p ${_TARGET}/${_BIN_DIR}"
     fi
     iexec "cp -f ${_SOURCE}/src/bash-library.sh ${_TARGET}/${_BIN_DIR}/"
     iexec "cp -f ${_SOURCE}/README.md ${_TARGET}/${_BIN_DIR}/${_README_FILENAME}"
@@ -244,7 +244,7 @@ To read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.\n\n----\n";
     IFS=$'\n'
     indoc=false
     intag=false
-    for line in $(cat "${_TARGET}/bin/bash-library.sh"); do
+    for line in $(cat "${_TARGET}/${_BIN_DIR}/bash-library.sh"); do
         if [ "$line" == '##@!@##' ]; then
             if $indoc; then indoc=false; else indoc=true; fi
             continue;
@@ -301,8 +301,8 @@ while getopts "s:t:${COMMON_OPTIONS_ARGS}" OPTION; do
             case $OPTARG in
                 target*) _TARGET=$LONGOPTARG;;
                 source*) _SOURCE=$LONGOPTARG;;
-                bindir*) _BIN_DIR=$OPTARG;;
-                docname*) _DOC_FILENAME=$OPTARG;;
+                bindir*) _BIN_DIR=$LONGOPTARG;;
+                docname*) _DOC_FILENAME=$LONGOPTARG;;
                 docmeta*) _META="${_META}${LONGOPTARG}";;
                 no-toc) _TOC=false;;
                 \?) error "Unknown long option '$OPTARG'";;
