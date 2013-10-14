@@ -87,8 +87,8 @@ declare -x LOGFILEPATH=""
 declare -x TEMPDIR=""
 
 ##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
-declare -rx COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
-declare -rx COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
+declare -x COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
+declare -x COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
 
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
