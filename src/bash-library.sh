@@ -23,9 +23,9 @@ declare -x E_OPTS=81
 declare -x E_CMD=82
 declare -x E_PATH=83
 
-##@ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOME )
+##@ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
 # see http://en.wikipedia.org/wiki/Man_page
-declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOME)
+declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE)
 
 ##@ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO )
 declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
@@ -117,7 +117,7 @@ declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
-declare -rx LIB_BUGS="https://github.com/atelierspierrot/bash-library/issues"
+declare -rx LIB_BUGS="http://github.com/atelierspierrot/bash-library/issues"
 
 declare -rx LIB_NAME_DEFAULT="bashlib"
 declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
@@ -1175,8 +1175,10 @@ library_usage () {
 #### library_version ()
 ## this function must echo an information about library name & version (with option "--libvers")
 library_version () {
+    local VERSFILE="${BASH_SOURCE/.sh/-gitversion}"
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
+    local _done=false
     if isgitclone $LIB_MODULE; then
         local gitcmd=$(which git)
         local oldpwd=$(pwd)
@@ -1184,13 +1186,17 @@ library_version () {
             cd $LIB_MODULE
             local gitremote=$(git config --get remote.origin.url)
             if [ "${gitremote}" == "${LIB_HOME}.git" -o "${gitremote}" == "${LIB_HOME}" ]; then
+                _done=true
                 add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
                 if [ -n "$add" ]; then
-                    TMP_VERS="${TMP_VERS} ${add}"
+                    TMP_VERS="${TMP_VERS} [@${add}]"
                 fi
             fi
             cd $oldpwd
         fi
+    fi
+    if ! $_done && [ -f "$VERSFILE" ]; then
+        TMP_VERS="${TMP_VERS} [@`cat $VERSFILE`]"
     fi
     echo "${TMP_VERS}"
     return 0
