@@ -1,7 +1,7 @@
-# Hack to allow keeping an empty directory
+### Hack to allow keeping an empty directory
 !.gitkeep
 
-# OS & software files
+### OS & software files
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -15,31 +15,25 @@ Thumbs.db
 ehthumbs.db
 Desktop.ini
 
-# Les Ateliers specifics:
+# IDE files
+# to be commented to include them in a project
+.project
+.buildpath
+.idea/*
 
-# the composer lock file
-composer.lock
+### Les Ateliers specifics
+
+# any "tmp*" file or dir anywhere
+*tmp*
 
 # user defined files
 user/*
+*/user/*
 
 # the external packages installed by Composer, Template Engine or others
 vendor/*
-bin/vendor/*
-data/vendor/*
-src/vendor/*
-www/vendor/*
+*/vendor/*
 
-# for development ...
-# this may be commented on the "wip" branch
+# specific to the "wip" branch
+build/*
 dev/*
-#build/*
-
-# any "tmp*" file or dir
-tmp*
-bin/tmp*
-demo/tmp*
-data/tmp*
-user/tmp*
-src/tmp*
-www/tmp*
