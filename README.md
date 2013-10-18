@@ -90,7 +90,7 @@ You can use the `-h` option to get help or info:
 
 >    Bash Library - The open source bash library of Les Ateliers Pierrot
 
->    https://github.com/atelierspierrot/bash-library
+>    http://github.com/atelierspierrot/bash-library
 
 >    Copyleft 2013, Pierre Cassat and contributors
 
