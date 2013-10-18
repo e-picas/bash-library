@@ -41,8 +41,7 @@ declare -x _ERRSTATUS
 # the error string (string)
 declare -x _ERRSTR
 
-NAME="Bash-Lib installer"
-VERSION="0.0.1-dev"
+NAME="Bash Library Installer"
 BUGS="$LIB_BUGS"
 AUTHOR="$LIB_AUTHOR"
 DESCRIPTION="The installer/updater/uninstaller of the Bash-Library. \n\
@@ -64,14 +63,11 @@ OPTIONS="\n\
 \t<bold>--docname=NAME</bold>\t\tfilename of the generated documentation (default is '${_DOC_FILENAME}')\n\
 \t<bold>--docmeta=META</bold>\t\tsome meta-data added at the head of the documentation\n\
 \t<bold>--no-toc</bold>\t\tdisable default insertion of a 'table of contents' in the documentation\n\
-\n\
 \t${COMMON_OPTIONS_INFO}";
-declare -rx SYNOPSIS_ERROR="<bold>error:</bold> no action to execute \n\
-<bold>usage:</bold> ${0}  [-${COMMON_OPTIONS_ARGS}] ... \n\
-\t-t path | --target=path  [-s path | --source=path]  ...\n\
-\t[--bindir=arg]  [--docmeta=arg]  [--docname=arg]  ...\n\
-\t[--no-toc]  [action : check | install | uninstall | update | doc]  -- \n\
-Run option '-h' for help.";
+declare -rx SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ARGS}] ... \n\
+\t[-s path | --source=path]  [--bindir=arg]  ...\n\
+\t[--docmeta=arg]  [--docname=arg]  [--no-toc]  ...\n\
+\t-t path | --target=path  <action : check | install | uninstall | update | doc>  --";
 MANPAGE_NODEPEDENCY=true
 
 #### send_error ()
@@ -361,7 +357,7 @@ then
         *) error "Unknown action '${ACTION}' !";;
     esac
 else
-    parsecolortags "${SYNOPSIS_ERROR}"
+    simple_error "no action to execute"
 fi
 
 verecho "_ ok"
