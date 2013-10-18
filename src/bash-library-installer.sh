@@ -169,8 +169,10 @@ isUpToDate () {
 makeInstall () {
     if [ ! -z "$1" ]; then export _TARGET="$1"; fi
     targetdir_required
+    export _TARGET="`realpath ${_TARGET}`"
     if [ ! -z "$2" ]; then export _SOURCE="$2"; fi
     sourcedir_required
+    export _SOURCE="`realpath ${_SOURCE}`"
     if [ ! -d "${_TARGET}/${_BIN_DIR}" ]; then
         iexec "mkdir -p ${_TARGET}/${_BIN_DIR}"
     fi
@@ -179,7 +181,7 @@ makeInstall () {
     if [ -f "${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}" ]; then
         iexec "rm -f ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
     fi
-    iexec "echo \"`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`\" > ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
+    iexec "cd ${_SOURCE} && echo \"\`git rev-parse --abbrev-ref HEAD\` \`git rev-parse HEAD\`\" > ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
     return 0
 }
 
