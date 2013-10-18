@@ -14,10 +14,7 @@
         "email": "piero.wbmstr@gmail.com",
         "homepage": "https://github.com/PieroWbmstr"
     }],
-    "config": {
-        "vendor-dir": "vendor",
-        "bin-dir": "bin/vendor"
-    },
+    "support": { "issues": "http://github.com/atelierspierrot/bash-library/issues" },
     "bin": [ "src/bash-library.sh" ],
     "extra": {
         "branch-alias": {
