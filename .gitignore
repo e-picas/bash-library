@@ -23,6 +23,9 @@ Desktop.ini
 
 ### Les Ateliers specifics
 
+# the composer lock file
+composer.lock
+
 # any "tmp*" file or dir anywhere
 *tmp*
 
