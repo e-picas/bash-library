@@ -16,6 +16,8 @@ console.
 
 ### Installation
 
+#### Classic install
+
 Once you have downloaded or cloned the package sources, just copy the `src/bash-library.sh`
 file to your project directory and begin to use it ...
 
@@ -29,6 +31,20 @@ A direct and complete installation, including downloading sources, could be:
     ~$ tar -xvf master.tar.gz
     ~$ cp bash-library-master/src/bash-library.sh path/to/your/project/bin/
     ~$ chmod +x path/to/your/project/bin/bash-library.sh
+
+#### Composer install
+
+If you are a [Composer](http://getcomposer.org/) user, you can add to your package requirements:
+
+    "atelierspierrot/bash-library": "1.*"
+
+The library will automatically be added in your package's `bin` directory.
+
+#### Install in a package file system
+
+It is sometimes useful to include the library file to your project and manage it manually
+under version control. To embed the library in a project, you can use the `src/bash-library-installer.sh`
+script which will handle the installation and update of the library files.
 
 ### Usage
 
