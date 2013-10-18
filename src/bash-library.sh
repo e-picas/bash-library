@@ -148,6 +148,7 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 
 declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ARGUMENTS</underline>]  --";
 declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ACTION</underline>]  --";
+declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ARGS}]  [-SCRIPT OPTIONS [=VALUE]]  <action>  --";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -657,6 +658,36 @@ commanderror () {
 patherror () {
     error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
+}
+
+#### simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+## writes an error string as a simple message with a synopsis usage info
+##@error default status is E_ERROR (90)
+simple_error () {
+    local ERRSYNOPSIS=""
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    if [ ! -z "$3" ]; then
+        if [ "$3" == 'lib' ]; then
+            ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS")
+        elif [ "$3" == 'action' ]; then
+            ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS_ACTION")
+        else
+            ERRSYNOPSIS=$(echo "$3")
+        fi
+    elif [ -n "$SYNOPSIS_ERROR" ]; then
+        ERRSYNOPSIS=$(echo "$SYNOPSIS_ERROR")
+    else
+        ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS_ERROR")
+    fi
+    if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
+    if $DEBUG; then
+        ERRSTR="${ERRSTR}\n\tat ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}"
+    fi
+    printf "`parsecolortags \"<bold>error:</bold> %s \n<bold>usage:</bold> %s \nRun option '-h' for help.\"`" \
+        "$ERRSTRING" "$ERRSYNOPSIS";
+    echo
+    exit ${ERRSTATUS}
 }
 
 
