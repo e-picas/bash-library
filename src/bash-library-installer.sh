@@ -182,6 +182,9 @@ makeInstall () {
         iexec "rm -f ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
     fi
     iexec "cd ${_SOURCE} && echo \"\`git rev-parse --abbrev-ref HEAD\` \`git rev-parse HEAD\`\" > ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
+    if [ -f "${_SOURCE}/src/bash-library.man" ]; then
+        iexec "cp -f ${_SOURCE}/src/bash-library.man ${_TARGET}/${_BIN_DIR}/"
+    fi
     return 0
 }
 
