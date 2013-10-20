@@ -27,7 +27,7 @@ for Bash scripts facilities. To use the library, just include its source file us
 The library is NOT a script doing some work itself ; it is just a library. So running it
 directly may not do anything. This manual explains the library itself, its options and
 usage methods but you MAY keep in mind that the final manual page to read is the one of
-the real script you will call, using the tools of the library do build its own work.
+the real script you will call, using the tools of the library to build its own work.
 
 The following features are available using the library:
 
@@ -107,6 +107,22 @@ USEROS
 SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO
 :    these are used to build man-pages and usage infors ; they may be defined for each script
 
+## EXIT STATUS
+
+The library defines and uses some specific error status:
+
+E_ERROR=**90**
+:   classic error
+
+E_OPTS=**81**
+:   script options error
+
+E_CMD=**82**
+:   missing command error
+
+E_PATH=**83**
+:   path not found error
+
 ## FILES
 
 **bash-library.sh**
@@ -132,5 +148,5 @@ To transmit bugs, see <http://github.com/atelierspierrot/bash-library/issues>.
 
 ## SEE ALSO
 
-bash, sed, printf, echo
+bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopts(1)
 
