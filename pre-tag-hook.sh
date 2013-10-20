@@ -20,7 +20,7 @@ _MANFILE="MANPAGE.md"
 _MANMANFILE="src/bash-library.man"
 _MDEBIN="vendor/bin/markdown_extended"
 
-if [ -f "$_MDEBIN" ]; then
+if [ ! -f "$_MDEBIN" ]; then
     echo "The binary '$_MDEBIN' can't be found ; the library manpage will not be updated for this tag."
     echo "If you want to install the markdown tool, run 'composer update --dev' ..."
     prompt 'Do you want to continue' 'Y/n' 'y'
