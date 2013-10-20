@@ -18,7 +18,7 @@ _DATE=$(git log -1 --format="%ci" --date=short | cut -s -f 1 -d ' ')
 _LIBFILE="src/bash-library.sh"
 _MANFILE="MANPAGE.md"
 _MANMANFILE="src/bash-library.man"
-_MDEBIN="vendor/bin/markdown_extended"
+_MDEBIN="vendor/bin/markdown-extended"
 
 if [ ! -f "$_MDEBIN" ]; then
     echo "The binary '$_MDEBIN' can't be found ; the library manpage will not be updated for this tag."
