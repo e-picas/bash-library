@@ -708,16 +708,16 @@ simple_error () {
     local ERRSTATUS="${2:-${E_ERROR}}"
     if [ ! -z "$3" ]; then
         if [ "$3" == 'lib' ]; then
-            ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS")
+            ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS")
         elif [ "$3" == 'action' ]; then
-            ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS_ACTION")
+            ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS_ACTION")
         else
-            ERRSYNOPSIS=$(echo "$3")
+            ERRSYNOPSIS=$(_echo "$3")
         fi
     elif [ -n "$SYNOPSIS_ERROR" ]; then
-        ERRSYNOPSIS=$(echo "$SYNOPSIS_ERROR")
+        ERRSYNOPSIS=$(_echo "$SYNOPSIS_ERROR")
     else
-        ERRSYNOPSIS=$(echo "$LIB_SYNOPSIS_ERROR")
+        ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS_ERROR")
     fi
     if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
     if $DEBUG; then
