@@ -194,7 +194,7 @@ send_error () {
     return 0
 }
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 verecho "_ go"
 
 OPTIND=1

@@ -39,7 +39,7 @@ the script arguments:
 
     #!/bin/bash
     source path/to/bash-library.sh
-    parsecomonoptions "$@"
+    parsecommonoptions "$@"
 
 After that, if you want to define and use some custom options, you can write (here for the 
 custom options '-t' and '--test' with arguments):

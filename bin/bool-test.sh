@@ -16,7 +16,7 @@ fi
 NAME="Bash boolean tests"
 VERSION="0.0.1-test"
 PRESENTATION="Script to test boolean values manipulations and equalities in bash."
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 export TRUEVAL=false

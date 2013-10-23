@@ -103,7 +103,7 @@ fi
 
 #### options treatment ##########################
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 
 OPTIND=1
 options=$(getscriptoptions "$@")

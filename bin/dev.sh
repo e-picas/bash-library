@@ -19,7 +19,7 @@ DESCRIPTION="A dev file for tests"
 OPTIONS="$COMMON_OPTIONS_INFO"
 SYNOPSIS="$LIB_SYNOPSIS"
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 clear
