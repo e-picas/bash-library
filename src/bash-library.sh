@@ -1343,6 +1343,15 @@ libdoc () {
 ##@ LIBRARY_REALPATH
 declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 
+##@ COMPATIBILITY
+# to be deleted in next major version !!
+
+#### parsecomonoptions ( "$@" )
+parsecomonoptions () {
+    parsecommonoptions "$@"
+    return 0
+}
+
 ##@!@##
 # Endfile
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh
