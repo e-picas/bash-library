@@ -17,7 +17,7 @@ NAME="Bash-Lib colors test"
 VERSION="0.0.1-dev"
 DESCRIPTION="A script to test colorized functions of the Bash-Library"
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 # color codes

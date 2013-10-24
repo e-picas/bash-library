@@ -29,7 +29,7 @@ OPTIONS="\n\
 \t<bold>replace</bold>\t\treplace a configuration entry\n\
 \t${COMMON_OPTIONS_INFO}";
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 filename=testconfig

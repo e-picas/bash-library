@@ -26,7 +26,7 @@ Each file of the package like 'bin/***-test.sh' is a demo or test for a specific
 <bold>LIBRARY</bold>\n\
 \t${LIB_INFO}";
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 # getscriptpath

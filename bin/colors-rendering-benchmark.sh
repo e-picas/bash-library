@@ -19,7 +19,7 @@ DESCRIPTION="A script to test your terminal colors rendering ..."
 SYNOPSIS="$LIB_SYNOPSIS"
 OPTIONS="$COMMON_OPTIONS_INFO"
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 echo
 

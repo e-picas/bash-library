@@ -1054,10 +1054,10 @@ getlastargument () {
     return 1
 }
 
-#### parsecomonoptions ( "$@" )
+#### parsecommonoptions ( "$@" )
 ## parse common script options as described in $LIB_OPTIONS
 ## this will stop options treatment at '--'
-parsecomonoptions () {
+parsecommonoptions () {
     local oldoptind=$OPTIND
     local options=$(getscriptoptions "$@")
 #    export LASTARG=$(getscriptoptions "${options[@]}")

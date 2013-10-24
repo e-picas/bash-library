@@ -34,7 +34,7 @@ OPTIONS="<bold>--testusage</bold>\tget a sample USAGE manpage\n\
 \t<bold>--default</bold>\t\tthe default script manpage (this is the default action)\n\
 \t<bold>--library</bold>\t\tthe library manpage";
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 if ! $VERBOSE; then 

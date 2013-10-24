@@ -34,7 +34,7 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
 \t<bold>-a</bold>\t\ta single short option to test options order\n$COMMON_OPTIONS_INFO"
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 echo

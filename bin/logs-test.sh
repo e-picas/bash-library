@@ -29,7 +29,7 @@ OPTIONS="\n\
 \t<bold>throw</bold>\t\tthrows an error to test log error message\n\
 \t${COMMON_OPTIONS_INFO}";
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 quietecho "_ go"
 
 OPTIND=1
