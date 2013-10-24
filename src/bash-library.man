@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Bash Shell Library" "3" "2013-10-20" "Version 1.0.3" "bash-library.sh Manual"
+.TH  "Bash Shell Library" "3" "2013-10-24" "Version 1.0.4" "bash-library.sh Manual"
 
 .SH NAME
 

@@ -1,8 +1,8 @@
 Man:        bash-library.sh Manual
 Name:       Bash Shell Library
 Author:     Les Ateliers Pierrot
-Date: 2013-10-20
-Version: 1.0.3
+Date: 2013-10-24
+Version: 1.0.4
 
 
 ## NAME
