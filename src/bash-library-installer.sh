@@ -287,7 +287,7 @@ To read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.\n\n----\n";
     return 0
 }
 
-parsecomonoptions "$@"
+parsecommonoptions "$@"
 verecho "_ go"
 
 OPTIND=1
