@@ -109,8 +109,8 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 # LIBRARY INFOS #####################################################################
 
 declare -rx LIB_NAME="Bash shell library"
-declare -rx LIB_VERSION="1.0.3"
-declare -rx LIB_DATE="2013-10-20"
+declare -rx LIB_VERSION="1.0.4"
+declare -rx LIB_DATE="2013-10-24"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE="GPL-3.0"
