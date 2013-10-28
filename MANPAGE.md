@@ -19,7 +19,7 @@ piwi-bash-library - The open source bash library of Les Ateliers Pierrot
 
 ## DESCRIPTION
 
-**Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
+**Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
 free software replacement for the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
 `source path/to/piwi-bash-library.sh` and call its methods.
@@ -71,28 +71,28 @@ manpage or help string for more infos.
 :    ask for confirmation before any action ; this will define the environment variable
      `INTERACTIVE` on `true` and `QUIET` on `false`
 
-**-x**, **--debug**
+**-x**, **--debug**, **--dry-run**
 :    see commands to run but not run them actually ; this will define the environment variable
      `DEBUG` on `true`
 
-**-V**, **--version**
+**-V**, **--vers**, **--version**
 :    see the script version when available ; use option `-q` to only have the version number
 
 **-d**, **--working-dir** =path
 :    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
      the environment variable `WORKINGDIR`
 
-**-l**, **--log** =filename
+**-l**, **--log**, **--logfile** =filename
 :    define the log filename to use (default is `pwibashlib.log`) ; this will update
      the environment variable `LOGFILE`
 
-**--libvers**
+**--libvers**, **--libversion**
 :    see the library version ; use options `-q` to only have the version number
 
 **--libhelp**
 :    see the library manpage
 
-**--libdoc**
+**--libdoc**, **--libdocumentation**
 :    see the library documentation (use option `-v` to increase output)
 
 You can group short options like `-xc`, set an option argument like `-d(=)value` or

@@ -87,11 +87,15 @@ declare -x TEMPDIR=""
 
 ##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
 declare -x COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
+declare -x COMMON_LONG_OPTIONS_ARGS="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation"
 declare -x COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
 
 ##@ SCRIPT_OPTS=() | ACTION_ARG = ''
 declare -xa SCRIPT_OPTS=()
-declare -x ACTION_ARG=""
+declare -x ACTION_ARG=false
+declare -x OPTIONS_ARGS="${COMMON_OPTIONS_ARGS}"
+declare -x LONG_OPTIONS_ARGS="${COMMON_LONG_OPTIONS_ARGS}"
+declare -rx ORIGINAL_SCRIPT_OPTS="$@"
 
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
@@ -1062,9 +1066,9 @@ getlongoptionarg () {
 ## for instance 'script.sh --options action' will echo "action"
 ## load it in $ACTION_ARG
 getlastargument () {
-    local options=()
+    local -a options=()
     if [ $# -gt 0 ]
-        then options=$(getscriptoptions "$@")
+        then options=($@)
         else options=$SCRIPT_OPTS
     fi
 #    local lastarg="${options: -1}"
@@ -1086,7 +1090,7 @@ getlastargument () {
 getfirstargument () {
     local -a options=()
     if [ $# -gt 0 ]
-        then options=$(getscriptoptions "$@")
+        then options=($@)
         else options=$SCRIPT_OPTS
     fi
     local tmp_arg=''
@@ -1112,13 +1116,9 @@ getfirstargument () {
 ## this will stop options treatment at '--'
 parsecommonoptions () {
     local oldoptind=$OPTIND
-    local options=()
-    if [ $# -gt 0 ]
-        then options=$(getscriptoptions "$@")
-        else options=$SCRIPT_OPTS
-    fi
-    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION $options; do
+    while getopts ":${OPTIONS_ARGS}" OPTION; do
         OPTARG="${OPTARG#=}"
+    echo "$OPTION : $OPTARG"
         case $OPTION in
         # common options
             h) clear; usage; exit 0;;
@@ -1134,27 +1134,26 @@ parsecommonoptions () {
                 case $OPTARG in
         # common options
                     help|man|usage) clear; usage; exit 0;;
-                    vers*) script_version $QUIET; exit 0;;
+                    vers|version) script_version $QUIET; exit 0;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
-                    debug) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    debug|dry-run) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-                    working-dir*) setworkingdir $LONGOPTARG;;
-                    log*) setlogfilename $LONGOPTARG;;
+                    working-dir|working-directory) setworkingdir $LONGOPTARG;;
+                    log|logfile) setlogfilename $LONGOPTARG;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
-                    libvers*) library_version $QUIET; exit 0;;
-                    libdoc*) libdoc; exit 0;;
+                    libvers|libversion) library_version $QUIET; exit 0;;
+                    libdoc|libdocumentation) libdoc; exit 0;;
         # no error for others
                     *) rien=rien;;
                 esac ;;
-            \?) rien=rien;;
+            *) rien=rien;;
         esac
     done
-    SCRIPT_OPTS=$options
     OPTIND=$oldoptind
-    export SCRIPT_OPTS OPTIND
+    export OPTIND
     return 0
 }
 
@@ -1312,6 +1311,8 @@ libdebug () {
     OPTIND=1
     local TMP_DEBUG_MASK=" \n\
 ---- DEBUG -------------------------------------------------------------\n\
+ \$ $0 ${ORIGINAL_SCRIPT_OPTS}\n\
+ re-arranged in:
  \$ $0 $*\n\
 ------------------------------------------------------------------------\n\
 - %s is set on %s\n\
