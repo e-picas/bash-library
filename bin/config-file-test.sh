@@ -29,6 +29,8 @@ OPTIONS="\n\
 \t<bold>get</bold>\t\tget values from the test config table\n\
 \t${COMMON_OPTIONS_INFO}";
 
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 parsecommonoptions "$@"
 quietecho "_ go"
 
@@ -38,10 +40,7 @@ values=('value one' 'value two' 'value three')
 filepath=$(getuserconfigfile $filename)
 actiondone=false
 
-OPTIND=1
-options=$(getscriptoptions "$@")
-getlastargument
-ACTION=$ACTION_ARG
+ACTION="${SCRIPT_ARGS[0]}"
 if [ -z "$ACTION" ]; then ACTION="read"; fi
 if [ ! -z "$ACTION" ]
 then

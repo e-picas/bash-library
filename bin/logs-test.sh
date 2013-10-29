@@ -29,13 +29,13 @@ OPTIONS="\n\
 \t<bold>throw</bold>\t\tthrows an error to test log error message\n\
 \t${COMMON_OPTIONS_INFO}";
 
-parsecommonoptions "$@"
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions
 quietecho "_ go"
 
 OPTIND=1
-options=$(getscriptoptions "$@")
-getlastargument
-ACTION=$ACTION_ARG
+ACTION="${SCRIPT_ARGS[0]}"
 if [ ! -z "$ACTION" ]
 then
     case $ACTION in
@@ -63,7 +63,7 @@ then
             ;;
     esac
 else
-    usage
+    simple_error 'please choose an action to do'
 fi
 
 quietecho "_ ok"

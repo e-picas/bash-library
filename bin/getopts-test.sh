@@ -20,7 +20,7 @@ NAME="Bash-Lib script options & arguments test"
 VERSION="0.0.1-test"
 DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \tTo test it, run:\n\
-\t\t~\$ path/to/getopts-test.sh -vi myaction1 -t \"two words\" -a -q --test=\"three wor ds\" myaction2 -- -x\n\
+\t\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- -x\n\
 \tResult is:\n\
 \t\t- the first common options 'v' and 'i' are parsed and considered by the library,\n\
 \t\t- the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,\n\
@@ -34,29 +34,27 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
 \t<bold>-a</bold>\t\ta single short option to test options order\n$COMMON_OPTIONS_INFO"
 
-first_action=$(getfirstargument "$@")
-shift
-last_action=$(getlastargument "$@")
-parsecommonoptions "$@"
+OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
+
 quietecho "_ go"
 
 echo
-echo "common options arguments: '${COMMON_OPTIONS_ALLOWED}'";
+echo "allowed options arguments: '${OPTIONS_ALLOWED}'";
 echo "received arguments: '$@'";
+
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions
+
+echo "rearranged arguments: '$@'";
 echo
-
-#echo $SCRIPT_OPTS
-#echo "${SCRIPT_OPTS[@]}"
-
-#for i in "${SCRIPT_OPTS[@]}"; do
-#    echo "$i"
-#done
 
 echo "# first loop for the 't' or 'test' option"
 echo "# to test it, run:"
 echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
 OPTIND=1
-while getopts ":at:${COMMON_OPTIONS_ALLOWED}" OPTION; do
+while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
@@ -75,7 +73,7 @@ echo "# second loop for the 'a' option"
 echo "# to test it, run:"
 echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
 OPTIND=1
-while getopts ":at:${COMMON_OPTIONS_ALLOWED}" OPTION; do
+while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
     case $OPTION in
         a) echo " - test option A";;
         ?) echo " - unknown option '$OPTION'";;
@@ -86,13 +84,13 @@ echo
 echo "# test for the last 'action' argument";
 echo "# to test it, run:"
 echo "#      ~\$ $0 ... action -- -x"
-echo " - last action is '$last_action'"
+echo " - last action is '${SCRIPT_ARGS[-1]}'"
 echo
 
 echo "# test for the first 'action' argument";
 echo "# to test it, run:"
 echo "#      ~\$ $0 action ... -- -x"
-echo " - first action is '$first_action'"
+echo " - first action is '${SCRIPT_ARGS[0]}'"
 echo
 
 quietecho "_ ok"

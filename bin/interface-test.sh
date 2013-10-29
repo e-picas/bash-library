@@ -103,13 +103,15 @@ fi
 
 #### options treatment ##########################
 
-parsecommonoptions "$@"
+OPTIONS_ALLOWED="zs:p:t:${COMMON_OPTIONS_ALLOWED}"
+
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions
 
 OPTIND=1
-options=$(getscriptoptions "$@")
-getlastargument
-ACTION=$ACTION_ARG
-while getopts "zs:p:t:${COMMON_OPTIONS_ALLOWED}" OPTION $options; do
+ACTION="${SCRIPT_ARGS[0]}"
+while getopts "${OPTIONS_ALLOWED}" OPTION $options; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         d|f|h|i|l|q|v|V|x) rien=rien;;
@@ -144,7 +146,7 @@ then
         error "Unknown action '${ACTION}' (use option '-z' to list available action scripts) !"
     fi
 else
-    usage
+    simple_error 'please define an action to launch'
 fi
 exit 0
 # Endfile

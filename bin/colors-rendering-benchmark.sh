@@ -72,6 +72,27 @@ txtoptstr="${txtoptstr}${line}"
 echo "## Text options demo:"
 _echo "$txtoptstr"
 
+# test of library presets
+presetoptstr=""
+col1lg=$(( ($linelg-3)/5 ))
+col2lg=$(( 4*$col1lg ))
+printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
+presetoptstr="${presetoptstr}${line}"
+for col in ${LIB_COLORS[@]}; do
+    cell="<${!col}>%-.*s</${!col}>";
+    printf -v cuttedcell "$cell" $(($col2lg-`strlen "$cell"`-`strlen "$col"`-`strlen "$col"`)) "$LOREMIPSUM"
+    printf -v line \
+        "|%-*s|%-*s|\n" \
+        $col1lg " preset ${col} " \
+        $(($col2lg+`strlen "$cell"`-5)) " $cuttedcell ";
+    presetoptstr="${presetoptstr}${line}"
+done
+printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
+presetoptstr="${presetoptstr}${line}"
+echo "## Library presets demo:"
+parsecolortags "$presetoptstr"
+
+
 quietecho "_ ok"
 libdebug "$*"
 exit 0

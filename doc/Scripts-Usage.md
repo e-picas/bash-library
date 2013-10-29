@@ -131,10 +131,10 @@ For a full example with custom options, see the `bin/getopts-test.sh` script.
 **-f** | **--force**
 :   force actions to execute, no confirmation is asked when possible ;
 
-**-d** | **--working-dir=PATH**
+**-d** | **--working-dir** *=path*
 :   redefine the working directory (default is the current directory) ;
 
-**-l** | **--log=FILENAME**
+**-l** | **--log** *=filename*
 :   redefine a log filename to use ;
 
 These options just enables or disables a constant flag in the environment; to make

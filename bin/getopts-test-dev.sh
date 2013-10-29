@@ -3,6 +3,10 @@
 #
 # getopts-test.sh -vi -t "two words" -a -q --test="three wor ds" -- -x
 #
+# ./bin/getopts-test-dev.sh myaction1 -vi -t "two words" -f -a --test="three wor ds" myaction2 -- myaction3 -x
+# ./bin/getopts-test-dev.sh myaction1 -vi -t"two words" -f -a --test="three wor ds" myaction2 -- myaction3 -x
+# ./bin/getopts-test-dev.sh myaction1 -vi -t="two words" -f -a --test="three wor ds" myaction2 myaction3
+#
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
@@ -46,105 +50,24 @@ echo
 echo "received arguments: '$@'";
 echo
 
-#echo "parsing common options";
-#parsecommonoptions "$@"
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+
+echo "rearranged arguments: '$@'";
+echo
+
+#echo "rearranged options: '${SCRIPT_OPTS[@]}'";
+#for i in "${SCRIPT_OPTS[@]}"; do echo "$i"; done
 #echo
 
-rearrangeoptions_getopts () {
-    SCRIPT_OPTS=$(getopt -q -s bash -n "$0" -o "${OPTIONS_ARGS}" -l "${LONG_OPTIONS_ARGS}" -- "$@")
-    export SCRIPT_OPTS
-    return 0
-}
-
-rearrangeoptions () {
-    SCRIPT_OPTS=()
-    SCRIPT_ARGS=()
-    local -a params=( "$@" )
-    local numargs="${#params[@]}"
-    local firstoptdone=false
-    local firstchar
-    local arg
-
-echo "BEFORE ${params[@]}"
-    for i in "${!params[@]}"; do
-        arg="${params[${i}]}"
-        firstchar="${arg:0:1}"
-        if [ "${firstchar}" != "-" ]
-            then SCRIPT_ARGS+=( "$arg" )
-            elif ! $firstoptdone; then firstoptdone=true;
-        fi
-        if ! $firstoptdone; then unset params["$i"]; fi
-    done
-
-echo "AFTER ${params[@]}"
-echo "SCRIPT_ARGS are ${SCRIPT_ARGS[@]}"
-
-
-echo
-echo "searching 'myaction1' :"
-array_search "myaction1" SCRIPT_ARGS[@]
-echo "searching 'two' : `array_search two $SCRIPT_ARGS[@]`"
-echo "searching 'two words' : `array_search 'two words' $SCRIPT_ARGS[@]`"
-echo
-
-    OPTIND=1
-    local eoo=false
-    while getopts ":${OPTIONS_ALLOWED}" OPTION "${params[@]}"; do
-        OPTARG="${OPTARG#=}"
-
-echo "getopts: $OPTION : $OPTARG"
-        local argindex=false
-        case $OPTION in
-            -) LONGOPT="`getlongoption \"${OPTARG}\"`"
-               LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
-                case $OPTARG in
-                    -) eoo=true; break;;
-                    *) 
-                    if ! $eoo; then
-                        if [ ! -z "$LONGOPTARG" -a "${LONGOPT}" != "${LONGOPTARG}" ]
-                            then
-                                SCRIPT_OPTS+=( "--${LONGOPT} ${LONGOPTARG}" )
-                                SCRIPT_ARGS="${SCRIPT_ARGS[@]/${LONGOPTARG}/}"
-                            else
-                                SCRIPT_OPTS+=( "--${LONGOPT}" )
-                        fi
-                    fi
-                    ;;
-                esac ;;
-            *) if ! $eoo; then
-                    if [ ! -z "$OPTARG" ]
-                        then
-                            SCRIPT_OPTS+=( "-${OPTION} ${OPTARG}" )
-                            SCRIPT_ARGS="${SCRIPT_ARGS[@]/${OPTARG}/}"
-                        else
-                            SCRIPT_OPTS+=( "-${OPTION}" )
-                    fi
-                fi
-                ;;
-        esac
-    done
-    OPTIND=1
-    export SCRIPT_OPTS SCRIPT_ARGS
-    return 0
-}
-
-rearrangeoptions "$@"
-echo "rearranged options: '${SCRIPT_OPTS[@]}'";
-for i in "${SCRIPT_OPTS[@]}"; do
-    echo "$i"
-done
-echo "rearranged arguments: '${SCRIPT_ARGS[@]}'";
-for i in "${SCRIPT_ARGS[@]}"; do
-    echo "$i"
-done
-echo
-set -- "${SCRIPT_OPTS[@]} -- ${SCRIPT_ARGS[@]}";
+#echo "rearranged arguments: '${SCRIPT_ARGS[@]}'";
+#for i in "${SCRIPT_ARGS[@]}"; do echo "$i"; done
+#echo
 
 echo "parsing common options";
-parsecommonoptions "$@"
-echo
+parsecommonoptions
 
-
+echo "parsing custom options";
 OPTIND=1
 while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"

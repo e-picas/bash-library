@@ -90,6 +90,7 @@ declare -x TEMPDIR=""
 declare -x COMMON_OPTIONS_ALLOWED="d:fhil:qvVx-:"
 declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation,lib-help,lib-vers,lib-version,lib-doc,lib-documentation"
 declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
+declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|working-directory|force|help|interactive|log|logfile|quiet|verbose|vers|version|debug|dry-run|libhelp|libvers|libversion|libdoc|libdocumentation|lib-help|lib-vers|lib-version|lib-doc|lib-documentation"
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@"
 ##@ SCRIPT_OPTS=() | SCRIPT_ARGS=()
@@ -130,6 +131,7 @@ declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
 declare -rx LIB_BUGS="http://github.com/atelierspierrot/piwi-bash-library/issues"
 
+declare -rx LIB_FILENAME_DEFAULT="piwi-bash-library"
 declare -rx LIB_NAME_DEFAULT="piwibashlib"
 declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
 declare -rx LIB_TEMPDIR="tmp"
@@ -139,17 +141,17 @@ set an option argument like '<bold>-d(=)value</bold>' \n\
 \tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
 to explicitly specify the end of the script options.";
 
-declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\tshow this information message \n\
-\t<bold>-v | --verbose</bold>\t\tincrease script verbosity \n\
-\t<bold>-q | --quiet</bold>\t\tdecrease script verbosity, nothing will be written unless errors \n\
-\t<bold>-f | --force</bold>\t\tforce some commands to not prompt confirmation \n\
-\t<bold>-i | --interactive</bold>\task for confirmation before any action \n\
-\t<bold>-x | --debug | --dry-run</bold>\t\tsee commands to run but not run them actually \n\
-\t<bold>-V | --version</bold>\t\tsee the script version when available\n\
-\t<bold>-d | --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t<bold>-l | --log=FILENAME</bold>\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
-\t<bold>--libvers</bold>\t\tsee the library version \n\
-\t<bold>--libhelp</bold>\t\tsee the library manpage";
+declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\t\tshow this information message \n\
+\t<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
+\t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
+\t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
+\t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
+\t<bold>-x | --debug | --dry-run</bold>\tsee commands to run but not run them actually \n\
+\t<bold>-V | --version</bold>\t\t\tsee the script version when available\n\
+\t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>-l | --log=FILENAME</bold>\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
+\t<bold>--libvers</bold>\t\t\tsee the library version \n\
+\t<bold>--libhelp</bold>\t\t\tsee the library manpage";
 
 declare -rx LIB_OPTIONS="${COMMON_OPTIONS_LIST}\n\n${OPTIONS_USAGE_INFOS}";
 
@@ -438,11 +440,21 @@ array_search () {
 #### in_array ( item , $array[@] )
 ##@return 0 if item is found in array
 in_array () {
-  needle=$1; shift
-  for item; do
-    [[ "$needle" = $item ]] && return 0
-  done
-  return 1
+    needle=$1; shift
+    for item; do
+        [[ "$needle" = $item ]] && return 0
+    done
+    return 1
+}
+
+#### array_filter ( $array[@] )
+##@return array with cleaned values
+array_filter () {
+    local -a cleaned=()
+    for item; do
+        if test "$item"; then cleaned+=("$item"); fi
+    done
+    echo "${cleaned[@]}"
 }
 
 
@@ -1030,35 +1042,6 @@ buildconfigstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
-#### getscriptoptions ( "$@" )
-## this will stop options treatment at '--'
-getscriptoptions () {
-    local options=()
-    local eoo=false
-    local first=true
-    while [[ $1 ]]; do
-        if ! $eoo; then
-            case "$1" in
-                --) eoo=true; shift;;
-                *) if [ -n "$1" ]; then
-                    if $first; then
-                        local first_char="${1:0:1}"
-                        if [ ".$first_char" == '.-' ]; then
-                            options+=($1)
-                        fi
-                        first=false
-                    else
-                        options+=($1)
-                    fi
-                fi; shift;;
-            esac
-        else shift;
-        fi
-    done
-    echo "${options[*]}"
-    return 0
-}
-
 #### getlongoption ( "$x" )
 ## echoes the name of a long option
 getlongoption () {
@@ -1077,54 +1060,61 @@ getoptionarg () {
     echo "${1#=}"; return 0;
 }
 
-#### getlastargument ( "$@" = SCRIPT_OPTS )
-## echoes the last argument that is not an option
-## for instance 'script.sh --options action' will echo "action"
-## load it in $ACTION_ARG
-getlastargument () {
-    local -a options=()
-    if [ $# -gt 0 ]
-        then options=($@)
-        else options=$SCRIPT_OPTS
-    fi
-#    local lastarg="${options: -1}"
-    local lastarg="${options[${#options[@]}-1]}"
-    local first_char="${lastarg:0:1}"
-    if [ ".$first_char" != '.-' ]; then
-        ACTION_ARG="${lastarg}"
-        echo "$lastarg"
-        export ACTION_ARG
-        return 0
-    fi
-    return 1
-}
-
-#### getfirstargument ( "$@" = SCRIPT_OPTS )
-## echoes the first argument that is not an option
-## for instance 'script.sh -a -b=val action --options' will echo "action"
-## load it in $ACTION_ARG
-getfirstargument () {
-    local -a options=()
-    if [ $# -gt 0 ]
-        then options=($@)
-        else options=$SCRIPT_OPTS
-    fi
-    local tmp_arg=''
-    local firstarg=''
-    for i in "${!options[@]}"; do
-        tmp_arg="${options[${i}]}"
-        if [ "${tmp_arg:0:1}" != '-' ]; then
-            firstarg=$tmp_arg
-            break
+#### rearrangescriptoptions ( "$@" )
+## this will separate script options from script arguments (manual emulation of GNU "getopt")
+## options are loaded in $SCRIPT_OPTS with their arguments
+## arguments are loaded in $SCRIPT_ARGS
+rearrangescriptoptions () {
+    SCRIPT_OPTS=()
+    SCRIPT_ARGS=()
+    local oldoptind=$OPTIND
+    local -a params=( "$@" )
+    local numargs="${#params[@]}"
+    local firstoptdone=false
+    local firstchar
+    local arg
+    for i in "${!params[@]}"; do
+        arg="${params[${i}]}"
+        firstchar="${arg:0:1}"
+        if [ "${firstchar}" != "-" ]
+            then SCRIPT_ARGS+=( "$arg" )
+            elif ! $firstoptdone; then firstoptdone=true;
         fi
+        if ! $firstoptdone; then unset params["$i"]; fi
     done
-    if [ ! -z $firstarg ]; then
-        ACTION_ARG="${firstarg}"
-        export ACTION_ARG
-        echo "$firstarg"
-        return 0
-    fi
-    return 1
+    OPTIND=1
+    local eoo=false
+    while getopts ":${OPTIONS_ALLOWED}" OPTION "${params[@]}"; do
+        OPTARG="${OPTARG#=}"
+        local argindex=false
+        case $OPTION in
+            -) LONGOPT="`getlongoption \"${OPTARG}\"`"
+               LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+                case $OPTARG in
+                    -) eoo=true; break;;
+                    *) if ! $eoo; then
+                        if [ ! -z "$LONGOPTARG" -a "${LONGOPT}" != "${LONGOPTARG}" ]; then
+                            SCRIPT_OPTS+=( "--${LONGOPT} ${LONGOPTARG}" )
+                            SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${LONGOPTARG}}" )
+                        else
+                            SCRIPT_OPTS+=( "--${LONGOPT}" )
+                        fi
+                    fi;;
+                esac ;;
+            *) if ! $eoo; then
+                    if [ ! -z "$OPTARG" ]; then
+                        SCRIPT_OPTS+=( "-${OPTION} ${OPTARG}" )
+                        SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${OPTARG}}" )
+                    else
+                        SCRIPT_OPTS+=( "-${OPTION}" )
+                    fi
+                fi;;
+        esac
+    done
+    OPTIND=$oldoptind
+    SCRIPT_ARGS=( $(array_filter "${SCRIPT_ARGS[@]}") )
+    export SCRIPT_OPTS SCRIPT_ARGS
+    return 0
 }
 
 #### parsecommonoptions ( "$@" = SCRIPT_OPTS )
@@ -1132,14 +1122,16 @@ getfirstargument () {
 ## this will stop options treatment at '--'
 parsecommonoptions () {
     local oldoptind=$OPTIND
-    local options=$(getscriptoptions "$@")
-#    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
-    while getopts ":${OPTIONS_ALLOWED}" OPTION $options; do
+    local actiontodo
+    if [ $# -gt 0 ]
+        then local options=("$@")
+        else local options=("${SCRIPT_OPTS[@]}")
+    fi
+    while getopts ":${OPTIONS_ALLOWED}" OPTION "${options[@]}"; do
         OPTARG="`getoptionarg \"${OPTARG}\"`"
-    echo "$OPTION : $OPTARG"
         case $OPTION in
         # common options
-            h) clear; usage; exit 0;;
+            h) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
             i) export INTERACTIVE=true; export QUIET=false;;
             v) export VERBOSE=true; export QUIET=false;;
             f) export FORCED=true;;
@@ -1147,13 +1139,13 @@ parsecommonoptions () {
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             d) setworkingdir $OPTARG;;
             l) setlogfilename $OPTARG;;
-            V) script_version $QUIET; exit 0;;
+            V) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
             -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
                 case $OPTARG in
         # common options
-                    help | usage) clear; usage; exit 0;;
-                    man) clear; usage; exit 0;;
-                    vers | version) script_version $QUIET; exit 0;;
+                    help | usage) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
+                    man) if [ -z $actiontodo ]; then actiontodo='man'; fi;;
+                    vers | version) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
@@ -1162,9 +1154,9 @@ parsecommonoptions () {
                     working-dir | working-directory) setworkingdir $LONGOPTARG;;
                     log | logfile) setlogfilename $LONGOPTARG;;
         # library options
-                    libhelp | lib-help) clear; library_usage; exit 0;;
-                    libvers | lib-vers | libversion | lib-version) library_version $QUIET; exit 0;;
-                    libdoc | lib-doc | libdocumentation | lib-documentation) libdoc; exit 0;;
+                    libhelp | lib-help) if [ -z $actiontodo ]; then actiontodo='libhelp'; fi;;
+                    libvers | lib-vers | libversion | lib-version) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
+                    libdoc | lib-doc | libdocumentation | lib-documentation) if [ -z $actiontodo ]; then actiontodo='libdoc'; fi;;
         # no error for others
                     *) rien=rien;;
                 esac ;;
@@ -1173,6 +1165,16 @@ parsecommonoptions () {
     done
     OPTIND=$oldoptind
     export OPTIND
+    if [ ! -z $actiontodo ]; then
+        case $actiontodo in
+            help) clear; usage; exit 0;;
+            usage) clear; usage; exit 0;;
+            version) script_version $QUIET; exit 0;;
+            libhelp) clear; library_usage; exit 0;;
+            libversion) library_version $QUIET; exit 0;;
+            libdoc) libdoc; exit 0;;
+        esac
+    fi
     return 0
 }
 
@@ -1328,11 +1330,13 @@ library_version () {
 ## see all common options flags values & some debug infos
 libdebug () {
     OPTIND=1
+    local TOP_STR=" \$ $0 ${ORIGINAL_SCRIPT_OPTS}"
+    if [ "$*" != "${ORIGINAL_SCRIPT_OPTS}" ]; then
+        TOP_STR="${TOP_STR}\n re-arranged in:\n \$ $0 $*"
+    fi
     local TMP_DEBUG_MASK=" \n\
 ---- DEBUG -------------------------------------------------------------\n\
- \$ $0 ${ORIGINAL_SCRIPT_OPTS}\n\
- re-arranged in:
- \$ $0 $*\n\
+${TOP_STR}\n\
 ------------------------------------------------------------------------\n\
 - %s is set on %s\n\
 - %s is set on %s\n\
@@ -1434,11 +1438,114 @@ declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 ##@ COMPATIBILITY
 # to be deleted in next major version !!
 
-#### parsecomonoptions ( "$@" )
-parsecomonoptions () {
-    parsecommonoptions "$@"
-    return 0
-}
+
+##@ Internal API
+# this MUST only be parsed when calling the lib directly
+# any method of the internal api is prefixed by `intlib_`
+if [ "`basename $0`" != "`basename ${BASH_SOURCE[0]}`" ]; then return 0; fi
+#echo "BASH LIBRARY !!!"
+
+declare -x INTLIB_REALPATH="`realpath $BASH_SOURCE`"
+declare -x INTLIB_REALPATH_DIR="`dirname $INTLIB_REALPATH`"
+declare -x INTLIB_BASEDIR="`dirname $INTLIB_REALPATH_DIR`"
+declare -x INTLIB_SOURCE="`basename $INTLIB_REALPATH`"
+declare -x INTLIB_DEVDOC_FILENAME="${LIB_FILENAME_DEFAULT}-DOC.md"
+declare -x INTLIB_README_FILENAME="${LIB_FILENAME_DEFAULT}-README.md"
+declare -x INTLIB_GITVERS_FILENAME="${LIB_FILENAME_DEFAULT}-gitversion"
+declare -x INTLIB_MAN_FILENAME="${LIB_FILENAME_DEFAULT}.man"
+declare -x INTLIB_TARGET
+declare -x INTLIB_PRESET='default'
+declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
+
+# script man infos
+MANPAGE_NODEPEDENCY=true
+OPTIONS_ALLOWED="t:p:${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
+NAME="${LIB_NAME}"
+VERSION="${LIB_VERSION}"
+DATE="${LIB_DATE}"
+PRESENTATION="${LIB_PRESENTATION}"
+AUTHOR="${LIB_AUTHOR}"
+LICENSE="${LIB_LICENSE}"
+LICENSE_URL="${LIB_LICENSE_URL}"
+PACKAGE="${LIB_PACKAGE}"
+HOME="${LIB_HOME}"
+BUGS="${LIB_BUGS}"
+DESCRIPTION="Manage a copy of the piwi-bash-library.\n\n\
+\t<bold>check</bold>\t\tcheck if the library is up-to-date\n\
+\t<bold>selfupdate</bold>\tupdate the library with newer version if so\n\
+\t<bold>install</bold>\t\tinstall the library locally or in your system\n\
+\t<bold>uninstall</bold>\tuninstall the library from a path\n\n\
+\tUse option '--target' to define the installation path. By default, the library will be installed in a path of the global 'PATH' variable.\n\n\
+\tUse option '--preset' to define the type of installation.\n\
+\tThe default preset only installs the library itself, a version file and the manapage. The 'dev' preset will install the library documentation and the 'user' preset will install its README.";
+OPTIONS="<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
+\t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
+\t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
+\t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
+\t<bold>-x | --debug | --dry-run</bold>\tsee commands to run but not run them actually \n\
+\t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
+\t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be '<bold>default</bold>' (the default), '<bold>dev</bold>', '<bold>user</bold>' or '<bold>full</bold>'";
+SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
+\t[-t path | --target=path]  ...\n\
+\t[--preset= (default | dev | user | full) ]  ...\n\
+\tcheck\n\
+\tinstall\n\
+\tuninstall\n\
+\tselfupdate";
+FILES="The following files are installed by default:\n\
+\t<underline>${INTLIB_SOURCE}</underline>\t\tthe standalone library source file \n\
+\t<underline>${INTLIB_GITVERS_FILENAME}</underline>\tthe current version of an installed library\n\
+\t<underline>${INTLIB_MAN_FILENAME}</underline>\t\tthe manpage of the library, installed in section 3 of system manpages\n\n\
+\tThe following files can be installed using the 'preset' option:\n\
+\t<underline>${INTLIB_README_FILENAME}</underline>\tthe README of the library (Markdown syntax - installed in 'user' and 'full' presets)\n\
+\t<underline>${INTLIB_DEVDOC_FILENAME}</underline>\ta full documentation of the library (Markdown syntax - installed in 'dev' and 'full' preset)";
+
+# internal API methods
+
+
+# parsing options
+rearrangescriptoptions "$@"
+set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions
+OPTIND=1
+while getopts ":${OPTIONS_ALLOWED}" OPTION; do
+    OPTARG="${OPTARG#=}"
+    case $OPTION in
+        h|f|i|q|v|x|V|d|l) ;;
+        t) INTLIB_TARGET="${OPTARG}";;
+        p) INTLIB_PRESET="${OPTARG}";;
+        -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+            case $OPTARG in
+                target*) INTLIB_TARGET="${LONGOPTARG}";;
+                preset*) INTLIB_PRESET="${LONGOPTARG}";;
+                ?) simple_error "unknown option '$OPTARG'";;
+            esac ;;
+        ?) simple_error "unknown option '$OPTION'";;
+    esac
+done
+
+# checking env
+in_array "$INTLIB_PRESET" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '$INTLIB_PRESET'!";
+
+if [ ! -d "$INTLIB_TARGET" ]; then
+    simple_error "unknown target path '$INTLIB_TARGET'!"
+fi
+
+# executing action
+ACTION="${SCRPIT_ARGS[0]}"
+if [ ! -z $ACTION ]; then
+    case $ACTION in
+        check) ;;
+        self-update | selfupdate) ;;
+        install) ;;
+        uninstall) ;;
+    esac
+else
+    simple_error 'no action requested!'
+fi
+
 
 ##@!@##
 # Endfile
