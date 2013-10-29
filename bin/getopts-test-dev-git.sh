@@ -34,68 +34,49 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
 \t<bold>-a</bold>\t\ta single short option to test options order\n$COMMON_OPTIONS_INFO"
 
-first_action=$(getfirstargument "$@")
-shift
-last_action=$(getlastargument "$@")
-parsecommonoptions "$@"
-quietecho "_ go"
+OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
 
 echo
-echo "common options arguments: '${COMMON_OPTIONS_ALLOWED}'";
+
+echo "short options arguments: '${OPTIONS_ALLOWED}'";
+echo "long options arguments: '${LONG_OPTIONS_ALLOWED}'";
+echo
+
 echo "received arguments: '$@'";
 echo
 
-#echo $SCRIPT_OPTS
-#echo "${SCRIPT_OPTS[@]}"
 
-#for i in "${SCRIPT_OPTS[@]}"; do
-#    echo "$i"
-#done
+rearrangeoptions () {
+    SCRIPT_OPTS=$(getopt -q -s bash -n "$0" -o "${OPTIONS_ALLOWED}" -l "${LONG_OPTIONS_ALLOWED}" -- "$@")
+    export SCRIPT_OPTS
+    return 0
+}
 
-echo "# first loop for the 't' or 'test' option"
-echo "# to test it, run:"
-echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
+rearrangeoptions "$@"
+eval set -- "$SCRIPT_OPTS";
+echo "rearranged arguments: '$@'";
+echo
+
+echo "parsing common options";
+parsecommonoptions "$@"
+echo
+
+
 OPTIND=1
-while getopts ":at:${COMMON_OPTIONS_ALLOWED}" OPTION; do
+while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
+    echo "$OPTION : $OPTARG"
     case $OPTION in
-        t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
         -)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
             LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
             case $OPTARG in
                 test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
-                ?) echo " - unknown long option '$OPTARG'";;
             esac ;;
-        ?) echo " - unknown option '$OPTION'";;
     esac
 done
-echo
 
-echo "# second loop for the 'a' option"
-echo "# to test it, run:"
-echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
-OPTIND=1
-while getopts ":at:${COMMON_OPTIONS_ALLOWED}" OPTION; do
-    case $OPTION in
-        a) echo " - test option A";;
-        ?) echo " - unknown option '$OPTION'";;
-    esac
-done
 echo
-
-echo "# test for the last 'action' argument";
-echo "# to test it, run:"
-echo "#      ~\$ $0 ... action -- -x"
-echo " - last action is '$last_action'"
-echo
-
-echo "# test for the first 'action' argument";
-echo "# to test it, run:"
-echo "#      ~\$ $0 action ... -- -x"
-echo " - first action is '$first_action'"
-echo
-
-quietecho "_ ok"
 libdebug "$*"
 exit 0
 

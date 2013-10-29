@@ -64,7 +64,7 @@ OPTIONS="\n\
 \t<bold>--docmeta=META</bold>\t\tsome meta-data added at the head of the documentation\n\
 \t<bold>--no-toc</bold>\t\tdisable default insertion of a 'table of contents' in the documentation\n\
 \t${COMMON_OPTIONS_INFO}";
-declare -rx SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ARGS}] ... \n\
+declare -rx SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED}] ... \n\
 \t[-s path | --source=path]  [--bindir=arg]  ...\n\
 \t[--docmeta=arg]  [--docname=arg]  [--no-toc]  ...\n\
 \t-t path | --target=path  <action : check | install | uninstall | update | doc>  --";
@@ -293,7 +293,7 @@ verecho "_ go"
 OPTIND=1
 options=$(getscriptoptions "$@")
 ACTION=$(getlastargument $options)
-while getopts "s:t:${COMMON_OPTIONS_ARGS}" OPTION; do
+while getopts "s:t:${COMMON_OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         s) _SOURCE=$OPTARG;;

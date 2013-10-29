@@ -43,7 +43,7 @@ fi
 
 actiondone=false
 OPTIND=1
-while getopts "${COMMON_OPTIONS_ARGS}" OPTION; do
+while getopts "${COMMON_OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         -) case $OPTARG in

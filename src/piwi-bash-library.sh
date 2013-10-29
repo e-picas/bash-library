@@ -85,18 +85,22 @@ declare -x LOGFILE=""
 declare -x LOGFILEPATH=""
 declare -x TEMPDIR=""
 
-##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
-declare -x COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
-declare -x COMMON_LONG_OPTIONS_ARGS="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation"
-declare -x COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
+##@ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:" | COMMON_OPTIONS_ALLOWED_MASK = REGEX mask that matches all common options
+##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation,lib-help,lib-vers,lib-version,lib-doc,lib-documentation"
+declare -x COMMON_OPTIONS_ALLOWED="d:fhil:qvVx-:"
+declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation,lib-help,lib-vers,lib-version,lib-doc,lib-documentation"
+declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
 
-##@ SCRIPT_OPTS=() | ACTION_ARG = ''
+##@ ORIGINAL_SCRIPT_OPTS="$@"
+##@ SCRIPT_OPTS=() | SCRIPT_ARGS=()
+##@ OPTIONS_ALLOWED | LONG_OPTIONS_ALLOWED : to be defined by the script
 declare -xa SCRIPT_OPTS=()
-declare -x ACTION_ARG=false
-declare -x OPTIONS_ARGS="${COMMON_OPTIONS_ARGS}"
-declare -x LONG_OPTIONS_ARGS="${COMMON_LONG_OPTIONS_ARGS}"
+declare -xa SCRIPT_ARGS=()
+declare -x OPTIONS_ALLOWED="${COMMON_OPTIONS_ALLOWED}"
+declare -x LONG_OPTIONS_ALLOWED="${COMMON_LONG_OPTIONS_ALLOWED}"
 declare -rx ORIGINAL_SCRIPT_OPTS="$@"
 
+##@ USEROS="$(uname)"
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
 
@@ -140,7 +144,7 @@ declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\tshow this informati
 \t<bold>-q | --quiet</bold>\t\tdecrease script verbosity, nothing will be written unless errors \n\
 \t<bold>-f | --force</bold>\t\tforce some commands to not prompt confirmation \n\
 \t<bold>-i | --interactive</bold>\task for confirmation before any action \n\
-\t<bold>-x | --debug</bold>\t\tsee commands to run but not run them actually \n\
+\t<bold>-x | --debug | --dry-run</bold>\t\tsee commands to run but not run them actually \n\
 \t<bold>-V | --version</bold>\t\tsee the script version when available\n\
 \t<bold>-d | --working-dir=PATH</bold>\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
 \t<bold>-l | --log=FILENAME</bold>\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
@@ -155,7 +159,7 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 
 declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>arguments</underline>]  --";
 declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>argument</underline>]  --";
-declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ARGS_MASK}]  [--script-options [=value]]  <arguments>  --";
+declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]  [--script-options [=value]]  <arguments>  --";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -422,8 +426,8 @@ stripcolors () {
 #### array_search ( item , $array[@] )
 ##@return the index of an array item
 array_search () {
-    local i=0 search=$1; shift
-    while [ $search != $1 ]
+    local i=0 search="$1"; shift
+    while [ "$search" != "$1" ]
     do ((i++)); shift
         [ -z "$1" ] && { i=0; break; }
     done
@@ -1055,10 +1059,22 @@ getscriptoptions () {
     return 0
 }
 
+#### getlongoption ( "$x" )
+## echoes the name of a long option
+getlongoption () {
+    echo "${1%=*}"; return 0;
+}
+
 #### getlongoptionarg ( "$x" )
 ## echoes the argument of a long option
 getlongoptionarg () {
     echo "${1#*=}"; return 0;
+}
+
+#### getoptionarg ( "$x" )
+## echoes the argument of an option
+getoptionarg () {
+    echo "${1#=}"; return 0;
 }
 
 #### getlastargument ( "$@" = SCRIPT_OPTS )
@@ -1116,8 +1132,10 @@ getfirstargument () {
 ## this will stop options treatment at '--'
 parsecommonoptions () {
     local oldoptind=$OPTIND
-    while getopts ":${OPTIONS_ARGS}" OPTION; do
-        OPTARG="${OPTARG#=}"
+    local options=$(getscriptoptions "$@")
+#    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
+    while getopts ":${OPTIONS_ALLOWED}" OPTION $options; do
+        OPTARG="`getoptionarg \"${OPTARG}\"`"
     echo "$OPTION : $OPTARG"
         case $OPTION in
         # common options
@@ -1133,19 +1151,20 @@ parsecommonoptions () {
             -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
                 case $OPTARG in
         # common options
-                    help|man|usage) clear; usage; exit 0;;
-                    vers|version) script_version $QUIET; exit 0;;
+                    help | usage) clear; usage; exit 0;;
+                    man) clear; usage; exit 0;;
+                    vers | version) script_version $QUIET; exit 0;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
-                    debug|dry-run) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    debug | dry-run) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-                    working-dir|working-directory) setworkingdir $LONGOPTARG;;
-                    log|logfile) setlogfilename $LONGOPTARG;;
+                    working-dir | working-directory) setworkingdir $LONGOPTARG;;
+                    log | logfile) setlogfilename $LONGOPTARG;;
         # library options
-                    libhelp) clear; library_usage; exit 0;;
-                    libvers|libversion) library_version $QUIET; exit 0;;
-                    libdoc|libdocumentation) libdoc; exit 0;;
+                    libhelp | lib-help) clear; library_usage; exit 0;;
+                    libvers | lib-vers | libversion | lib-version) library_version $QUIET; exit 0;;
+                    libdoc | lib-doc | libdocumentation | lib-documentation) libdoc; exit 0;;
         # no error for others
                     *) rien=rien;;
                 esac ;;

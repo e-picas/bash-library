@@ -109,7 +109,7 @@ OPTIND=1
 options=$(getscriptoptions "$@")
 getlastargument
 ACTION=$ACTION_ARG
-while getopts "zs:p:t:${COMMON_OPTIONS_ARGS}" OPTION $options; do
+while getopts "zs:p:t:${COMMON_OPTIONS_ALLOWED}" OPTION $options; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         d|f|h|i|l|q|v|V|x) rien=rien;;
