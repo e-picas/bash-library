@@ -83,14 +83,19 @@ echo
 
 echo "# test for the last 'action' argument";
 echo "# to test it, run:"
-echo "#      ~\$ $0 ... action -- -x"
-echo " - last action is '${SCRIPT_ARGS[-1]}'"
+echo "#      ~\$ $0 ... action -x"
+lastarg=$(getlastargument)
+echo " - last argument is '${lastarg}'"
 echo
 
-echo "# test for the first 'action' argument";
+echo "# test for the 'action' arguments";
 echo "# to test it, run:"
-echo "#      ~\$ $0 action ... -- -x"
-echo " - first action is '${SCRIPT_ARGS[0]}'"
+echo "#      ~\$ $0 action1 action2 ... -x"
+echo " - first argument is '`getnextargument`'"
+echo " - next argument is '`getnextargument`'"
+echo
+echo "# finally:"
+echo " - 'ARGIND' is: $ARGIND"
 echo
 
 quietecho "_ ok"

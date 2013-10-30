@@ -86,11 +86,11 @@ declare -x LOGFILEPATH=""
 declare -x TEMPDIR=""
 
 ##@ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:" | COMMON_OPTIONS_ALLOWED_MASK = REGEX mask that matches all common options
-##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation,lib-help,lib-vers,lib-version,lib-doc,lib-documentation"
+##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libvers,libversion,lib-vers,lib-version"
 declare -x COMMON_OPTIONS_ALLOWED="d:fhil:qvVx-:"
-declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libhelp,libvers,libversion,libdoc,libdocumentation,lib-help,lib-vers,lib-version,lib-doc,lib-documentation"
+declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libvers,libversion,lib-vers,lib-version"
 declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
-declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|working-directory|force|help|interactive|log|logfile|quiet|verbose|vers|version|debug|dry-run|libhelp|libvers|libversion|libdoc|libdocumentation|lib-help|lib-vers|lib-version|lib-doc|lib-documentation"
+declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|working-directory|force|help|interactive|log|logfile|quiet|verbose|vers|version|debug|dry-run|libvers|libversion|lib-vers|lib-version"
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@"
 ##@ SCRIPT_OPTS=() | SCRIPT_ARGS=()
@@ -100,6 +100,7 @@ declare -xa SCRIPT_ARGS=()
 declare -x OPTIONS_ALLOWED="${COMMON_OPTIONS_ALLOWED}"
 declare -x LONG_OPTIONS_ALLOWED="${COMMON_LONG_OPTIONS_ALLOWED}"
 declare -rx ORIGINAL_SCRIPT_OPTS="$@"
+declare -xi ARGIND=0
 
 ##@ USEROS="$(uname)"
 declare -rx USEROS="$(uname)"
@@ -150,8 +151,7 @@ declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\t\tshow this informa
 \t<bold>-V | --version</bold>\t\t\tsee the script version when available\n\
 \t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
 \t<bold>-l | --log=FILENAME</bold>\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
-\t<bold>--libvers</bold>\t\t\tsee the library version \n\
-\t<bold>--libhelp</bold>\t\t\tsee the library manpage";
+\t<bold>--libvers</bold>\t\t\tsee the library version";
 
 declare -rx LIB_OPTIONS="${COMMON_OPTIONS_LIST}\n\n${OPTIONS_USAGE_INFOS}";
 
@@ -723,36 +723,43 @@ patherror () {
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
-## writes an error string as a simple message with a synopsis usage info
-##@error default status is E_ERROR (90)
-simple_error () {
+#### simple_usage ( synopsis = SYNOPSIS_ERROR )
+## writes a synopsis usage info
+simple_usage () {
     local ERRSYNOPSIS=""
-    local ERRSTRING="${1:-unknown error}"
-    local ERRSTATUS="${2:-${E_ERROR}}"
-    if [ ! -z "$3" ]; then
-        if [ "$3" == 'lib' ]; then
+    if [ ! -z "$1" ]; then
+        if [ "$1" == 'lib' ]; then
             ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS")
-        elif [ "$3" == 'action' ]; then
+        elif [ "$1" == 'action' ]; then
             ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS_ACTION")
         else
-            ERRSYNOPSIS=$(_echo "$3")
+            ERRSYNOPSIS=$(_echo "$1")
         fi
     elif [ -n "$SYNOPSIS_ERROR" ]; then
         ERRSYNOPSIS=$(_echo "$SYNOPSIS_ERROR")
     else
         ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS_ERROR")
     fi
+    printf "`parsecolortags \"<bold>usage:</bold> %s \nRun option '-h' for help.\"`" "$ERRSYNOPSIS";
+    echo
+    return 0
+}
+
+#### simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+## writes an error string as a simple message with a synopsis usage info
+##@error default status is E_ERROR (90)
+simple_error () {
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
     if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
     if $DEBUG; then
         ERRSTR="${ERRSTR}\n\tat ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}"
     fi
-    printf "`parsecolortags \"<bold>error:</bold> %s \n<bold>usage:</bold> %s \nRun option '-h' for help.\"`" \
-        "$ERRSTRING" "$ERRSYNOPSIS" >&2;
+    printf "`parsecolortags \"<bold>error:</bold> %s\"`" "$ERRSTRING" >&2;
     echo
+    simple_usage "$3"
     exit ${ERRSTATUS}
 }
-
 
 #### TEMPORARY FILES #####################################################################
 
@@ -1042,6 +1049,12 @@ buildconfigstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
+#### getoptionarg ( "$x" )
+## echoes the argument of an option
+getoptionarg () {
+    echo "${1#=}"; return 0;
+}
+
 #### getlongoption ( "$x" )
 ## echoes the name of a long option
 getlongoption () {
@@ -1054,10 +1067,23 @@ getlongoptionarg () {
     echo "${1#*=}"; return 0;
 }
 
-#### getoptionarg ( "$x" )
-## echoes the argument of an option
-getoptionarg () {
-    echo "${1#=}"; return 0;
+#### getnextargument ()
+## echoes the next script argument according to current `ARGIND`
+getnextargument () {
+    if [ $ARGIND -lt ${#SCRIPT_ARGS[@]} ]; then
+        echo "${SCRIPT_ARGS[${ARGIND}]}"
+#echo $ARGIND
+        ((ARGIND++))
+#echo $ARGIND
+        export ARGIND
+    fi
+    return 0
+}
+
+#### getlastargument ()
+## echoes the last script argument
+getlastargument () {
+    echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"; return 0;
 }
 
 #### rearrangescriptoptions ( "$@" )
@@ -1103,7 +1129,7 @@ rearrangescriptoptions () {
                 esac ;;
             *) if ! $eoo; then
                     if [ ! -z "$OPTARG" ]; then
-                        SCRIPT_OPTS+=( "-${OPTION} ${OPTARG}" )
+                        SCRIPT_OPTS+=( "-${OPTION}${OPTARG}" )
                         SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${OPTARG}}" )
                     else
                         SCRIPT_OPTS+=( "-${OPTION}" )
@@ -1143,20 +1169,18 @@ parsecommonoptions () {
             -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
                 case $OPTARG in
         # common options
-                    help | usage) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
+                    help|usage) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
                     man) if [ -z $actiontodo ]; then actiontodo='man'; fi;;
-                    vers | version) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
+                    vers|version) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
-                    debug | dry-run) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    debug|dry-run) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-                    working-dir | working-directory) setworkingdir $LONGOPTARG;;
-                    log | logfile) setlogfilename $LONGOPTARG;;
+                    working-dir|working-directory) setworkingdir $LONGOPTARG;;
+                    log|logfile) setlogfilename $LONGOPTARG;;
         # library options
-                    libhelp | lib-help) if [ -z $actiontodo ]; then actiontodo='libhelp'; fi;;
-                    libvers | lib-vers | libversion | lib-version) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
-                    libdoc | lib-doc | libdocumentation | lib-documentation) if [ -z $actiontodo ]; then actiontodo='libdoc'; fi;;
+                    libvers|lib-vers|libversion|lib-version) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
         # no error for others
                     *) rien=rien;;
                 esac ;;
@@ -1168,11 +1192,9 @@ parsecommonoptions () {
     if [ ! -z $actiontodo ]; then
         case $actiontodo in
             help) clear; usage; exit 0;;
-            usage) clear; usage; exit 0;;
+            man) clear; usage; exit 0;;
             version) script_version $QUIET; exit 0;;
-            libhelp) clear; library_usage; exit 0;;
             libversion) library_version $QUIET; exit 0;;
-            libdoc) libdoc; exit 0;;
         esac
     fi
     return 0
@@ -1363,16 +1385,119 @@ ${TOP_STR}\n\
     return 0
 }
 
-#### libdoc ()
-## get the library functions list (with option "--libdoc")
-## expend the doc with option '-v'
-libdoc () {
+##@ LIBRARY_REALPATH
+declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
+
+##@ COMPATIBILITY
+# to be deleted in next major version !!
+
+
+##@!@##
+##########################################################################################
+# Internal API
+##########################################################################################
+
+# this MUST only be parsed when calling the lib directly
+# any method of the internal api is prefixed by `intlib_`
+if [ "`basename $0`" != "`basename ${BASH_SOURCE[0]}`" ]; then return 0; fi
+#echo "BASH LIBRARY !!!"
+
+declare -x INTLIB_REALPATH="`realpath $BASH_SOURCE`"
+declare -x INTLIB_REALPATH_DIR="`dirname $INTLIB_REALPATH`"
+declare -x INTLIB_BASEDIR="`dirname $INTLIB_REALPATH_DIR`"
+declare -x INTLIB_SOURCE="`basename $INTLIB_REALPATH`"
+declare -x INTLIB_DEVDOC_FILENAME="${LIB_FILENAME_DEFAULT}-DOC.md"
+declare -x INTLIB_README_FILENAME="${LIB_FILENAME_DEFAULT}-README.md"
+declare -x INTLIB_GITVERS_FILENAME="${LIB_FILENAME_DEFAULT}-gitversion"
+declare -x INTLIB_MAN_FILENAME="${LIB_FILENAME_DEFAULT}.man"
+declare -x INTLIB_TARGET
+declare -x INTLIB_PRESET='default'
+declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
+declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check selfupdate self-update doc documentation vers version help usage )
+
+# script man infos
+MANPAGE_NODEPEDENCY=true
+OPTIONS_ALLOWED="t:p:${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
+NAME="${LIB_NAME}"
+VERSION="${LIB_VERSION}"
+DATE="${LIB_DATE}"
+PRESENTATION="${LIB_PRESENTATION}"
+AUTHOR="${LIB_AUTHOR}"
+LICENSE="${LIB_LICENSE}"
+LICENSE_URL="${LIB_LICENSE_URL}"
+PACKAGE="${LIB_PACKAGE}"
+HOME="${LIB_HOME}"
+BUGS="${LIB_BUGS}"
+INTLIB_PRESET_INFO=""
+for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
+    INTLIB_PRESET_INFO="${INTLIB_PRESET_INFO} '<bold>${pres}</bold>'"
+done
+DESCRIPTION="Manage a copy of the piwi-bash-library.\n\n\
+\t<bold>check</bold>\t\tcheck if the library is up-to-date\n\
+\t<bold>selfupdate</bold>\tupdate the library with newer version if so\n\
+\t<bold>install</bold>\t\tinstall the library locally or in your system\n\
+\t<bold>uninstall</bold>\tuninstall the library from a path\n\
+\t<bold>version</bold>\t\tget the library version infos ; use option '-q' to get only the version number\n\
+\t<bold>documentation</bold>\tsee the library documentation ; use option '-v' to increase verbosity\n\
+\n\
+\tUse option '--target' to define the installation path. By default, the library will be installed in a path of the global 'PATH' variable.\n\n\
+\tUse option '--preset' to define the type of installation.\n\
+\tThe default preset only installs the library itself, a version file and the manapage. The 'dev' preset will install the library documentation and the 'user' preset will install its README.";
+OPTIONS="<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
+\t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
+\t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
+\t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
+\t<bold>-x | --debug | --dry-run</bold>\tsee commands to run but not run them actually \n\
+\t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
+\t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}";
+SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
+\t[-t path | --target=path]  ...\n\
+\t[--preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
+\tcheck\n\
+\tinstall\n\
+\tuninstall\n\
+\tselfupdate | self-update\n\
+\tdoc | documentation\n\
+\tvers | version\n\
+";
+FILES="The following files are installed by default:\n\
+\t<underline>${INTLIB_SOURCE}</underline>\t\tthe standalone library source file \n\
+\t<underline>${INTLIB_GITVERS_FILENAME}</underline>\tthe current version of an installed library\n\
+\t<underline>${INTLIB_MAN_FILENAME}</underline>\t\tthe manpage of the library, installed in section 3 of system manpages\n\n\
+\tThe following files can be installed using the 'preset' option:\n\
+\t<underline>${INTLIB_README_FILENAME}</underline>\tthe README of the library (Markdown syntax - installed in 'user' and 'full' presets)\n\
+\t<underline>${INTLIB_DEVDOC_FILENAME}</underline>\ta full documentation of the library (Markdown syntax - installed in 'dev' and 'full' preset)";
+
+# internal API methods
+
+# -> unknown option 
+intlib_optionerror () {
+    simple_error "unknown option '$1'"
+}
+
+# -> check preset validity
+preset_valid () {
+    in_array "$INTLIB_PRESET" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '$INTLIB_PRESET'!";
+    return 0
+}
+
+# -> which target
+target_required () {
+    if [ ! -d "$INTLIB_TARGET" ]; then
+        simple_error "unknown target path '$INTLIB_TARGET'!"
+    fi
+}
+
+# action doc
+intlibaction_documentation () {
     if $VERBOSE; then
         parsecolortags "<bold>Library documentation</bold> (developed mode)";
     else
         parsecolortags "<bold>Library documentation</bold> (use option '-v' to develop)";
     fi
-    local libraryfile=${LIBFILE:-${BASH_SOURCE[0]}}
+    local libraryfile=${BASH_SOURCE[0]}
     if [ ! -f $libraryfile ]; then patherror $libraryfile; fi
     i=0
     old_IFS=$IFS
@@ -1385,19 +1510,15 @@ libdoc () {
             continue;
         fi
         line_str=""
-#        fct_line=$(echo "$line" | grep -Po "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
         fct_line=$(echo "$line" | grep -o "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
         if [ $indoc -a -n "$fct_line" ]; then
             line_str="$fct_line"
             intag=true
         elif $indoc; then
-#            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
             title_line=$(echo "$line" | grep -o "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
             if [ -n "$title_line" ]; then
                 line_str="$title_line"
             elif $intag; then
-#                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
-#                comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
                 arg_line=$(echo "$line" | grep -o "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
                 comm_line=$(echo "$line" | grep -o "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
                 if $VERBOSE; then
@@ -1417,7 +1538,6 @@ libdoc () {
                 fi
             else
                 intag=false;
-#                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
                 arg_line=$(echo "$line" | grep -o "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
                 if [ -n "$arg_line" ]; then
                     line_str="$arg_line"
@@ -1432,77 +1552,28 @@ libdoc () {
     return 0
 }
 
-##@ LIBRARY_REALPATH
-declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
+intlibaction_check () {
+    target_required
+    echo "todo"
+}
 
-##@ COMPATIBILITY
-# to be deleted in next major version !!
+intlibaction_selfupdate () {
+    target_required
+    preset_valid
+    echo "todo"
+}
 
+intlibaction_install () {
+    target_required
+    preset_valid
+    echo "todo"
+}
 
-##@ Internal API
-# this MUST only be parsed when calling the lib directly
-# any method of the internal api is prefixed by `intlib_`
-if [ "`basename $0`" != "`basename ${BASH_SOURCE[0]}`" ]; then return 0; fi
-#echo "BASH LIBRARY !!!"
-
-declare -x INTLIB_REALPATH="`realpath $BASH_SOURCE`"
-declare -x INTLIB_REALPATH_DIR="`dirname $INTLIB_REALPATH`"
-declare -x INTLIB_BASEDIR="`dirname $INTLIB_REALPATH_DIR`"
-declare -x INTLIB_SOURCE="`basename $INTLIB_REALPATH`"
-declare -x INTLIB_DEVDOC_FILENAME="${LIB_FILENAME_DEFAULT}-DOC.md"
-declare -x INTLIB_README_FILENAME="${LIB_FILENAME_DEFAULT}-README.md"
-declare -x INTLIB_GITVERS_FILENAME="${LIB_FILENAME_DEFAULT}-gitversion"
-declare -x INTLIB_MAN_FILENAME="${LIB_FILENAME_DEFAULT}.man"
-declare -x INTLIB_TARGET
-declare -x INTLIB_PRESET='default'
-declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
-
-# script man infos
-MANPAGE_NODEPEDENCY=true
-OPTIONS_ALLOWED="t:p:${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
-NAME="${LIB_NAME}"
-VERSION="${LIB_VERSION}"
-DATE="${LIB_DATE}"
-PRESENTATION="${LIB_PRESENTATION}"
-AUTHOR="${LIB_AUTHOR}"
-LICENSE="${LIB_LICENSE}"
-LICENSE_URL="${LIB_LICENSE_URL}"
-PACKAGE="${LIB_PACKAGE}"
-HOME="${LIB_HOME}"
-BUGS="${LIB_BUGS}"
-DESCRIPTION="Manage a copy of the piwi-bash-library.\n\n\
-\t<bold>check</bold>\t\tcheck if the library is up-to-date\n\
-\t<bold>selfupdate</bold>\tupdate the library with newer version if so\n\
-\t<bold>install</bold>\t\tinstall the library locally or in your system\n\
-\t<bold>uninstall</bold>\tuninstall the library from a path\n\n\
-\tUse option '--target' to define the installation path. By default, the library will be installed in a path of the global 'PATH' variable.\n\n\
-\tUse option '--preset' to define the type of installation.\n\
-\tThe default preset only installs the library itself, a version file and the manapage. The 'dev' preset will install the library documentation and the 'user' preset will install its README.";
-OPTIONS="<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
-\t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
-\t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
-\t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
-\t<bold>-x | --debug | --dry-run</bold>\tsee commands to run but not run them actually \n\
-\t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
-\t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be '<bold>default</bold>' (the default), '<bold>dev</bold>', '<bold>user</bold>' or '<bold>full</bold>'";
-SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
-\t[-t path | --target=path]  ...\n\
-\t[--preset= (default | dev | user | full) ]  ...\n\
-\tcheck\n\
-\tinstall\n\
-\tuninstall\n\
-\tselfupdate";
-FILES="The following files are installed by default:\n\
-\t<underline>${INTLIB_SOURCE}</underline>\t\tthe standalone library source file \n\
-\t<underline>${INTLIB_GITVERS_FILENAME}</underline>\tthe current version of an installed library\n\
-\t<underline>${INTLIB_MAN_FILENAME}</underline>\t\tthe manpage of the library, installed in section 3 of system manpages\n\n\
-\tThe following files can be installed using the 'preset' option:\n\
-\t<underline>${INTLIB_README_FILENAME}</underline>\tthe README of the library (Markdown syntax - installed in 'user' and 'full' presets)\n\
-\t<underline>${INTLIB_DEVDOC_FILENAME}</underline>\ta full documentation of the library (Markdown syntax - installed in 'dev' and 'full' preset)";
-
-# internal API methods
+intlibaction_uninstall () {
+    target_required
+    preset_valid
+    echo "todo"
+}
 
 
 # parsing options
@@ -1514,39 +1585,38 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         h|f|i|q|v|x|V|d|l) ;;
-        t) INTLIB_TARGET="${OPTARG}";;
-        p) INTLIB_PRESET="${OPTARG}";;
+        t) export INTLIB_TARGET="${OPTARG}";;
+        p) export INTLIB_PRESET="${OPTARG}";;
         -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
             case $OPTARG in
-                target*) INTLIB_TARGET="${LONGOPTARG}";;
-                preset*) INTLIB_PRESET="${LONGOPTARG}";;
-                ?) simple_error "unknown option '$OPTARG'";;
+                target*) export INTLIB_TARGET="${LONGOPTARG}";;
+                preset*) export INTLIB_PRESET="${LONGOPTARG}";;
+                ?) intlib_optionerror "$OPTION";;
             esac ;;
-        ?) simple_error "unknown option '$OPTION'";;
+        ?) intlib_optionerror "$OPTION";;
     esac
 done
+ACTION="${SCRIPT_ARGS[0]}"
 
 # checking env
-in_array "$INTLIB_PRESET" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '$INTLIB_PRESET'!";
-
-if [ ! -d "$INTLIB_TARGET" ]; then
-    simple_error "unknown target path '$INTLIB_TARGET'!"
-fi
+# -> action is required
+if [ -z $ACTION ]; then simple_error 'nothing to do'; fi
+# -> check action validity
+in_array "$ACTION" "${INTLIB_ACTION_ALLOWED[@]}" || simple_error "unknown action '$ACTION'!";
 
 # executing action
-ACTION="${SCRPIT_ARGS[0]}"
-if [ ! -z $ACTION ]; then
-    case $ACTION in
-        check) ;;
-        self-update | selfupdate) ;;
-        install) ;;
-        uninstall) ;;
-    esac
-else
-    simple_error 'no action requested!'
-fi
+if $DEBUG; then libdebug; fi
+case $ACTION in
+    check) intlibaction_check;;
+    self-update|selfupdate) intlibaction_selfupdate;;
+    install) intlibaction_install;;
+    uninstall) intlibaction_uninstall;;
+    doc|documentation) intlibaction_documentation; exit 0;;
+    vers|version) library_version $QUIET; exit 0;;
+    help) clear; library_usage; exit 0;;
+    usage) simple_usage; exit 0;;
+    *) ;;
+esac
 
-
-##@!@##
 # Endfile
 # vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh

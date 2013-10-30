@@ -45,6 +45,9 @@ The following features are available using the library:
     with the script, such as increase or decrease verbosity, make a dry run, ask to force 
     commands or to always prompt for confirmation
 
+We mostly try to follow the [GNU coding standards](http://www.gnu.org/prep/standards/standards.html)
+to keep user in a known environment ...
+
 ## OPTIONS
 
 Each script depending on the library may define its own options. Report to the script

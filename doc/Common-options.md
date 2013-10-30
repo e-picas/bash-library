@@ -45,7 +45,7 @@ After that, if you want to define and use some custom options, you can write (he
 custom options '-t' and '--test' with arguments):
 
     OPTIND=1
-    while getopts "t:${COMMON_OPTIONS_ARGS}" OPTION; do
+    while getopts "t:${COMMON_OPTIONS_ALLOWED}" OPTION; do
         OPTARG="${OPTARG#=}"
         case $OPTION in
             t) 
