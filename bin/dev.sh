@@ -25,7 +25,7 @@ verecho "_ go"
 simple_error "this is the classic usage error"
 
 verecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

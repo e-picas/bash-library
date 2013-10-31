@@ -25,14 +25,15 @@ DESCRIPTION="A script to test library automatic manpages ...\n\
 \tThen run:\n\
 \t\t~\$ path/to/manpage-test.sh --library\n\
 \tResult is the default library manpage.\n\n\
-You can use option '-v' to add the DEPENDENCIES section of the default manpage.";
+\tYou can use option '-v' to add the DEPENDENCIES section of the default manpage.\n\
+\tYou can use special program name long option like '--less' or '--more'.";
 SYNOPSIS="$LIB_SYNOPSIS"
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_INFO
 OPTIONS="<bold>--testusage</bold>\tget a sample USAGE manpage\n\
-\t<bold>--default</bold>\t\tthe default script manpage (this is the default action)\n\
-\t<bold>--library</bold>\t\tthe library manpage";
+\t<bold>--default</bold>\tthe default script manpage (this is the default action)\n\
+\t<bold>--library</bold>\tthe library manpage";
 
 parsecommonoptions "$@"
 quietecho "_ go"
@@ -69,7 +70,7 @@ if ! $actiondone; then
 fi
 
 quietecho "_ ok"
-#libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

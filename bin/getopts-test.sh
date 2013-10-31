@@ -20,7 +20,7 @@ NAME="Bash-Lib script options & arguments test"
 VERSION="0.0.1-test"
 DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \tTo test it, run:\n\
-\t\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- -x\n\
+\t\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- myaction3 -x\n\
 \tResult is:\n\
 \t\t- the first common options 'v' and 'i' are parsed and considered by the library,\n\
 \t\t- the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,\n\
@@ -99,7 +99,7 @@ echo " - 'ARGIND' is: $ARGIND"
 echo
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

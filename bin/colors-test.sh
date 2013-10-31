@@ -100,7 +100,7 @@ _echo "colorized: ${PARSEDTESTSTR9}"
 stripcolors "stripped: ${PARSEDTESTSTR9}"
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

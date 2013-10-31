@@ -62,7 +62,7 @@ for col in ${LIBTEXTOPTIONS[@]}; do
     printf -v line \
         "|%-*s|%-*s|\n" \
         $col1lg " text option ${col} " \
-        $(($col2lg+`strlen "$txtoptcode"`+`strlen "$normalcode"`-6)) " $cuttedcell ";
+        $(($col2lg+`strlen "$txtoptcode"`+`strlen "$normalcode"`)) " $cuttedcell ";
     txtoptstr="${txtoptstr}${line}"
 done
 printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
@@ -92,7 +92,7 @@ parsecolortags "$presetoptstr"
 
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

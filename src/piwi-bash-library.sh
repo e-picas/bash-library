@@ -100,10 +100,11 @@ declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
 declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|working-directory|force|help|interactive|log|logfile|quiet|verbose|vers|version|debug|dry-run|libvers|libversion|lib-vers|lib-version"
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@"
-##@ SCRIPT_OPTS=() | SCRIPT_ARGS=()
+##@ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
 ##@ OPTIONS_ALLOWED | LONG_OPTIONS_ALLOWED : to be defined by the script
 declare -xa SCRIPT_OPTS=()
 declare -xa SCRIPT_ARGS=()
+declare -xa SCRIPT_PROGRAMS=()
 declare -x OPTIONS_ALLOWED="${COMMON_OPTIONS_ALLOWED}"
 declare -x LONG_OPTIONS_ALLOWED="${COMMON_LONG_OPTIONS_ALLOWED}"
 declare -rx ORIGINAL_SCRIPT_OPTS="$@"
@@ -170,9 +171,9 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 <underline>Common options</underline> (to use first):\n\
 \t${LIB_OPTIONS}";
 
-declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>arguments</underline>]  --";
-declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>argument</underline>]  --";
-declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]  [--script-options [=value]]  <arguments>  --";
+declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>arguments</underline>]";
+declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]";
+declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]  [--script-options [=value]]  [--]  <arguments>";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -374,12 +375,12 @@ colorize () {
     local bgopt
     if [ ! -z $4 ]; then bgopt=`getcolorcode "$4" true`; fi
     local add=""
-    if [ ! -z $textopt ]; then add="${textopt}"; fi
+    if [ ! -z $textopt ]; then add+="${textopt}"; fi
     if [ ! -z $fgopt ]; then
-        if [ -n "$add" ]; then add="${add};${fgopt}"; else add="${fgopt}"; fi
+        if [ -n "$add" ]; then add+=";${fgopt}"; else add+="${fgopt}"; fi
     fi
     if [ ! -z $bgopt ]; then
-        if [ -n "$add" ]; then add="${add};${bgopt}"; else add="${bgopt}"; fi
+        if [ -n "$add" ]; then add+=";${bgopt}"; else add+="${bgopt}"; fi
     fi
     opentag=$(gettextformattag "${add}")
     closetag=$(gettextformattag "$(gettextoptioncode normal)")
@@ -399,7 +400,6 @@ parsecolortags () {
     while read -r line; do
         doneopts=()
         transformedline="$line"
-#        for opt in $(echo "$line" | grep -Po '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
         for opt in $(echo "$line" | grep -o '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
             opt="${opt/\//}"
             if `in_array "$opt" ${doneopts[@]}`; then continue; fi
@@ -429,8 +429,8 @@ parsecolortags () {
                 if [ ! -z "$strsubstituted" ]; then transformedline="${strsubstituted}"; fi
             fi
         done
-        if [ -n "$transformed" ]; then transformed="${transformed}\n"; fi
-        transformed="${transformed}${transformedline}"
+        if [ -n "$transformed" ]; then transformed+="\n"; fi
+        transformed+="${transformedline}"
     done <<< "$1"
     _echo "$transformed"
     return 0
@@ -446,8 +446,8 @@ stripcolors () {
             *)
                 stripped_line=$(echo "$line" | sed 's|\x1B\[[0-9;]*[a-zA-Z]||g');;
         esac
-        if [ -n "$transformed" ]; then transformed="${transformed}\n"; fi
-        transformed="${transformed}${stripped_line}"
+        if [ -n "$transformed" ]; then transformed+="\n"; fi
+        transformed+="${stripped_line}"
     done <<< "$1"
     _echo "$transformed"
     return 0
@@ -1107,7 +1107,10 @@ getnextargument () {
 #### getlastargument ()
 ## echoes the last script argument
 getlastargument () {
-    echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"; return 0;
+    if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
+        echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"; return 0;
+    else return 1
+    fi
 }
 
 #### rearrangescriptoptions ( "$@" )
@@ -1206,7 +1209,12 @@ parsecommonoptions () {
         # library options
                     libvers|lib-vers|libversion|lib-version) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
         # no error for others
-                    *) rien=rien;;
+                    *) 
+                        if [ -n "$LONGOPTARG" -a "`which $OPTARG`" ]; then
+                            SCRIPT_PROGRAMS+=( "${OPTARG}" )
+                            export SCRIPT_PROGRAMS
+                        fi
+                    rien=rien;;
                 esac ;;
             *) rien=rien;;
         esac
@@ -1272,32 +1280,47 @@ title () {
 usage () {
     local lib_info="${1:-true}"
     local TMP_VERS="`library_info`"
+    local USAGESTR=""
     if [ ! "x${USAGE}" = 'x' -a "$lib_info" == 'true' ]; then
-        title
-        parsecolortags "$USAGE"
-        parsecolortags "\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>"
+        USAGESTR+=$(title)
+        USAGESTR+=$(parsecolortags "\n$USAGE\n")
+        USAGESTR+=$(parsecolortags "\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>")
     else
         local TMP_TITLE="${NAME:-?}"
         if [ -n "$VERSION" ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
         local TMP_USAGE="\n<bold>NAME</bold>\n\t<bold>${TMP_TITLE}</bold>";
         if [ -n "$PRESENTATION" ]; then
-            TMP_USAGE="${TMP_USAGE}\n\t${PRESENTATION}";
+            TMP_USAGE+="\n\t${PRESENTATION}";
         fi
-        TMP_USAGE="${TMP_USAGE}\n";
+        TMP_USAGE+="\n";
         for section in "${MANPAGE_INFOS[@]}"; do
             eval "section_ctt=\"\$$section\""
             if [ "$section" != 'NAME' -a -n "$section_ctt" ]; then
-                TMP_USAGE="${TMP_USAGE}\n<bold>${section}</bold>\n\t${section_ctt}\n";
+                TMP_USAGE+="\n<bold>${section}</bold>\n\t${section_ctt}\n";
             fi
         done
         if ! ${MANPAGE_NODEPEDENCY:-false}; then
             if [ "$lib_info" == 'true' ]; then
-                TMP_USAGE="${TMP_USAGE}\n<bold>DEPENDENCIES</bold>\n\t${LIB_INFO}\n";
+                TMP_USAGE+="\n<bold>DEPENDENCIES</bold>\n\t${LIB_INFO}\n";
             fi
         fi
-        TMP_USAGE="${TMP_USAGE}\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>";
-        parsecolortags "$TMP_USAGE"
+        TMP_USAGE+="\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>";
+        USAGESTR+=$(parsecolortags "$TMP_USAGE")
     fi
+    local _done=false
+    if [ "${#SCRIPT_PROGRAMS[@]}" -gt 0 ]; then
+        local _tmpfile=$(gettempfilepath "`getfilename $0`.usage")
+        if $(in_array "less" "${SCRIPT_PROGRAMS[@]}"); then
+            echo "$USAGESTR" > "$_tmpfile"
+            cat "$_tmpfile" | less -cfre~
+            _done=true
+        elif $(in_array "more" "${SCRIPT_PROGRAMS[@]}"); then
+            echo "$USAGESTR" > "$_tmpfile"
+            cat "$_tmpfile" | more -cf
+            _done=true
+        fi
+    fi
+    if ! $_done; then echo "${USAGESTR}"; fi
     return 0;
 }
 
@@ -1314,9 +1337,9 @@ script_shortversion () {
             then TMP_STR="${NAME} ${TMP_STR}"
             else TMP_STR="${0} ${TMP_STR}"
         fi
-        if [ -n "$DATE" ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
+        if [ -n "$DATE" ]; then TMP_STR+=" - ${DATE}"; fi
         local gitvers=$(gitversion)
-        if [ -n "$gitvers" ]; then TMP_STR="${TMP_STR} - ${gitvers}"; fi
+        if [ -n "$gitvers" ]; then TMP_STR+=" - ${gitvers}"; fi
         echo "${TMP_STR}"
     fi
     return 0;
@@ -1389,14 +1412,14 @@ library_shortversion () {
                 _done=true
                 add=$(gitversion)
                 if [ -n "$add" ]; then
-                    TMP_VERS="${TMP_VERS} - ${add}"
+                    TMP_VERS+=" - ${add}"
                 fi
             fi
             cd $oldpwd
         fi
     fi
     if ! $_done && [ -f "$VERSFILE" ]; then
-        TMP_VERS="${TMP_VERS} - `cat $VERSFILE`"
+        TMP_VERS+=" - `cat $VERSFILE`"
     fi
     echo "${TMP_VERS}"
     return 0

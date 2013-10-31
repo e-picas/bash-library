@@ -15,7 +15,7 @@ fi
 
 NAME="Bash boolean tests"
 VERSION="0.0.1-test"
-PRESENTATION="Script to test boolean values manipulations and equalities in bash."
+DESCRIPTION="A script to test boolean values manipulations and equalities in bash."
 parsecommonoptions "$@"
 quietecho "_ go"
 
@@ -57,7 +57,7 @@ echo "TRUEVAL is `onoffbit $TRUEVAL`"
 echo "FALSEVAL is `onoffbit $FALSEVAL`"
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

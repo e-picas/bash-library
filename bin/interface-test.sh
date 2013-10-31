@@ -148,5 +148,7 @@ then
 else
     simple_error 'please define an action to launch'
 fi
+
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 # Endfile

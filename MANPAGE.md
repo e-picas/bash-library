@@ -15,7 +15,7 @@ piwi-bash-library - The open source bash library of Les Ateliers Pierrot
 
 **piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
     [**-d** *path*]  [**-l** *filename*]
-    [script options ...] [arguments ...] --
+    [script options ...]  (--)  [arguments ...]
 
 ## DESCRIPTION
 
@@ -60,34 +60,34 @@ manpage or help string for more infos.
 
 **-v**, **--verbose**
 :    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
-     and `QUIET` on `false`
+and `QUIET` on `false`
 
 **-q**, **--quiet**
 :    decrease script verbosity, nothing will be written unless errors ; this will define
-     the environment variables `VERBOSE` and `INTERACTIVE on `false` and `QUIET` on `true`
+the environment variables `VERBOSE` and `INTERACTIVE` on `false` and `QUIET` on `true`
 
 **-f**, **--force**
 :    force some commands to not prompt confirmation ; this will define the environment
-     variable `FORCED` on `true`
+variable `FORCED` on `true`
 
 **-i**, **--interactive**
 :    ask for confirmation before any action ; this will define the environment variable
-     `INTERACTIVE` on `true` and `QUIET` on `false`
+`INTERACTIVE` on `true` and `QUIET` on `false`
 
 **-x**, **--debug**, **--dry-run**
 :    see commands to run but not run them actually ; this will define the environment variable
-     `DEBUG` on `true`
+`DEBUG` on `true`
 
 **-V**, **--vers**, **--version**
 :    see the script version when available ; use option `-q` to only have the version number
 
 **-d**, **--working-dir** =path
 :    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
-     the environment variable `WORKINGDIR`
+the environment variable `WORKINGDIR`
 
 **-l**, **--log**, **--logfile** =filename
 :    define the log filename to use (default is `pwibashlib.log`) ; this will update
-     the environment variable `LOGFILE`
+the environment variable `LOGFILE`
 
 **--libvers**, **--libversion**
 :    see the library version ; use options `-q` to only have the version number
@@ -100,6 +100,12 @@ manpage or help string for more infos.
 
 You can group short options like `-xc`, set an option argument like `-d(=)value` or
 `--long=value` and use `--` to explicitly specify the end of the script options.
+
+In some cases, you can use an automatic long option named as a program like `--less` for the
+'less' program. If this program is installed in the system, it will be used for certain
+option rendering. A long "usage" output can be loaded via `less` for instance running:
+
+    piwi-bash-library-script -h --less
 
 ## ENVIRONMENT
 

@@ -98,7 +98,7 @@ iexec "error 'My test error' 3"
 echo "this will not be seen if the error has been thrown as the 'error()' function exits the script"
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile
