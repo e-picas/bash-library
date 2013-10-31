@@ -16,8 +16,6 @@ fi
 NAME="Terminal colors rendering benchmark"
 VERSION="0.0.1-test"
 DESCRIPTION="A script to test your terminal colors rendering ..."
-SYNOPSIS="$LIB_SYNOPSIS"
-OPTIONS="$COMMON_OPTIONS_INFO"
 
 parsecommonoptions "$@"
 quietecho "_ go"

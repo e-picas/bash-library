@@ -3,7 +3,7 @@ ROADMAP - Piwi-Bash-Library
 
 ## TODO
 
--   skip the 'libhelp' option (which have no real meanin) to prefer the manpage
+-   skip the 'libhelp' option (which have no real meaning) to prefer the manpage
 -   the output of 'version' may follow GNU specs:
 
     GNU hello 2.3

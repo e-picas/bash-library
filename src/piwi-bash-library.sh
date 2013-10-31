@@ -27,8 +27,13 @@ declare -x E_PATH=83
 # see http://en.wikipedia.org/wiki/Man_page
 declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE)
 
-##@ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO )
-declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS FILES ENVIRONMENT BUGS AUTHOR SEE_ALSO)
+##@ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
+# see http://en.wikipedia.org/wiki/Man_page
+declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO)
+
+##@ VERSION_INFOS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
+# see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
+declare -rxa VERSION_INFOS=(NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO)
 
 ##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
 declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
@@ -72,6 +77,8 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 #### COMMON OPTIONS #############################################################################
 
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
+##@ LIB_FILENAME_DEFAULT = piwi-bash-library
+##@ LIB_NAME_DEFAULT = piwibashlib
 ##@ WORKINGDIR = pwd
 ##@ LOGFILE = pwibashlib.log
 ##@ TEMPDIR = tmp
@@ -131,6 +138,10 @@ declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
 declare -rx LIB_BUGS="http://github.com/atelierspierrot/piwi-bash-library/issues"
+declare -rx LIB_COPYRIGHT_TYPE="Copyleft (c) 2013 ${LIB_AUTHOR}"
+declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
+declare -rx LIB_SOURCES_TYPE="Sources & updates: <${LIB_HOME}>"
+declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.";
 
 declare -rx LIB_FILENAME_DEFAULT="piwi-bash-library"
 declare -rx LIB_NAME_DEFAULT="piwibashlib"
@@ -165,19 +176,19 @@ declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]  [--scri
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
+declare -rx LIB_COPYRIGHT="${LIB_COPYRIGHT_TYPE} - Some rights reserved. \n\
+\t${LIB_LICENSE_TYPE}.\n\
+\t${LIB_SOURCES_TYPE}.\n\
+\tBug reports: <${LIB_BUGS}>.\n\
+\t${LIB_ADDITIONAL_INFO}";
+
 declare -rx LIB_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_PRESENTATION}\". \n\
 \tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>]. \n\
-\tLicensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
-\tFor sources & updates, see <${LIB_HOME}>.\n\
-\tFor bug reports, see <${LIB_BUGS}>. \n\
-\tTo read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.";
+\t${LIB_COPYRIGHT}";
 
 declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COLOR_NOTICE}>\", is a <underline>Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
-\tTo use the library, just include its source file using: \`<bold>source path/to/piwi-bash-library.sh</bold>\` and call its methods.\n\n\
-\tThe library is licensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
-\tFor documentation, sources & updates, see <${LIB_HOME}>. \n\
-\tTo read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.";
+\tTo use the library, just include its source file using: \`<bold>source path/to/piwi-bash-library.sh</bold>\` and call its methods.";
 
 declare -rx LIB_FILES="<underline>${BASH_SOURCE}</underline>\tthe standalone library source file \n\
 \t<underline>${LIB_LOGFILE}</underline>\tthe default library log file";
@@ -186,7 +197,6 @@ declare -rx LIB_ENVIRONMENT="<${COLOR_NOTICE}>${LIB_COLORS[@]}</${COLOR_NOTICE}>
 \t<${COLOR_NOTICE}>${LIB_FLAGS[@]}</${COLOR_NOTICE}>\tthe library flags, activated by script common options\n\
 \t<${COLOR_NOTICE}>USEROS</${COLOR_NOTICE}>\tthe current user operating system\n\
 \t<${COLOR_NOTICE}>${MANPAGE_INFOS[@]}</${COLOR_NOTICE}>\tthese are used to build man-pages ; can be defined for each script";
-
 
 #### SYSTEM #############################################################################
 
@@ -233,16 +243,6 @@ getscriptpath () {
     return 0
 }
 
-#### realpath ( script = $0 )
-## get the real path of a script (passed as argument) or from current executed script
-realpath () {
-    local arg="${1:-${0}}"
-    local dirpath=$(getscriptpath "$arg")
-    if [ -z "$dirpath" ]; then return 1; fi
-    echo "${dirpath}/`basename $arg`"
-    return 0
-}
-
 #### setworkingdir ( path )
 ## handles the '-d' option for instance
 ## throws an error if 'path' does not exist
@@ -263,6 +263,36 @@ setworkingdir () {
 ## handles the '-l' option for instance
 setlogfilename () {
     if [ ! -z $1 ]; then export LOGFILE=$1; fi
+    return 0
+}
+
+#### FILES #############################################################################
+
+#### getextension ( filename )
+## retrieve a file extension
+getextension () {
+    if [ -n "$1" ]; then echo "${1##*.}"; fi; return 0;
+}
+
+#### getfilename ( path )
+## isolate a file name
+getfilename () {
+    if [ -n "$1" ]; then echo "`basename ${1}`"; fi; return 0;
+}
+
+#### getdirname ( path )
+## isolate a file directory name
+getdirname () {
+    if [ -n "$1" ]; then echo "`dirname ${1}`"; fi; return 0;
+}
+
+#### realpath ( script = $0 )
+## get the real path of a script (passed as argument) or from current executed script
+realpath () {
+    local arg="${1:-${0}}"
+    local dirpath=$(getscriptpath "$arg")
+    if [ -z "$dirpath" ]; then return 1; fi
+    echo "${dirpath}/`basename $arg`"
     return 0
 }
 
@@ -464,12 +494,6 @@ array_filter () {
 ##@return the number of characters in string
 strlen () {
     echo ${#1}; return 0;
-}
-
-#### getextension ( filename )
-## retrieve a file extension
-getextension () {
-    if [ -n "$1" ]; then echo "${1##*.}"; fi; return 0;
 }
 
 #### strtoupper ( string )
@@ -1087,7 +1111,7 @@ getlastargument () {
 }
 
 #### rearrangescriptoptions ( "$@" )
-## this will separate script options from script arguments (manual emulation of GNU "getopt")
+## this will separate script options from script arguments (emulation of GNU "getopt")
 ## options are loaded in $SCRIPT_OPTS with their arguments
 ## arguments are loaded in $SCRIPT_ARGS
 rearrangescriptoptions () {
@@ -1203,15 +1227,25 @@ parsecommonoptions () {
 
 #### SCRIPT INFOS #####################################################################
 
-#### version ( quiet = false )
-version () {
+#### gitversion ( quiet = false )
+gitversion () {
     if isgitclone; then
         local gitcmd=$(which git)
         if [ -n "$gitcmd" ]; then
-            echo "`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
+            echo "`git rev-parse --abbrev-ref HEAD`@`git rev-parse HEAD`"
+            return 0
         fi
-    else
-        if [ "x$VERSION" != 'x' ]; then echo "${VERSION}"; fi
+    fi
+    return 1
+}
+
+#### version ( quiet = false )
+version () {
+    local gitvers=$(gitversion)
+    if [ -n "$gitvers" ]
+        then echo "$gitvers"
+        else 
+            if [ "x$VERSION" != 'x' ]; then echo "${VERSION}"; fi
     fi
     return 0
 }
@@ -1223,11 +1257,9 @@ title () {
     local TITLE="${NAME}"
     if [ "x$VERSION" != 'x' ]; then TITLE="${TITLE} - v. [${VERSION}]"; fi    
     _echo $(colorize "##  ${TITLE}  ##" bold)
-    if isgitclone; then
-        local gitcmd=$(which git)
-        if [ -n "$gitcmd" ]; then
-            _echo "[git: `git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`]"
-        fi
+    local gitvers=$(gitversion)
+    if [ -n "$gitvers" ]; then
+        _echo "[$gitvers]"
     fi
     if [ ! -z "$1" ]; then
         _echo "[using `library_version` - ${LIB_HOME}]"
@@ -1269,19 +1301,41 @@ usage () {
     return 0;
 }
 
-#### script_version ()
+#### script_shortversion ( quiet = false )
+script_shortversion () {
+    local bequiet="${1:-false}"
+    if $bequiet; then
+        echo "${VERSION:-?}"
+        return 0
+    fi
+    local TMP_STR="${VERSION}"
+    if [ -n "$VERSION" ]; then
+        if [ -n "$NAME" ]
+            then TMP_STR="${NAME} ${TMP_STR}"
+            else TMP_STR="${0} ${TMP_STR}"
+        fi
+        if [ -n "$DATE" ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
+        local gitvers=$(gitversion)
+        if [ -n "$gitvers" ]; then TMP_STR="${TMP_STR} - ${gitvers}"; fi
+        echo "${TMP_STR}"
+    fi
+    return 0;
+}
+
+#### script_version ( quiet = false )
 script_version () {
     local bequiet="${1:-false}"
     if $bequiet; then
-        echo "${VERSION}"
+        echo "${VERSION:-?}"
         return 0
     fi
-    local TMP_VERS="${VERSION}"
-    if [ -n "$VERSION" ]; then
-        local TMP_STR="${0} ${TMP_VERS}"
-        if [ -n "$DATE" ]; then TMP_STR="${TMP_STR} - ${DATE}"; fi
-        echo "${TMP_STR}"
-    fi
+    script_shortversion
+    for section in "${VERSION_INFOS[@]}"; do
+        case $section in
+            NAME|VERSION|DATE);;
+            *) if [ -n "${!section}" ]; then echo "${!section}"; fi;;
+        esac
+    done
     return 0;
 }
 
@@ -1289,7 +1343,7 @@ script_version () {
 
 #### library_info ()
 library_info () {
-    echo "`library_version` - ${LIB_DATE}"
+    echo "`library_shortversion`"
     return 0;
 }
 
@@ -1313,16 +1367,16 @@ library_usage () {
     done
 }
 
-#### library_version ( quiet = false )
-## this function must echo an information about library name & version (with option "--libvers")
-library_version () {
+#### library_shortversion ( quiet = false )
+## this function must echo an information about library name & version
+library_shortversion () {
     local bequiet="${1:-false}"
     if $bequiet; then
         echo "${LIB_VERSION}"
         return 0
     fi
     local VERSFILE="${BASH_SOURCE/.sh/-gitversion}"
-    local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
+    local TMP_VERS="${LIB_NAME} ${LIB_VERSION} - ${LIB_DATE}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
     local _done=false
     if isgitclone $LIB_MODULE; then
@@ -1333,18 +1387,38 @@ library_version () {
             local gitremote=$(git config --get remote.origin.url)
             if [ "${gitremote}" == "${LIB_HOME}.git" -o "${gitremote}" == "${LIB_HOME}" ]; then
                 _done=true
-                add="`git rev-parse --abbrev-ref HEAD` `git rev-parse HEAD`"
+                add=$(gitversion)
                 if [ -n "$add" ]; then
-                    TMP_VERS="${TMP_VERS} [@${add}]"
+                    TMP_VERS="${TMP_VERS} - ${add}"
                 fi
             fi
             cd $oldpwd
         fi
     fi
     if ! $_done && [ -f "$VERSFILE" ]; then
-        TMP_VERS="${TMP_VERS} [@`cat $VERSFILE`]"
+        TMP_VERS="${TMP_VERS} - `cat $VERSFILE`"
     fi
     echo "${TMP_VERS}"
+    return 0
+}
+
+#### library_version ( quiet = false )
+## this function must echo an FULL information about library name & version (GNU like)
+library_version () {
+    local bequiet="${1:-false}"
+    if $bequiet; then
+        echo "${LIB_VERSION}"
+        return 0
+    fi
+    library_shortversion
+    for section in "${VERSION_INFOS[@]}"; do
+        case $section in
+            NAME|VERSION|DATE);;
+            *)
+                local libsection="LIB_${section}"
+                if [ -n "${!libsection}" ]; then echo "${!libsection}"; fi;;
+        esac
+    done
     return 0
 }
 
@@ -1388,7 +1462,7 @@ ${TOP_STR}\n\
 ##@ LIBRARY_REALPATH
 declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 
-##@ COMPATIBILITY
+#### COMPATIBILITY #####################################################################
 # to be deleted in next major version !!
 
 
@@ -1423,12 +1497,14 @@ NAME="${LIB_NAME}"
 VERSION="${LIB_VERSION}"
 DATE="${LIB_DATE}"
 PRESENTATION="${LIB_PRESENTATION}"
-AUTHOR="${LIB_AUTHOR}"
 LICENSE="${LIB_LICENSE}"
 LICENSE_URL="${LIB_LICENSE_URL}"
 PACKAGE="${LIB_PACKAGE}"
-HOME="${LIB_HOME}"
-BUGS="${LIB_BUGS}"
+COPYRIGHT_TYPE="${LIB_COPYRIGHT_TYPE}"
+LICENSE_TYPE="${LIB_LICENSE_TYPE}"
+SOURCES_TYPE="${LIB_SOURCES_TYPE}"
+ADDITIONAL_INFO="${LIB_ADDITIONAL_INFO}"
+COPYRIGHT="${LIB_COPYRIGHT}"
 INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO="${INTLIB_PRESET_INFO} '<bold>${pres}</bold>'"
@@ -1492,6 +1568,8 @@ target_required () {
 
 # action doc
 intlibaction_documentation () {
+    title
+    echo
     if $VERBOSE; then
         parsecolortags "<bold>Library documentation</bold> (developed mode)";
     else
