@@ -1,8 +1,8 @@
 Man:        piwi-bash-library.sh Manual
 Name:       Piwi Bash Library
 Author:     Les Ateliers Pierrot
-Date: 2013-10-24
-Version: 1.0.4
+Date: 2013-11-03
+Version: 1.0.0-test
 
 
 ## NAME

@@ -177,9 +177,9 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
 declare -rx LIB_NAME="Piwi Bash library"
-declare -rx LIB_VERSION="1.0.0"
-declare -rx LIB_DATE="2013-10-27"
-declare -rx LIB_GITVERSION="wip@3ecb6b8612f2b01201495358d421bf07d2c28222"
+declare -rx LIB_VERSION="1.0.0-test"
+declare -rx LIB_DATE="2013-11-03"
+declare -rx LIB_GITVERSION="master@c05254d4e4b58b3b4a2c9a4c5dcad0449ca3cac9"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
@@ -1277,13 +1277,28 @@ getoptionarg () {
 #### getlongoption ( "$x" )
 ## echoes the name of a long option
 getlongoption () {
-    if [ -n "$1" ]; then arg=$(echo "${1}" | cut -f 1 -d " "); echo "${arg%=*}"; fi; return 0;
+    local arg="$1"
+    if [ -n "$arg" ]; then
+        if [[ "$arg" =~ .*=.* ]]; then arg="${arg%=*}"; fi
+        echo "$arg" | cut -d " " -f1
+        return 0
+    fi
+    return 1
 }
 
 #### getlongoptionarg ( "$x" )
 ## echoes the argument of a long option
 getlongoptionarg () {
-    if [ -n "$1" ]; then echo "${1#*=}"; fi; return 0;
+    local arg="$1"
+    if [ -n "$arg" ]; then
+        if [[ "$arg" =~ .*=.* ]]
+            then arg="${arg#*=}"
+            else arg=$(echo "$arg" | cut -d " " -f2-)
+        fi
+        echo "$arg"
+        return 0
+    fi
+    return 1
 }
 
 #### getnextargument ()
@@ -1597,17 +1612,18 @@ script_version () {
     return 0;
 }
 
-#### build_documentation ( type = TERMINAL , output = null )
+#### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
 build_documentation () {
     local type="${1:-TERMINAL}"
     local output="${2}"
+    local source="${3:-${BASH_SOURCE[0]}}"
     local type_var="DOCBUILDER_`strtoupper ${type}`_MASKS"
     if [ -z "${!type_var}" ]; then
         error "unknown doc-builder type '${type}'"
     fi
     eval "export DOCBUILDER_MASKS=( \"\${${type_var}[@]}\" )"
-    verecho "- generating documentation in format '$type' from file '${BASH_SOURCE[0]}'"
-    generate_documentation "${BASH_SOURCE[0]}" "$output"
+    verecho "- generating documentation in format '$type' from file '${source}'"
+    generate_documentation "${source}" "${output}"
     return 0
 }
 
