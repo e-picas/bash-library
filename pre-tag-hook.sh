@@ -15,10 +15,12 @@ BRANCH_NAME="$3"
 
 _VERSION="${TAG_NAME/v/}"
 _DATE=$(git log -1 --format="%ci" --date=short | cut -s -f 1 -d ' ')
+_GITVERSION=$(gitversion)
 _LIBFILE="src/piwi-bash-library.sh"
 _MANFILE="MANPAGE.md"
 _MANMANFILE="src/piwi-bash-library.man"
 _MDEBIN="vendor/bin/markdown-extended"
+_DOCFILE="DOCUMENTATION.md"
 
 if [ ! -f "$_MDEBIN" ]; then
     echo "The binary '$_MDEBIN' can't be found ; the library manpage will not be updated for this tag."
@@ -28,8 +30,9 @@ if [ ! -f "$_MDEBIN" ]; then
 fi
 
 if [ -f "$_LIBFILE" ]; then
-    sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|" "$_LIBFILE";
-    git add "$_LIBFILE"
+    sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_GITVERSION=\".*\"| LIB_GITVERSION=\"${_GITVERSION}\"|" "$_LIBFILE";
+    build_documentation 'markdown' "${_DOCFILE}"
+    git add "$_LIBFILE" "$_DOCFILE"
 else
     verecho "!! > Library file '${_LIBFILE}' not found! (can't update version number and date)"
 fi

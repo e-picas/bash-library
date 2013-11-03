@@ -106,73 +106,59 @@ define some special behaviors during this logic. The arguments are just some str
 "as is" at the end of the command line. They are NOT required, can be one, two or more.
 
 
-## List of library's common options
+## Implementation in the library
 
-The library handles, if you say so, a set of commonly used arguments that enables/disables
-a set of flags or actions commonly used.
+### Re-arrangement of script options 
 
-For a full example with custom options, see the `bin/getopts-test.sh` script.
+The library can rearrange options and arguments to safely prepare and parse them. To do so, 
+you need to write something like:
 
-### Interactions & informations
+    rearrangescriptoptions "$@"
+    [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+    [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+    [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 
-**-v** | **--verbose**
-:   increase verbosity of the script ;
+The `rearrangescriptoptions` method will load script options in the `SCRIPT_OPTS` variable 
+and the arguments in the `SCRIPT_ARGS` variable. As it is not possible to reset the global
+command line positional parameters inside a function, you need to manually redefine them
+using the `set` program as shown above. Doing so, you can be safely sure after these lines
+to have the correct options, loaded with their arguments if so (even if they are multi-words)
+and the script arguments.
 
-**-x** | **--debug** | **--dry-run**
-:   drastically increase verbosity of the script ; some commands will be shown but not
-    really executed ;
+### Dealing with arguments
 
-**-q** | **--quiet**
-:   drastically decrease verbosity of the script ; only errors are shown ;
+The library defines some methods to get and treat script arguments (global arguments, not
+options' arguments). It defines and uses a new environment variable named `ARGIND` which
+indicates the current argument index, just like `OPTIND` works for options with `getopts`.
 
-**-i** | **--interactive**
-:   the script will ask confirmation before some actions ;
+To get and loop over arguments, you can use the `getnextarguments` method, which will load
+the "next" argument (the first one for a first usage) in the `ARGUMENT` variable and increments
+`ARGIND` by one:
 
-**-f** | **--force**
-:   force actions to execute, no confirmation is asked when possible ;
+    # initialy
+    echo $ARGIND
+    0
+    echo $ARGUMENT
+    ''
 
-**-d** | **--working-dir** *=path*
-:   redefine the working directory (default is the current directory) ;
+    # first usage
+    getnextargument
+    echo $ARGIND
+    1
+    echo $ARGUMENT
+    first-arg
 
-**-l** | **--log** *=filename*
-:   redefine a log filename to use ;
+    # then, while a next argument is available
+    getnextargument
+    echo $ARGIND
+    n+1
+    echo $ARGUMENT
+    n-arg
 
-These options just enables or disables a constant flag in the environment; to make
-them really "works", you will need to use some of the related functions of the library.
-See the [Global documentation](Global-doc.md) to learn more.
+For facility, a `getlastargument` method is defined to get the last one directly. The `ARGIND`
+indexer is not concerned.
 
-### Man-page for each script
-
-**-h** | **--help** | **--usage**
-:   get a usage string about current script ;
-
-**--man**
-:   will try to open a man page of the current script if it exists, or show the usage string
-    about current script if not ;
-
-**-V** | **--vers** | **--version**
-:   get the script version if available ; you can use
-    the `quiet` option to only have the version number ; by default, this will write the
-    version number, the last commit hash and the last commit date ;
-
-See the specific [Man-pages](Man-pages.md) and [Versioning](Versioning.md) documentation for more infos.
-
-### Library infos
-
-**--libhelp** | **--lib-help**
-:   get the usage string of the library itself ;
-
-**--libvers** | **--libversion** | **--lib-vers** | **--lib-version**
-:   get the version number of the library ; you can use
-    the `quiet` option to only have the version number ; by default, this will write the
-    version number, the last commit hash and the last commit date ;
-
-**--libdoc** | **--libdocumentation** | **--lib-doc** | **--lib-documentation**
-:   get the library documentation by parsing its 
-    source ; you can use the `verbose` option to increase rendering informations ;
-
-
-## Usage of common options
+### Usage of common options
 
 To use common options in a script, just call the `parsecommonoptions` method passing it
 the script arguments:
@@ -204,10 +190,66 @@ To get any long option argument, you can use:
 
     LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
 
-To get the full array of options before any `--` sign (which may notify the end of the
-command line options), you can use:
 
-    FULL_OPTIONS=`getscriptoptions "$@"`
+### Options parsing and error reporting
+
+A special `parsecommonoptions_strict` method is defined as an alias of the classic
+`parsecommonoptions` but throwing an error for undefined options. To use it, you MUST
+define both `OPTIONS_ALLOWED` and `LONG_OPTIONS_ALLOWED` strings in your script as they
+are used to define known options names. You can use the library `COMMON_OPTIONS_ALLOWED`
+and `COMMON_LONG_OPTIONS_ALLOWED` and complete them with your own options, like:
+
+    OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
+    LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
+
+This way, the `parsecommonoptions_strict` method will consider the '-t' option as allowed
+but will throw an error with the '-z' option that seems not allowed. It works the same for
+long options.
+
+
+## Full example
+
+Below is a complete example of a script which first re-arrange the command line call and then
+parse the common options throwing an error for unknown options (taken from the `bin/getopts-test.sh`
+test script).
+
+    OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
+    LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
+
+    rearrangescriptoptions "$@"
+    [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+    [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+    [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+
+    parsecommonoptions_strict
+
+    # own options usage
+    OPTIND=1
+    while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
+        OPTARG="${OPTARG#=}"
+        case $OPTION in
+            t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
+            a) echo " - test option A";;
+            -)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
+                LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+                case $OPTARG in
+                    test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
+                    ?) echo " - unknown long option '$OPTARG'";;
+                esac ;;
+            ?) echo " - unknown option '$OPTION'";;
+        esac
+    done
+
+    # arguments usage
+    lastarg=$(getlastargument)
+    echo " - last argument is '${lastarg}'"
+
+    getnextargument
+    echo " - first argument is '$ARGUMENT'"
+    getnextargument
+    echo " - next argument is '$ARGUMENT'"
+
+    echo " - final 'ARGIND' is: $ARGIND"
 
 
 --------------

@@ -22,45 +22,68 @@ Each file of the package like 'bin/***-test.sh' is a demo or test for a specific
 <bold>USAGE</bold>\n\
 \t~\$ ${0} -option(s) --longoption(s)\n\n\
 <bold>COMMON OPTIONS</bold>\n\
-\t${LIB_OPTIONS}\n\n\
+\t${COMMON_OPTIONS_FULLINFO}\n\n\
 <bold>LIBRARY</bold>\n\
-\t${LIB_INFO}";
+\t${LIB_DEPEDENCY_INFO}";
 
-parsecommonoptions "$@"
+rearrangescriptoptions "$@"
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions_strict
 quietecho "_ go"
 
-# getscriptpath
-echo "## pwd is:"
-echo "`pwd`"
+# getsysteminfo
+echo "## getsysteminfo is: '`getsysteminfo`'"
+echo
+
+# getmachinename
+echo "## getmachinename is: '`getmachinename`'"
 echo
 
 # getscriptpath
-echo "## getscriptpath:"
-echo "`getscriptpath`"
+echo "## pwd is: '`pwd`'"
 echo
 
-# array_search
+# files
+echo "## getscriptpath: '`getscriptpath`'"
+echo "## dirname: '`getdirname`'"
+echo "## basename: '`getbasename`'"
+echo "## filename: '`getfilename`'"
+echo "## extension: '`getextension`'"
+echo
+
+## arrays
 declare -a arrayname=(element1 element2 element3)
-echo "## tests of fct 'array_search':"
+echo "## tests of fct 'array_search' (indexes are 0 based):"
 echo "index of 'element2' in array '${arrayname[@]}' : `array_search element2 \"${arrayname[@]}\"`"
 echo 
-
-# in_array
 echo "## tests of fct 'in_array':"
-if `in_array black ${libcolors[@]}`; then echo "- black is in array"; else echo "- black is NOT in array"; fi
-if `in_array mlk ${libcolors[@]}`; then echo "- mlk is in array"; else echo "- mlk is NOT in array"; fi
+echo "## array is '${LIBCOLORS[@]}'"
+echo "- test for 'black' (true):"
+if $(in_array "black" "${LIBCOLORS[@]}"); then echo "=> IS in array"; else echo "=> is NOT in array"; fi
+echo "- test for 'mlk' (false):"
+if $(in_array "mlk" "${LIBCOLORS[@]}"); then echo "=> IS in array"; else echo "=> is NOT in array"; fi
 echo 
 
-# strlen
+# strings
 teststr="my test string"
 echo "## tests of fct 'strlen':"
 echo "strlen of test string '$teststr' (14) : `strlen \"$teststr\"`"
 echo "strlen of test string '' (0) : `strlen`"
 echo 
+echo "## strtoupper: `strtoupper \"$teststr\"`"
+echo "## strtolower: `strtolower \"$teststr\"`"
+echo "## ucfirst: `ucfirst \"$teststr\"`"
+echo
 
 # isgitclone
 echo "## test of fct 'isgitclone' on current dir:"
-if isgitclone; then echo "=> is git clone"; else echo "=> is NOT git clone"; fi
+if isgitclone; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+echo "## test of fct 'isgitclone' on current dir for remote '${LIB_HOME}':"
+if $(isgitclone `pwd` "${LIB_HOME}"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+echo "## test of fct 'isgitclone' on current dir for remote 'https://github.com/atelierspierrot/dev-tools':"
+if $(isgitclone `pwd` "https://github.com/atelierspierrot/dev-tools"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
 echo
 
 # colorize
@@ -89,11 +112,11 @@ verecho "test of info() : this will be shown with any option"
 info "My test info string"
 
 # warning() usage
-verecho "test of warning() : run option '-i' to not throw the error"
+verecho "test of warning() : run option '-i' or '-x' to not throw the error"
 iexec "warning 'My test warning info'"
 
 # error() usage
-verecho "test of error() : run option '-i' to not throw the error"
+verecho "test of error() : run option '-i' or '-x' to not throw the error"
 iexec "error 'My test error' 3"
 echo "this will not be seen if the error has been thrown as the 'error()' function exits the script"
 

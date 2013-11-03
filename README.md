@@ -16,6 +16,9 @@ console.
 
 ### Installation
 
+You can install the package in many ways explained below ; the best practice is to use **the
+internal interface** as described below.
+
 #### Classic install
 
 Once you have downloaded or cloned the package sources, just copy the `src/piwi-bash-library.sh`
@@ -40,11 +43,17 @@ If you are a [Composer](http://getcomposer.org/) user, you can add to your packa
 
 The library will automatically be added in your package's `bin` directory.
 
-#### Install in a package file system
+#### Internal interface
+
+The library embeds an internal interface to manage (instal/update/uninstall) the library
+itself locally or globally. To use it, run:
+
+    ~$ path/to/piwi-bash-library.sh help
 
 It is sometimes useful to include the library file to your project and manage it manually
-under version control. To embed the library in a project, you can use the `src/piwi-bash-library-installer.sh`
-script which will handle the installation and update of the library files.
+under version control. The interface will handle the installation and update of the library
+files for you.
+
 
 ### Usage
 
@@ -80,7 +89,7 @@ Documentation files are included in the [`doc/` directory](doc) of the package.
 A quick overview of the whole library methods or variables can be written on screen running
 (the `-v` option renders a complete doc with comments for each method):
 
-    ~$ ./path/to/my-script.sh (-v) --libdoc
+    ~$ ./path/to/piwi-bash-library.sh (-v) documentation
 
 
 ### Demonstration files

@@ -16,7 +16,7 @@ fi
 NAME="Bash-Lib-dev"
 VERSION="x.y.z-dev"
 DESCRIPTION="A dev file for tests"
-OPTIONS="$COMMON_OPTIONS_INFO"
+OPTIONS="$COMMON_OPTIONS_FULLINFO"
 SYNOPSIS="$LIB_SYNOPSIS"
 
 parsecommonoptions "$@"

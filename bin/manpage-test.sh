@@ -61,7 +61,7 @@ This is a simple test of in-script full 'USAGE' custom string (so automatic manp
                 actiondone=true
                 ;;
             esac ;;
-        ?) echo " - unknown option '$OPTION'";;
+        ?) ;;
     esac
 done
 

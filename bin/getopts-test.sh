@@ -30,24 +30,33 @@ DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 
 # for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_INFO
+# you can use the common library options string with $COMMON_OPTIONS_FULLINFO
 OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
-\t<bold>-a</bold>\t\ta single short option to test options order\n$COMMON_OPTIONS_INFO"
+\t<bold>-a</bold>\t\ta single short option to test options order\n\n\
+\t<underline>Common options</underline> (to use first):\n\
+\t${COMMON_OPTIONS_FULLINFO}";
 
 OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
 LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
+SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[-a]  [-t [=value]]  [--test [=value]]  --  <arguments>";
 
 quietecho "_ go"
 
 echo
-echo "allowed options arguments: '${OPTIONS_ALLOWED}'";
-echo "received arguments: '$@'";
-
+echo "# command line analysis:"
+echo "- allowed short options: '${OPTIONS_ALLOWED}'";
+echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
+echo "- received arguments: '$@'";
+echo
+echo "# re-arranging options and arguments:"
 rearrangescriptoptions "$@"
-set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions
-
-echo "rearranged arguments: '$@'";
+echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[@]}'"
+echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[@]}'"
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions_strict
+echo "- rearranged arguments: '$@'";
 echo
 
 echo "# first loop for the 't' or 'test' option"
@@ -91,8 +100,10 @@ echo
 echo "# test for the 'action' arguments";
 echo "# to test it, run:"
 echo "#      ~\$ $0 action1 action2 ... -x"
-echo " - first argument is '`getnextargument`'"
-echo " - next argument is '`getnextargument`'"
+getnextargument
+echo " - first argument is '$ARGUMENT'"
+getnextargument
+echo " - next argument is '$ARGUMENT'"
 echo
 echo "# finally:"
 echo " - 'ARGIND' is: $ARGIND"

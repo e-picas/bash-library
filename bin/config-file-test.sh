@@ -19,19 +19,22 @@ DESCRIPTION="A script to test library configuration files management ...";
 SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 
 # for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_INFO
-OPTIONS="\n\
-<underline>Available actions:</underline>\n\
+# you can use the common library options string with $COMMON_OPTIONS_FULLINFO
+OPTIONS="<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the configuration file (default action)\n\
 \t<bold>write</bold>\t\twrite the configuration file\n\
 \t<bold>add</bold>\t\tadd a configuration entry\n\
 \t<bold>replace</bold>\t\treplace a configuration entry\n\
 \t<bold>get</bold>\t\tget values from the test config table\n\
-\t${COMMON_OPTIONS_INFO}";
+\t<bold>delete</bold>\t\tdelete any existing config file\n\n\
+\t<underline>Common options</underline> (to use first):\n\
+\t${COMMON_OPTIONS_FULLINFO}";
 
 rearrangescriptoptions "$@"
-set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions "$@"
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parsecommonoptions
 quietecho "_ go"
 
 filename=testconfig
@@ -45,6 +48,11 @@ if [ -z "$ACTION" ]; then ACTION="read"; fi
 if [ ! -z "$ACTION" ]
 then
     case $ACTION in
+        delete)
+            verecho "Deleting config file '$filepath':"
+            iexec "rm -f $filepath"
+            verecho "_ ok"
+            ;;
         read)
             verecho "Reading config file '$filepath':"
             iexec "readconfigfile $filepath"

@@ -15,7 +15,7 @@ fi
 
 NAME="Lorem-Ipsum-Test"
 VERSION="0.0.1-dev"
-DESCRIPTION="A test for 'program' long option usage."
+DESCRIPTION="A test for 'program' long option usage. Run with no long option, then with '--less' for instance."
 
 parsecommonoptions "$@"
 quietecho "_ go"

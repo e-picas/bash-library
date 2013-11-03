@@ -6,8 +6,6 @@ of the library itself.
 
 For a full example, see the `bin/manpage-test.sh` script.
 
-From any demo script, use the option `--libhelp` to see the library manpage.
-
 
 ## Structure
 

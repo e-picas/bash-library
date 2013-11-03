@@ -37,8 +37,9 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 OPTIONS="<bold>-z | --actions</bold>\t\tget the list of available actions\n\
 \t<bold>-s | --set=NAME</bold>\t\tpool set for action (default is '${_SET}')\n\
 \t<bold>-p | --project=NAME</bold>\tthe project name\n\
-\t<bold>-t | --target=PATH</bold>\ttarget directory used for some actions\n\
-\t${COMMON_OPTIONS_INFO}";
+\t<bold>-t | --target=PATH</bold>\ttarget directory used for some actions\n\n\
+\t<underline>Common options</underline> (to use first):\n\
+\t${COMMON_OPTIONS_FULLINFO}";
 
 #### internal lib ##########################
 
@@ -106,7 +107,9 @@ fi
 OPTIONS_ALLOWED="zs:p:t:${COMMON_OPTIONS_ALLOWED}"
 
 rearrangescriptoptions "$@"
-set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 parsecommonoptions
 
 OPTIND=1

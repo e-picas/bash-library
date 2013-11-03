@@ -21,16 +21,20 @@ DESCRIPTION="A script to test library log infos management ...";
 SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 
 # for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_INFO
+# you can use the common library options string with $COMMON_OPTIONS_FULLINFO
 OPTIONS="\n\
-<underline>Available actions:</underline>
+<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the current log file\n\
-\t<bold>write</bold>\t\twrite 10 tests log messages file\n\
+\t<bold>write</bold>\t\twrite 10 tests log messages in log file\n\
 \t<bold>throw</bold>\t\tthrows an error to test log error message\n\
-\t${COMMON_OPTIONS_INFO}";
+\t<bold>delete</bold>\t\tdelete log file\n\n\
+\t<underline>Common options</underline> (to use first):\n\
+\t${COMMON_OPTIONS_FULLINFO}";
 
 rearrangescriptoptions "$@"
-set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 parsecommonoptions
 quietecho "_ go"
 
@@ -60,6 +64,11 @@ then
         throw)
             if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
             error "test throwing error"
+            ;;
+        delete)
+            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            verecho "Deleting log file '$LOGFILEPATH':"
+            iexec "rm -f $LOGFILEPATH"
             ;;
     esac
 else
