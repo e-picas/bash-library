@@ -177,9 +177,9 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
 declare -rx LIB_NAME="Piwi Bash library"
-declare -rx LIB_VERSION="1.0.0-test"
+declare -rx LIB_VERSION="1.0.0"
 declare -rx LIB_DATE="2013-11-03"
-declare -rx LIB_GITVERSION="master@c05254d4e4b58b3b4a2c9a4c5dcad0449ca3cac9"
+declare -rx LIB_GITVERSION="master@f06c50d7cf51379451edb014883903aaad9ee42a"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"

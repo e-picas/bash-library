@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Piwi Bash Library" "3" "2013-11-03" "Version 1.0.0-test" "piwi-bash-library.sh Manual"
+.TH  "Piwi Bash Library" "3" "2013-11-03" "Version 1.0.0" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -14,6 +14,7 @@ piwi-bash-library - The open source bash library of Les Ateliers Pierrot
 
 .PP
 \fBpiwi-bash-library-script\fP  [\fB-h\fP|\fB-V\fP]  [\fB-x\fP|\fB-v\fP|\fB-i\fP|\fB-q\fP|\fB-f\fP]
+    [\fB--help\fP|\fB--usage\fP|\fB--man\fP]
     [\fB-d\fP \fIpath\fP]  [\fB-l\fP \fIfilename\fP]
     [\fB--force\fP|\fB--help\fP|\fB--interactive\fP|\fB--quiet\fP|\fB--verbose\fP|\fB--debug\fP|\fB--dry-run\fP]
     [\fB--version\fP|\fB--libversion\fP]

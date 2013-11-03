@@ -218,4 +218,4 @@
 
 ----
 
-[*Doc generated at 03-11-2013 22:36:51 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 03-11-2013 23:43:45 from path 'src/piwi-bash-library.sh'*]
