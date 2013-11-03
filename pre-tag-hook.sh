@@ -31,7 +31,7 @@ fi
 
 if [ -f "$_LIBFILE" ]; then
     sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_GITVERSION=\".*\"| LIB_GITVERSION=\"${_GITVERSION}\"|" "$_LIBFILE";
-    build_documentation 'markdown' "${_DOCFILE}"
+    build_documentation 'markdown' "${_DOCFILE}" "${_LIBFILE}"
     git add "$_LIBFILE" "$_DOCFILE"
 else
     verecho "!! > Library file '${_LIBFILE}' not found! (can't update version number and date)"

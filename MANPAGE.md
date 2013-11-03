@@ -14,6 +14,7 @@ piwi-bash-library - The open source bash library of Les Ateliers Pierrot
 **piwi-bash-library-script [common options] [script options [=value]] [arguments] --**
 
 **piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
+    [**--help**|**--usage**|**--man**]
     [**-d** *path*]  [**-l** *filename*]
     [**--force**|**--help**|**--interactive**|**--quiet**|**--verbose**|**--debug**|**--dry-run**]
     [**--version**|**--libversion**]
