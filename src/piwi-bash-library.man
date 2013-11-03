@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Piwi Bash Library" "3" "2013-10-24" "Version 1.0.4" "piwi-bash-library.sh Manual"
+.TH  "Piwi Bash Library" "3" "2013-11-03" "Version 1.0.0-test" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -72,7 +72,7 @@ commands or to always prompt for confirmation
 
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
+<GNU coding standards> to keep user in
 a known environment ...
 
 .SS INTERFACE
@@ -267,7 +267,7 @@ path not found error
 the standalone library source file 
 .TP
 \fBpiwi-bash-library.man\fP
-the manpage of the library, installed in section 3 of system manpages
+the manpage of the library, installed in section 3 of system manpages for global installation
 .TP
 \fBpiwi-bash-library-README.md\fP (optional)
 the standard README file of the version installed (Markdown syntax) ; it is installed
@@ -296,7 +296,7 @@ To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issue
 .SH AUTHOR
 
 .PP
-\fBPiwi\fP &#x70;&#x69;&#101;&#114;&#x6f;&#x2e;w&#98;&#109;&#x73;&#x74;&#114;&#64;&#x67;&#x6d;a&#105;&#108;&#x2e;&#x63;&#111;&#109; <&#109;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#x70;&#x69;&#101;&#114;&#x6f;&#x2e;w&#98;&#109;&#x73;&#x74;&#114;&#64;&#x67;&#x6d;a&#105;&#108;&#x2e;&#x63;&#111;&#109;> for Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>.
+\fBPiwi\fP <&#x70;&#x69;&#101;&#114;&#x6f;&#x2e;w&#98;&#109;&#x73;&#x74;&#114;&#64;&#x67;&#x6d;a&#105;&#108;&#x2e;&#x63;&#111;&#109;> for Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>.
 
 .SH SEE ALSO
 
