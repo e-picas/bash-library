@@ -15,7 +15,7 @@ fi
 
 NAME="Bash-Lib colors test"
 VERSION="0.0.1-dev"
-DESCRIPTION="A script to test colorized functions of the Bash-Library"
+DESCRIPTION="A script to test colorized functions of the Piwi-Bash-Library"
 
 parsecommonoptions "$@"
 quietecho "_ go"

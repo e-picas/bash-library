@@ -15,7 +15,7 @@ fi
 
 NAME="Bash-Lib-Test"
 VERSION="0.0.1-dev"
-DESCRIPTION="A global test file for the Bash-Library"
+DESCRIPTION="A global test file for the Piwi-Bash-Library"
 USAGE="\n\
 This file is the global test script of the library. You can play with options below to modify its behavior.\n\
 Each file of the package like 'bin/***-test.sh' is a demo or test for a specific feature.\n\n\
