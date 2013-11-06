@@ -73,7 +73,7 @@ commands or to always prompt for confirmation
 
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-<GNU coding standards> to keep user in
+GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
 a known environment ...
 
 .SS INTERFACE
@@ -297,7 +297,7 @@ To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issue
 .SH AUTHOR
 
 .PP
-\fBPiwi\fP <&#x70;&#x69;&#101;&#114;&#x6f;&#x2e;w&#98;&#109;&#x73;&#x74;&#114;&#64;&#x67;&#x6d;a&#105;&#108;&#x2e;&#x63;&#111;&#109;> for Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>.
+\fBPiwi\fP <piero.wbmstr@gmail.com> for Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>.
 
 .SH SEE ALSO
 
