@@ -1,28 +1,31 @@
 Piwi-Bash-Library
 =================
 
-The Bash library package of Les Ateliers Pierrot
+An open source day-to-day bash library.
 
 
 ## What is *bash* ?
 
-**Bash**, the "Bourne-Again-SHell", is a Unix shell written for the GNU Project as a free
-software replacement for the original Bourne shell (sh). The present library is a tool for
-Bash scripts facilities. Bash is the language mostly used by Linux/Unix devices terminal or
-console.
+**Bash**, the "Bourne-Again-SHell", is the default language for command line and scripts
+for UNIX systems. Bash is a Unix shell written for the GNU Project as a free software
+replacement for the original Bourne shell (sh).
 
 
 ## Usage of the library
 
 ### Installation
 
-You can install the package in many ways explained below ; the best practice is to use **the
-internal interface** as described below.
+Installing the *Piwi Bash Library* means to make a copy of two files in your target directory:
+the **library source itself** and **its Unix's manual page**.
 
-#### Classic install
+You can install the package in many ways explained below ; the best practice is to use **the
+internal interface** as it presents facilities to update the library.
+
+#### Classic installation
 
 Once you have downloaded or cloned the package sources, just copy the `src/piwi-bash-library.sh`
-file to your project directory and begin to use it ...
+file to your project directory and begin to use it ... We recommend to also copy the library's
+manpage `src/piwi-bash-library.man` in the same directory.
 
 For a global usage on your machine, you can copy the library in your `bin/` directory.
 
@@ -32,8 +35,9 @@ A direct and complete installation, including downloading sources, could be:
 
     ~$ wget --no-check-certificate https://github.com/atelierspierrot/piwi-bash-library/archive/master.tar.gz
     ~$ tar -xvf master.tar.gz
-    ~$ cp piwi-bash-library-master/src/piwi-bash-library.sh path/to/your/project/bin/
-    ~$ chmod +x path/to/your/project/bin/piwi-bash-library.sh
+    ~$ cp piwi-bash-library-master/src/piwi-bash-library.* path/to/your/project/bin/
+    ~$ chmod a+x path/to/your/project/bin/piwi-bash-library.sh
+    ~$ man path/to/your/project/bin/piwi-bash-library.man
 
 #### Composer install
 
@@ -113,18 +117,22 @@ You can use the `-h` option to get help or info:
 
 ## Author & License
 
->    Piwi Bash Library - The open source bash library of Les Ateliers Pierrot
+    Piwi Bash Library - An open source day-to-day bash library
+	Copyleft (C) 2013-2014 Pierre Cassat & contributors
 
->    http://github.com/atelierspierrot/piwi-bash-library
+	This program is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
->    Copyleft 2013, Pierre Cassat and contributors
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+	GNU General Public License for more details.
 
->    Licensed under the GPL Version 3 license.
+	You should have received a copy of the GNU General Public License
+	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
->    http://opensource.org/licenses/GPL-3.0
-
->    ----
-
->    Les Ateliers Pierrot - Paris, France
-
->    <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
+	<http://www.ateliers-pierrot.fr/> - Some rights reserved. For documentation,
+	sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
+	To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
