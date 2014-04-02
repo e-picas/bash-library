@@ -2140,7 +2140,7 @@ intlib_check_uptodate () {
     local now=$(date +%s)
     local fmdate
     if `in_array $USEROS ${LINUX_OS[@]}`
-        then fmdate=$(stat -c %y "$0")
+        then fmdate=$(stat -c "%y" "$0")
         else fmdate=$(stat -f "%m" "$0")
     fi
     local checkdiff=$(($now-$fmdate))
