@@ -1,7 +1,9 @@
 #!/bin/bash
 #
-# Piwi Bash Library - The open source bash library of Les Ateliers Pierrot
-# Copyleft (c) 2013 Pierre Cassat and contributors
+# Piwi Bash Library - An open source bash library
+# Copyright (C) 2013-2014 "Les Ateliers Pierrot"
+# Create & maintained by Pierre Cassat & contributors
+# <http://github.com/atelierspierrot/piwi-bash-library>
 # <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
 # License GPL-3.0 <http://www.opensource.org/licenses/gpl-3.0.html>
 # Sources <http://github.com/atelierspierrot/piwi-bash-library>
@@ -12,10 +14,10 @@
 
 #### REFERENCES #####################################################################
 
-##@ Bash Reference Manual: http://www.gnu.org/software/bash/manual/bashref.html
-##@ Bash Guide for Beginners: http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html
-##@ Advanced Bash-Scripting Guide: http://www.tldp.org/LDP/abs/html/abs-guide.html
-##@ GNU coding standards: http://www.gnu.org/prep/standards/standards.html
+##@ Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>
+##@ Bash Guide for Beginners: <http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html>
+##@ Advanced Bash-Scripting Guide: <http://www.tldp.org/LDP/abs/html/abs-guide.html>
+##@ GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>
 
 
 #### SETTINGS #####################################################################
@@ -179,13 +181,13 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 declare -rx LIB_NAME="Piwi Bash library"
 declare -rx LIB_VERSION="1.0.0"
 declare -rx LIB_DATE="2013-11-03"
-declare -rx LIB_GITVERSION="master@f06c50d7cf51379451edb014883903aaad9ee42a"
-declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
+declare -rx LIB_GITVERSION=""
+declare -rx LIB_PRESENTATION="An open source bash library"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
-declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
-declare -rx LIB_COPYRIGHT_TYPE="Copyleft (c) 2013 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
+declare -rx LIB_HOME="http://github.com/atelierspierrot/piwi-bash-library"
+declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 \"Les Ateliers Pierrot\" <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
 declare -rx LIB_SOURCES_TYPE="Sources & updates: <${LIB_HOME}>"
 declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";

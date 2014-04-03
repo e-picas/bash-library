@@ -7,7 +7,7 @@ Version: 1.0.0
 
 ## NAME
 
-piwi-bash-library - The open source bash library of Les Ateliers Pierrot
+piwi-bash-library - An open source bash library
 
 ## SYNOPSIS
 
@@ -246,6 +246,21 @@ is installed by the interface using the "dev" or "full" presets
 ## LICENSE
 
 The library is licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot
+Copyright (C) 2013-2014 "Les Ateliers Pierrot"
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <http://www.gnu.org/licenses/>.
+
 <http://www.ateliers-pierrot.fr/> - Some rights reserved. For documentation,
 sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
