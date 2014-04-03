@@ -7,7 +7,7 @@ Version: 1.0.0
 
 ## NAME
 
-piwi-bash-library - The open source bash library of Les Ateliers Pierrot
+piwi-bash-library - An open source bash library
 
 ## SYNOPSIS
 
@@ -245,7 +245,7 @@ is installed by the interface using the "dev" or "full" presets
 
 ## LICENSE
 
-Copyleft (C) 2013-2014 Pierre Cassat & contributors
+Copyright (C) 2013-2014 "Les Ateliers Pierrot"
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

@@ -4,6 +4,8 @@ Scripts Usage - Piwi-Bash-Library
 This document explains the global and common usage of command line scripts as hanlded and
 expected by the library.
 
+For a full example and an help for this tutorial, see the `bin/getopts-test.sh` script.
+
 
 ## Classic script usage
 
@@ -26,6 +28,10 @@ It determines the executed script and, on some systems, the shell script to use.
 distinguish here an installed program and a local script file. In the first case, you will
 just write the program's name, in the second, you may write the full relative path to the
 executed file.
+
+    ~$ mycommand ...
+    OR
+    ~$ ./path/to/mycommand ...
 
 The path of the script may exist from you current working directory, or could be stored
 in a directory that is included in the global `$PATH` environment variable, which is usually
@@ -255,3 +261,7 @@ test script).
 --------------
 
 Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).
+
+**(c) 2013-2014 [Les Ateliers Pierrot](http://www.ateliers-pierrot.fr/)** - Paris, France - Some rights reserved.
+
+This documentation is licensed under the [Creative Commons - Attribution - Share Alike - Unported - version 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.

@@ -66,18 +66,27 @@ For example:
     tags ...
 
 As you can see, the rule is quite simple to build a colorized string, you just need to surround
-your text between opening and closing special tags constructed as the XML tags idea: `<...>text</...>`
+your text between opening and closing special tags constructed as XML tags `<...>text</...>`
 and fill each tag with the name of the text option to use, the color name for foreground and
 the color name prefixed by `bg` for a background color.
 
 You can also use imbricated tags (note here that the rendering is not guaranteed depending
-on the user system).
+on user's system).
 
 To build the final colorized string, just run:
 
     parsecolortags "the string"
 
+If your string is contained in a bash variable, you HAVE to surround the variable name between
+doubel quotes like:
+
+    parsecolortags "$MYSTRING"
+
 
 --------------
 
 Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).
+
+**(c) 2013-2014 [Les Ateliers Pierrot](http://www.ateliers-pierrot.fr/)** - Paris, France - Some rights reserved.
+
+This documentation is licensed under the [Creative Commons - Attribution - Share Alike - Unported - version 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.
