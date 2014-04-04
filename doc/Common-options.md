@@ -134,12 +134,21 @@ them. To do so, you must use method `debug_exec`:
 :   will try to open a man page of the current script if it exists, or show the usage string
     about current script if not ;
 
-**-V** | **--vers** | **--version**
+**-V** | **--version**
 :   get the script version if available ; you can use the `quiet` option to only have
 	the version number ; by default, this will write the version number, the last commit hash
 	and the last commit date ;
 
 See the specific [Man-pages](Man-pages.md) and [Versioning & Licensing](Versioning-Licensing.md) documentation for more infos.
+
+
+## Other useful options
+
+**-l** | **--log**
+:   set a log filename to replace default
+
+**-d** | **--working-dir**
+:   set the working directory path which will replace current working directory
 
 
 --------------

@@ -49,6 +49,10 @@ while getopts "${COMMON_OPTIONS_ALLOWED}" OPTION; do
     case $OPTION in
         -) case $OPTARG in
             library)
+                library_help
+                actiondone=true
+                ;;
+            libraryusage)
                 library_usage
                 actiondone=true
                 ;;

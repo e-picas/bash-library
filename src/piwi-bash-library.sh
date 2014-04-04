@@ -128,12 +128,12 @@ declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
 
 ##@ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:"
 ##@ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
-##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libvers,libversion,lib-vers,lib-version"
+##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 ##@ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
 declare -x COMMON_OPTIONS_ALLOWED="d:fhil:qvVx-:"
-declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,force,help,interactive,log:,quiet,verbose,vers,version,debug,dry-run,libvers,libversion,lib-vers,lib-version,man,usage"
+declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,force,help,interactive,log:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
-declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|log|quiet|verbose|vers|version|debug|dry-run|libvers|libversion|lib-vers|lib-version|man|usage"
+declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|log|quiet|verbose|version|debug|dry-run|libvers|man|usage"
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@"
 ##@ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
@@ -191,12 +191,12 @@ declare -rx LIB_NAME="Piwi Bash library"
 declare -rx LIB_VERSION="1.0.0"
 declare -rx LIB_DATE="2013-11-03"
 declare -rx LIB_GITVERSION=""
-declare -rx LIB_PRESENTATION="An open source bash library"
+declare -rx LIB_PRESENTATION="An open source day-to-day bash library."
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_HOME="http://github.com/atelierspierrot/piwi-bash-library"
-declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 \"Les Ateliers Pierrot\" <http://www.ateliers-pierrot.fr/>"
+declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
 declare -rx LIB_SOURCES_TYPE="Sources & updates: <${LIB_HOME}>"
 declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
@@ -487,12 +487,36 @@ isgitclone () {
     if [ -d "$gitpath" ]; then return 0; else return 1; fi;
 }
 
+#### get_gitbranch ()
+get_gitbranch () {
+    if isgitclone; then
+        local gitcmd=$(which git)
+        if [ -n "$gitcmd" ]; then
+            echo "`git rev-parse --abbrev-ref HEAD`"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+#### get_gitcommit ()
+get_gitcommit () {
+    if isgitclone; then
+        local gitcmd=$(which git)
+        if [ -n "$gitcmd" ]; then
+            echo "`git rev-parse HEAD`"
+            return 0
+        fi
+    fi
+    return 1
+}
+
 #### gitversion ( quiet = false )
 gitversion () {
     if isgitclone; then
         local gitcmd=$(which git)
         if [ -n "$gitcmd" ]; then
-            echo "`git rev-parse --abbrev-ref HEAD`@`git rev-parse HEAD`"
+            echo "`get_gitbranch`@`get_gitcommit`"
             return 0
         fi
     fi
@@ -1450,7 +1474,7 @@ parsecommonoptions () {
                     help) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
                     usage) if [ -z $actiontodo ]; then actiontodo='usage'; fi;;
                     man) if [ -z $actiontodo ]; then actiontodo='man'; fi;;
-                    vers|version) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
+                    version) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
@@ -1460,7 +1484,7 @@ parsecommonoptions () {
                     working-dir*) setworkingdir $LONGOPTARG;;
                     log*) setlogfilename $LONGOPTARG;;
         # library options
-                    libvers|lib-vers|libversion|lib-version) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
+                    libvers) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
         # no error for others
                     *) 
                         if [ -n "$LONGOPTARG" -a "`which $OPTARG`" ]; then
@@ -1741,6 +1765,26 @@ library_info () {
     return 0;
 }
 
+#### library_path ()
+library_path () {
+	echo $(realpath ${BASH_SOURCE[0]})
+	return 0;
+}
+
+#### library_help ()
+library_help () {
+	local _lib=`library_path`
+    ${_lib} help
+    return 0
+}
+
+#### library_usage ()
+library_usage () {
+	local _lib=`library_path`
+    ${_lib} usage
+    return 0
+}
+
 #### library_shortversion ( quiet = false )
 ## this function must echo an information about library name & version
 library_shortversion () {
@@ -1769,21 +1813,8 @@ library_shortversion () {
 #### library_version ( quiet = false )
 ## this function must echo an FULL information about library name & version (GNU like)
 library_version () {
-    local bequiet="${1:-false}"
-    if $bequiet; then
-        echo "${LIB_VERSION}"
-        return 0
-    fi
-    library_shortversion
-    for section in "${VERSION_INFOS[@]}"; do
-        case $section in
-            NAME|VERSION|DATE);;
-            *)
-                local libsection="LIB_${section}"
-                if [ -n "${!libsection}" ]; then echo "${!libsection}"; fi;;
-        esac
-    done
-    return 0
+	script_version ${1:-false}
+	return 0
 }
 
 #### library_debug ( "$*" )
@@ -1863,8 +1894,7 @@ declare -x INTLIB_OUTDATED_FORCE=90
 declare -x INTLIB_HOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}"
 declare -x INTLIB_CLONEDIR="${INTLIB_HOMEDIR}/cache"
 declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
-declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update vers version help usage \
-selfupdate self-update doc documentation mddoc mddocumentation selfvers selfversion self-vers self-version )
+declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help usage documentation )
 declare -x INTLIB_TARGET
 declare -x INTLIB_TARGET_BRANCH
 declare -x INTLIB_TARGET_GITVERSION
@@ -1883,16 +1913,14 @@ done
 DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COLOR_NOTICE}>\", is a <underline>Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
 \tTo use the library, just include its source file using: \`<bold>source path/to/piwi-bash-library.sh</bold>\` and call its methods.\n\n\
-\tA direct call of the library is an interface to manage a copy of this script using one of the following actions:\n\
+\tThe following actions are available to manage a copy of the library:\n\
 \t<bold>install</bold>\t\t\t\tinstall a copy locally or in your system\n\
-\t<bold>version</bold>\t\t\t\tget a copy version infos ; use option '-q' to get only the version number\n\
 \t<bold>check</bold>\t\t\t\tcheck if a copy is up-to-date\n\
 \t<bold>update</bold>\t\t\t\tupdate a copy with newer version if so\n\
 \t<bold>uninstall</bold>\t\t\tuninstall a copy from a system path\n\
-\t<bold>selfupdate</bold> | <bold>self-update</bold>\tupdate this library script (\$0) with newer version if so\n\
-\t<bold>selfvers</bold> | <bold>self-version</bold>\t\tget this library script (\$0) version infos ; use option '-q' to get only the version number\n\
-\t<bold>doc</bold> | <bold>documentation</bold>\t\tsee the library documentation ; use option '-v' to increase verbosity\n\n\
-\tTry 'man piwi-bash-library(.sh)' or '$0 --man' for the library full manpage.";
+\t<bold>version</bold>\t\t\t\tget a copy version infos ; use option '-q' to get only the version number\n\
+\t<bold>documentation</bold>\t\t\tsee the library documentation ; use option '-v' to increase verbosity\n\n\
+\tTry 'man piwi-bash-library(.sh)', 'man ./piwi-bash-library.man' or '$0 --man' for the library full manpage.";
 OPTIONS="<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
 \t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t<bold>-b | --branch=NAME</bold>\t\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\n\
@@ -1903,14 +1931,12 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-b | --branch=branch]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
 \thelp | usage\n\
+\tversion\n\
 \tcheck\n\
-\tvers | version\n\
 \tinstall\n\
 \tupdate\n\
 \tuninstall\n\
-\tselfupdate | self-update\n\
-\tselfversion | self-version\n\
-\tdoc | documentation\n\
+\tdocumentation\n\
 ";
 FILES="The following files are installed by default:\n\
 \t<underline>${INTLIB_SOURCE}</underline>\t\tthe standalone library source file \n\
@@ -1943,8 +1969,8 @@ preset_valid () {
 # -> which target
 target_required () {
     if [ -z "$INTLIB_TARGET" ]; then
-        simple_error "unknown target path '$INTLIB_TARGET'! (use option '-t')"
-    fi
+		INTLIB_TARGET="${HOME}/bin"
+	fi
     if [ ! -d "$INTLIB_TARGET" ]; then
         mkdir $INTLIB_TARGET || simple_error "target path '$INTLIB_TARGET' not found and can't be created!"
     fi
@@ -1986,6 +2012,7 @@ make_homedir () {
 
 # -> make lib clone
 make_clone () {
+    make_homedir
     local tocreate=true
     if [ -d "${INTLIB_CLONEDIR}" ]; then
         if `isgitclone "${INTLIB_CLONEDIR}" "${LIB_HOME}"`; then tocreate=false; fi
@@ -2014,8 +2041,11 @@ change_branch () {
     local gitcmd=$(which git)
     local oldpwd=$(pwd)
     if [ -z $gitcmd ]; then commanderror 'git'; fi
-    verecho "- switching library clone branch '${INTLIB_BRANCH}' in '${INTLIB_CLONEDIR}' ..."
-    iexec "cd ${INTLIB_CLONEDIR} && git checkout -q \"${INTLIB_BRANCH}\" && git pull"
+    cd ${INTLIB_CLONEDIR}
+    if [ ${INTLIB_BRANCH} != `get_gitbranch` ]; then
+		verecho "- switching library clone branch '${INTLIB_BRANCH}' in '${INTLIB_CLONEDIR}' ..."
+		iexec "git checkout -q \"${INTLIB_BRANCH}\" && git pull"
+    fi
     cd $oldpwd
     return 0
 }
@@ -2077,7 +2107,7 @@ intlibaction_check () {
         else local remotevers_sha=$(get_remoteversion "${INTLIB_BRANCH}");
     fi
     if [ "${targetvers_sha}" != "${remotevers_sha}" ]
-        then echo "New version available ..."; return 1;
+        then echo "New version ${remotevers_sha} available ..."; return 1;
         else echo "Up-to-date"; touch "${INTLIB_TARGET}/piwi-bash-library.sh";
     fi
     return 0
@@ -2086,7 +2116,6 @@ intlibaction_check () {
 intlibaction_install () {
     target_required
     preset_valid
-    make_homedir
     make_clone
     if [ "${INTLIB_BRANCH}" != 'master' ]; then change_branch; fi;
     do_update
@@ -2115,10 +2144,7 @@ intlibaction_uninstall () {
 
 intlibaction_version () {
     target_required
-    if $QUIET
-        then "${INTLIB_TARGET}/piwi-bash-library.sh" -q selfvers;
-        else "${INTLIB_TARGET}/piwi-bash-library.sh" selfvers;
-    fi
+    library_version $QUIET
     return 0
 }
 
@@ -2128,22 +2154,6 @@ intlibaction_help () {
 
 intlibaction_usage () {
     simple_usage; return 0
-}
-
-intlibaction_selfupdate () {
-    local _target="$0"
-    export INTLIB_TARGET=`dirname $_target`
-    make_homedir
-    make_clone
-    if [ "${INTLIB_BRANCH}" != 'master' ]; then change_branch; fi;
-    do_update
-    quietecho ">> ok, library updated"
-    return 0
-}
-
-intlibaction_selfversion () {
-    library_version $QUIET
-    return 0
 }
 
 intlib_check_uptodate () {
@@ -2170,15 +2180,6 @@ intlib_check_uptodate () {
     fi
     return 0
 }
-
-# local clonevers=$(get_clone_gitversion)
-# local clonevers_sha=$(gitversion_extract_sha "${clonevers}")
-# local clonevers_branch=$(gitversion_extract_branch "${clonevers}")
-# echo "clone: '$clonevers' ; branch: '$clonevers_branch' ; sha: '$clonevers_sha'"
-# local realvers=$(get_real_gitversion)
-# local realvers_sha=$(gitversion_extract_sha "${realvers}")
-# local realvers_branch=$(gitversion_extract_branch "${realvers}")
-# echo "real: '$realvers' ; branch: '$realvers_branch' ; sha: '$realvers_sha'"
 
 # check last updates
 intlib_check_uptodate
@@ -2226,13 +2227,11 @@ case $ACTION in
     install) intlibaction_install; exit 0;;
     update) intlibaction_update; exit 0;;
     uninstall) intlibaction_uninstall; exit 0;;
-    vers|version) intlibaction_version; exit 0;;
     help) intlibaction_help; exit 0;;
     usage) intlibaction_usage; exit 0;;
-    self-update|selfupdate) intlibaction_selfupdate; exit 0;;
-    self-vers*|selfvers*) intlibaction_selfversion; exit 0;;
-    doc*) intlibaction_documentation; exit 0;;
-    mddoc*) intlibaction_documentation_tomd; exit 0;;
+    version) intlibaction_version; exit 0;;
+    documentation) intlibaction_documentation; exit 0;;
+    mddocumentation) intlibaction_documentation_tomd; exit 0;;
     *) ;;
 esac
 

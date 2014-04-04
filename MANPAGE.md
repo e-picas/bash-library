@@ -7,7 +7,7 @@ Version: 1.0.0
 
 ## NAME
 
-piwi-bash-library - An open source bash library
+piwi-bash-library - An open source day-to-day bash library.
 
 ## SYNOPSIS
 
@@ -17,7 +17,7 @@ piwi-bash-library - An open source bash library
     [**--help**|**--usage**|**--man**]
     [**-d** *path*]  [**-l** *filename*]
     [**--force**|**--help**|**--interactive**|**--quiet**|**--verbose**|**--debug**|**--dry-run**]
-    [**--version**|**--libversion**]
+    [**--version**|**--libvers**]
     [**--logfile** *=filename*] [**working-dir** *=path*]
         [script options ...]  (--)  [arguments ...]
 
@@ -72,34 +72,27 @@ See the "Options" section below for specific options usage.
 ### The following actions are available
 
 **help** and **usage**
-:   get an 'help' and 'usage' information about the interface itself
+:   get an 'help' and 'usage' information about the library
 
 **install**
 :   install a copy of the library locally or in your system
 
-**version**
-:   get the version informations about an installed copy ; use option `quiet` to get only
-the version number
-
 **check**
-:   check if an installed copy is up-to-date
+:   check if your library is up-to-date
 
 **update**
-:   update an installed copy with newer version if so ; this will update the MINOR version
+:   update the library with a newer version if so ; this will update the MINOR version
 
 **uninstall**
 :   uninstall a copy from a system path
 
-**selfupdate**, **self-update**
-:   update the current library script (called script `$0`) with newer version if so
+**version**
+:   get the version informations about the library ; use option `quiet` to get only
+the version number
 
-**selfvers**, **self-version**
-:   get the current library script version informations (called script `$0`) ; use option
-`quiet` to get only the version number
-
-**doc**, **documentation**
+**documentation**
 :   see the library documentation ; use option `verbose` to increase verbosity ; you can
-add an `md` prefix to get the documentation in Markdown format ('mddoc' or 'mddocumentation')
+add an `md` prefix to get the documentation in Markdown format ('mddocumentation')
 
 ## OPTIONS
 
@@ -130,7 +123,7 @@ variable `FORCED` on `true`
 **-x**, **--debug**
 :    enable debug mode ; this will define the environment variable `DEBUG` on `true`
 
-**-V**, **--vers**, **--version**
+**-V**, **--version**
 :    see the script version when available ; use option `quiet` to only have the version number
 
 **-d**, **--working-dir** =path
@@ -151,7 +144,7 @@ the environment variable `LOGFILE`
 :    see commands to run but not run them actually ; this will define the environment variable
 `DRYRUN` on `true`
 
-**--libvers**, **--libversion**
+**--libvers**
 :    see the library version ; use option `quiet` to only have the version number
 
 You can group short options like `-xc`, set an option argument like `-d(=)value` or
@@ -168,17 +161,17 @@ option rendering. For instance, a long "help" output can be loaded via `less` ru
 Calling the library script itself to use its interface, you can use the following options:
 
 **-t**, **--target** =path
-:    define the target directory of a copy installation ; if it does not exist, `path` will
+:    defines the target directory of a copy installation ; if it does not exist, `path` will
 be created ; it defaults to current path (`pwd`)
 
 **-p**, **--preset** =type
-:    define the preset type to use for an installation ; can be "**default**" (default value),
+:    defines the preset type to use for an installation ; can be "**default**" (default value),
 "**user**", "**dev**" or "**full**" ; the value of this option will be used to define the
 files to install ; see the "Files" section below for more informations
 
 **-b**, **--branch** =name
-:    define the GIT branch to use from the remote repository ; the branch MUST exist in the
-repository ; it defaults to "master"
+:    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
+repository ; it defaults to "**master**"
 
 
 ## ENVIRONMENT
@@ -245,7 +238,8 @@ is installed by the interface using the "dev" or "full" presets
 
 ## LICENSE
 
-Copyright (C) 2013-2014 "Les Ateliers Pierrot"
+Copyright (C) 2013-2014 Les Ateliers Pierrot
+<http://www.ateliers-pierrot.fr/> - Some rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -260,8 +254,8 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-<http://www.ateliers-pierrot.fr/> - Some rights reserved. For documentation,
-sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
+For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
+
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 ## BUGS
@@ -269,8 +263,6 @@ To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.htm
 To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 
 ## AUTHOR
-
-**Les Ateliers Pierrot** <http://www.ateliers-pierrot.fr/> - Paris, France.
 
 Created and maintained by **Pierre Cassat** (*piwi* - <http://github.com/pierowbmstr>)
 & contributors.
