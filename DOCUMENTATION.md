@@ -1,13 +1,13 @@
 # Documentation of 'src/piwi-bash-library.sh'
 
-## REFERENCES (line 10)
+## REFERENCES (line 12)
 
--   @ Bash Reference Manual: http://www.gnu.org/software/bash/manual/bashref.html
--   @ Bash Guide for Beginners: http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html
--   @ Advanced Bash-Scripting Guide: http://www.tldp.org/LDP/abs/html/abs-guide.html
--   @ GNU coding standards: http://www.gnu.org/prep/standards/standards.html
+-   @ Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>
+-   @ Bash Guide for Beginners: <http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html>
+-   @ Advanced Bash-Scripting Guide: <http://www.tldp.org/LDP/abs/html/abs-guide.html>
+-   @ GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>
 
-## SETTINGS (line 15)
+## SETTINGS (line 17)
 
 -   @ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
 -   @ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
@@ -21,17 +21,17 @@
 -   @ LIB_LOGFILE = "piwibashlib.log"
 -   @ LIB_TEMPDIR = "tmp"
 
-## ENVIRONMENT (line 78)
+## ENVIRONMENT (line 80)
 
 -   @ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
 -   @ WORKINGDIR = pwd
 -   @ USEROS="$(uname)"
 
-## COMMON OPTIONS (line 94)
+## COMMON OPTIONS (line 96)
 
 -   @ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:"
 -   @ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
--   @ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,vers,version,debug,dry-run,libvers,libversion,lib-vers,lib-version"
+-   @ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 -   @ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
 -   @ ORIGINAL_SCRIPT_OPTS="$@"
 -   @ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
@@ -40,15 +40,15 @@
 -   @ COMMON_OPTIONS_LIST : information string about common script options
 -   @ COMMON_OPTIONS_FULLINFO : concatenation of COMMON_OPTIONS_LIST & OPTIONS_USAGE_INFOS
 
-## LOREM IPSUM (line 135)
+## LOREM IPSUM (line 137)
 
 -   @ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE
 
-## LIBRARY INFOS (line 144)
+## LIBRARY INFOS (line 146)
 
 -   @ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
 
-## SYSTEM (line 194)
+## SYSTEM (line 196)
 
 -   **getsysteminfo ()**
 -   **getmachinename ()**
@@ -57,7 +57,7 @@
 -   **setworkingdir ( path )**
 -   **setlogfilename ( path )**
 
-## FILES (line 247)
+## FILES (line 249)
 
 -   **getextension ( path = $0 )**
 -   **getfilename ( path = $0 )**
@@ -65,7 +65,7 @@
 -   **getdirname ( path = $0 )**
 -   **realpath ( script = $0 )**
 
-## ARRAY (line 281)
+## ARRAY (line 283)
 
 -   **array_search ( item , $array[@] )**
     @return the index of an array item, 0 based
@@ -74,7 +74,7 @@
 -   **array_filter ( $array[@] )**
     @return array with cleaned values
 
-## STRING (line 311)
+## STRING (line 313)
 
 -   **strlen ( string )**
     @return the number of characters in string
@@ -85,16 +85,18 @@
 -   **implode ( array[@] , delim = ' ' )**
 -   **explodeletters ( str )**
 
-## BOOLEAN (line 381)
+## BOOLEAN (line 383)
 
 -   **onoffbit ( bool )**
 
-## VCS (line 387)
+## VCS (line 389)
 
 -   **isgitclone ( path = pwd , remote_url = null )**
+-   **get_gitbranch ()**
+-   **get_gitcommit ()**
 -   **gitversion ( quiet = false )**
 
-## UTILS (line 421)
+## UTILS (line 445)
 
 -   **_echo ( string )**
 -   **_necho ( string )**
@@ -123,7 +125,7 @@
 -   @error default status is E_ERROR (90)
 -   **gnuerrorstr ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
 
-## COLORIZED CONTENTS (line 675)
+## COLORIZED CONTENTS (line 699)
 
 -   **gettextformattag ( code )**
     @param code must be one of the library colors or text-options codes
@@ -144,7 +146,7 @@
 -   **parsecolortags ( "string with <bold>tags</bold>" )**
 -   **stripcolors ( string )**
 
-## TEMPORARY FILES (line 841)
+## TEMPORARY FILES (line 865)
 
 -   **gettempdirpath ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
@@ -158,13 +160,13 @@
 -   **cleartempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 928)
+## LOG FILES (line 952)
 
 -   **getlogfilepath ()**
 -   **log ( message , type='' )**
 -   **readlog ()**
 
-## CONFIGURATION FILES (line 958)
+## CONFIGURATION FILES (line 982)
 
 -   **getglobalconfigfile ( file_name )**
 -   **getuserconfigfile ( file_name )**
@@ -175,7 +177,7 @@
 -   **getconfigval ( file_path , key )**
 -   **buildconfigstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1108)
+## SCRIPT OPTIONS / ARGUMENTS (line 1132)
 
 -   **getshortoptionsarray ()**
 -   **getshortoptionsstring ( delimiter = '|' )**
@@ -190,7 +192,7 @@
 -   **parsecommonoptions_strict ( "$@" = SCRIPT_OPTS )**
 -   **parsecommonoptions ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1340)
+## SCRIPT INFOS (line 1364)
 
 -   **version ( quiet = false )**
 -   **title ( lib = false )**
@@ -201,21 +203,24 @@
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 1548)
+## LIBRARY INFOS (line 1572)
 
 -   **get_gitversion ( path = $0 )**
 -   **gitversion_extract_sha ( gitversion_string )**
 -   **gitversion_extract_branch ( gitversion_string )**
 -   **library_info ()**
+-   **library_path ()**
+-   **library_help ()**
+-   **library_usage ()**
 -   **library_shortversion ( quiet = false )**
 -   **library_version ( quiet = false )**
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 -   @ LIBRARY_REALPATH
 
-## COMPATIBILITY (line 1665)
+## COMPATIBILITY (line 1693)
 
 
 ----
 
-[*Doc generated at 03-11-2013 23:43:45 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 04-4-2014 17:31:11 from path 'src/piwi-bash-library.sh'*]

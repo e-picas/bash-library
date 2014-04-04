@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Piwi Bash Library" "3" "2013-11-03" "Version 1.0.0" "piwi-bash-library.sh Manual"
+.TH  "Piwi Bash Library" "3" "2014-04-04" "Version 1.0.1" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -297,6 +297,10 @@ For documentation, sources & updates, see <http://github.com/atelierspierrot/piw
 
 .PP
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+
+.PP
+This is free software: you are free to change and redistribute it ; there is NO WARRANTY,
+to the extent permitted by law.
 
 .SH BUGS
 
