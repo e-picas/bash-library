@@ -10,6 +10,13 @@ An open source day-to-day bash library.
 for UNIX systems. Bash is a Unix shell written for the GNU Project as a free software
 replacement for the original Bourne shell (sh).
 
+## What is *piwi bash library* ?
+
+It is a library of variables, constants and methods to use in bash scripts. It defines a
+large set of commonly used methods to facilitate bash scripts writing, such as an handler
+for errors, the construction of an output with text and color effects, some facilities 
+to work with booleans, strings, arrays etc. It also offers a standardization for scripts
+arguments and help and usage strings. 
 
 ## Usage of the library
 
@@ -58,6 +65,12 @@ It is sometimes useful to include the library file to your project and manage it
 under version control. The interface will handle the installation and update of the library
 files for you.
 
+A direct and complete installation, including downloading sources, could be:
+
+    ~$ wget --no-check-certificate https://github.com/atelierspierrot/piwi-bash-library/archive/master.tar.gz
+    ~$ tar -xvf master.tar.gz
+    ~$ ./piwi-bash-library-master/src/piwi-bash-library.sh install
+
 
 ### Usage
 
@@ -67,7 +80,7 @@ call of its methods or variables:
     #!/bin/bash
     source path/to/piwi-bash-library.sh
 
-For a complete loading writing an error if the library is not found, use the following:
+For a complete loading writing an error if the library is not found (if it is a requirement), use the following:
 
     LIBFILE="path/to/piwi-bash-library.sh"
     if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
@@ -118,7 +131,9 @@ You can use the `-h` option to get help or info:
 ## Author & License
 
     Piwi Bash Library - An open source day-to-day bash library
-	Copyleft (C) 2013-2014 Pierre Cassat & contributors
+	Copyright (C) 2013-2014 Les Ateliers Pierrot
+	<http://www.ateliers-pierrot.fr/> - Some rights reserved.
+	Created & maintained by Pierre Cassat & contributors
 
 	This program is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -133,6 +148,5 @@ You can use the `-h` option to get help or info:
 	You should have received a copy of the GNU General Public License
 	along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-	<http://www.ateliers-pierrot.fr/> - Some rights reserved. For documentation,
-	sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
+	For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
 	To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
