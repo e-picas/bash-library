@@ -257,9 +257,6 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
 
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
-
-This is free software: you are free to change and redistribute it ; there is NO WARRANTY,
-to the extent permitted by law.
 	
 ## BUGS
 
