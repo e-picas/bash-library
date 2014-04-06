@@ -29,7 +29,7 @@ To generate the manpage from `MANPAGE.md`:
 
 To generate the documentation to `DOCUMENTATION.md`:
 
-    src/piwi-bash-library.sh -v mddoc > DOCUMENTATION.md
+    src/piwi-bash-library.sh -v mddocumentation > DOCUMENTATION.md
 
 ## TODO
 

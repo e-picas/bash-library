@@ -1,6 +1,6 @@
 #!/bin/bash
 #
-# Piwi Bash Library - An open source bash library
+# Piwi Bash Library - An open source day-to-day bash library
 # Copyright (C) 2013-2014 "Les Ateliers Pierrot"
 # Create & maintained by Pierre Cassat & contributors
 # <http://github.com/atelierspierrot/piwi-bash-library>
@@ -100,6 +100,10 @@ declare -rx LIB_NAME_DEFAULT="piwibashlib"
 declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
 ##@ LIB_TEMPDIR = "tmp"
 declare -rx LIB_TEMPDIR="tmp"
+##@ LIB_SYSHOMEDIR = "${HOME}/.piwi-bash-library/"
+declare -rx LIB_SYSHOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}"
+##@ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/"
+declare -rx LIB_SYSCACHEDIR="${LIB_SYSHOMEDIR}/cache"
 
 declare -rx GITVERSION_MASK="@gitversion@"
 declare -x TEST_VAR="test"
@@ -191,7 +195,7 @@ declare -rx LIB_NAME="Piwi Bash library"
 declare -rx LIB_VERSION="1.0.1"
 declare -rx LIB_DATE="2014-04-04"
 declare -rx LIB_GITVERSION="master@fb34ed425a494bbe22f5e47f6a6a3d735c27e2ee"
-declare -rx LIB_PRESENTATION="An open source day-to-day bash library."
+declare -rx LIB_PRESENTATION="An open source day-to-day bash library"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
@@ -280,13 +284,11 @@ getscriptpath () {
 ## handles the '-d' option for instance
 ## throws an error if 'path' does not exist
 setworkingdir () {
-    if [ "$1" = "~" ]; then
-        export WORKINGDIR=$HOME
-    else
-        if [ -d $1 ]
-            then export WORKINGDIR=$1
-            else patherror "$1"
-        fi
+    if [ $# -eq 0 ]; then return 0; fi
+    local _wd=$(resolve "$1")
+    if [ -d $1 ]
+        then export WORKINGDIR=${_wd}
+        else patherror "$1"
     fi
     cd $WORKINGDIR
     return 0
@@ -339,6 +341,15 @@ realpath () {
     echo "${dirpath}/`basename $arg`" && return 0 || return 1
 }
 
+#### resolve ( path )
+## resolve a system path replacing '~' and '.'
+resolve () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local _path="$1"
+    _path="${_path/\~/${HOME}}"
+    _path="${_path/./`pwd`}"
+    echo ${_path}
+}
 
 #### ARRAY #############################################################################
 
@@ -521,6 +532,88 @@ gitversion () {
         fi
     fi
     return 1
+}
+
+#### make_git_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
+## create a git clone of a distant repository in $CURRENT_GIT_CLONE_DIR
+make_git_clone () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local repourl="$1"
+    if [ $# -eq 1 ]
+    then
+        local _dirname=$(basename ${repourl})
+        _dirname="${_dirname/.git/}"
+        local target="${LIB_SYSCACHEDIR}/${_dirname}"
+        make_library_cachedir
+    else
+        local target="$2"
+        if [ ! -d $target ]; then mkdir -p $target; fi
+    fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then commanderror 'git'; fi
+    local tocreate=true
+    if [ -d "${target}" ]; then
+        if `isgitclone "${target}" "${repourl}"`; then tocreate=false; fi
+    fi
+    if $tocreate; then
+        rm -rf "${target}" && mkdir "${target}"
+        verecho "- creating git clone of repository '${repourl}' into '${target}' ..."
+        git clone -q "${repourl}" "${target}"
+        cd $oldpwd
+    fi
+    export CURRENT_GIT_CLONE_DIR=${target}
+    return 0
+}
+
+#### update_git_clone ( target_dir )
+## update a git clone
+##@param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+update_git_clone () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then commanderror 'git'; fi
+    local target="$1"
+    if [ ! -d ${target} ]; then
+        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
+        if [ ! -d ${fulltarget} ]; then
+            patherror "git clone target '${target}' not found"
+        fi
+        target="${fulltarget}"
+    fi
+    cd ${target}
+    verecho "- updating git clone in '${target}' ..."
+    git pull -q
+    cd $oldpwd
+    export CURRENT_GIT_CLONE_DIR=${target}
+    return 0
+}
+
+#### change_git_branch ( target_dir , branch = 'master' )
+## change a git clone tracking branch
+##@param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+change_git_branch () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then commanderror 'git'; fi
+    local target="$1"
+    if [ ! -d ${target} ]; then
+        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
+        if [ ! -d ${fulltarget} ]; then
+            patherror "git clone target '${target}' not found"
+        fi
+        target="${fulltarget}"
+    fi
+    local targetbranch="${2:-master}"
+    cd ${target}
+    if [ ${targetbranch} != `get_gitbranch` ]; then
+		verecho "- switching git clone branch to '${targetbranch}' in '${target}' ..."
+		git checkout -q "${targetbranch}" && git pull -q
+    fi
+    cd $oldpwd
+    return 0
 }
 
 
@@ -781,9 +874,33 @@ simple_error () {
     fi
     if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
     printf "`parsecolortags \"<bold>error:</bold> %s\"`" "$ERRSTRING" >&2;
-    echo
-    simple_usage "$3"
+    echo >&2
+    simple_usage "$3" >&2
     exit ${ERRSTATUS}
+}
+
+#### nooptionsimpleerror ()
+## no script option simple error
+##@error exits with status E_OPTS (81)
+nooptionsimpleerror () {
+    simple_error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
+        ${FUNCNAME[1]} ${BASH_LINENO[0]};
+}
+
+#### commandsimpleerror ( cmd )
+## command not found simple error
+##@error exits with status E_CMD (82)
+commandsimpleerror () {
+    simple_error "'$1' command seems not installed on your machine ... The process can't be done !" \
+        "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
+}
+
+#### pathsimpleerror ( path )
+## path not found simple error
+##@error exits with status E_PATH (83)
+pathsimpleerror () {
+    simple_error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
+        ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
 #### gnuerrorstr ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
@@ -1074,14 +1191,22 @@ cleartempfiles () {
 #### LOG FILES #####################################################################
 
 #### getlogfilepath ()
-## creates a default placed log file with fallback: first in '/var/log' then in current dir
+## creates a default placed log file with fallback: first in '/var/log' then in LIB_SYSHOMEDIR, finally in current dir
 ## the real log file path is loaded in the global `LOGFILEPATH
 getlogfilepath () {
     if [ ! -n "$LOGFILE" ]; then export LOGFILE=$LIB_LOGFILE; fi
     local logsys="/var/log/${LOGFILE}"
+    touch ${logsys} 2&> /dev/null;
     if [ -w "$logsys" ]
+    then export LOGFILEPATH="$logsys"
+    else
+        make_library_homedir
+        local logsys="${LIB_SYSHOMEDIR}/${LOGFILE}"
+        touch ${logsys} 2&> /dev/null;
+        if [ -w "$logsys" ]
         then export LOGFILEPATH="$logsys"
         else export LOGFILEPATH="$LOGFILE"
+        fi
     fi
     return 0
 }
@@ -1622,9 +1747,8 @@ script_shortversion () {
             then TMP_STR="${NAME} ${TMP_STR}"
             else TMP_STR="${0} ${TMP_STR}"
         fi
-        if [ -n "$DATE" ]; then TMP_STR+=" - ${DATE}"; fi
         local gitvers=$(gitversion)
-        if [ -n "$gitvers" ]; then TMP_STR+=" - ${gitvers}"; fi
+        if [ -n "$gitvers" ]; then TMP_STR+=" ${gitvers}"; fi
         echo "${TMP_STR}"
     fi
     return 0;
@@ -1657,7 +1781,7 @@ build_documentation () {
         error "unknown doc-builder type '${type}'"
     fi
     eval "export DOCBUILDER_MASKS=( \"\${${type_var}[@]}\" )"
-    verecho "- generating documentation in format '$type' from file '${source}'"
+    verecho "- generating documentation in format '$type' from file '${source}'" >&2;
     generate_documentation "${source}" "${output}"
     return 0
 }
@@ -1793,18 +1917,18 @@ library_shortversion () {
         echo "${LIB_VERSION}"
         return 0
     fi
-    local TMP_VERS="${LIB_NAME} ${LIB_VERSION} - ${LIB_DATE}"
+    local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
     local _done=false
     if $(isgitclone "$LIB_MODULE" "$LIB_HOME"); then
         add=$(gitversion)
         if [ -n "$add" ]; then
             _done=true
-            TMP_VERS+=" - ${add}"
+            TMP_VERS+=" ${add}"
         fi
     fi
     if ! $_done; then
-        TMP_VERS+=" - `get_gitversion \"${BASH_SOURCE}\"`"
+        TMP_VERS+=" `get_gitversion \"${BASH_SOURCE}\"`"
     fi
     echo "${TMP_VERS}"
     return 0
@@ -1860,9 +1984,214 @@ libdebug () {
     library_debug "$*"
 }
 
+#### LIBRARY INTERNALS ###################################################################
 
-##@ LIBRARY_REALPATH
+##@ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
+declare -rx LIBRARY_DIR=$(dirname ${LIBRARY_REALPATH})
+declare -rx LIBRARY_BASEDIR=$(dirname ${LIBRARY_DIR})
+declare -rx LIBRARY_SOURCEFILE=$(basename ${LIBRARY_REALPATH})
+
+#### make_library_homedir ()
+## make dir '$HOME/.piwi-bash-library' if it doesn't exist
+make_library_homedir () {
+    if [ ! -d "${LIB_SYSHOMEDIR}" ]; then mkdir "${LIB_SYSHOMEDIR}"; fi
+    return 0
+}
+
+#### make_library_cachedir ()
+## make dir '$HOME/.piwi-bash-library/cache' if it doesn't exist
+make_library_cachedir () {
+    make_library_homedir
+    if [ ! -d "${LIB_SYSCACHEDIR}" ]; then mkdir "${LIB_SYSCACHEDIR}"; fi
+    return 0
+}
+
+#### clean_library_cachedir ()
+## clean dir '$HOME/.piwi-bash-library/cache' if it exists
+clean_library_cachedir () {
+    if [ -d "${LIB_SYSCACHEDIR}" ]; then rm -rf "${LIB_SYSCACHEDIR}"; fi
+    return 0
+}
+
+#### INSTALLATION WIZARD #################################################################
+#! All internal installation methods are prefixed with 'instwiz_'
+#! All internal installation constants are prefixed with 'LIBINST_'
+
+##@ SCRIPT_REPOSITORY_URL = url of your distant repository
+declare -x SCRIPT_REPOSITORY_URL=""
+##@ SCRIPT_FILES = array of installable files
+declare -xa SCRIPT_FILES=()
+##@ SCRIPT_FILES_BIN = array of installable binary files
+declare -xa SCRIPT_FILES_BIN=()
+##@ SCRIPT_FILES_MAN = array of manpages files
+declare -xa SCRIPT_FILES_MAN=()
+##@ SCRIPT_FILES_CONF = array of configuration files
+declare -xa SCRIPT_FILES_CONF=()
+
+#! internal vars for installation
+declare -x LIBINST_TARGET=""
+declare -x LIBINST_CLONE=""
+declare -x LIBINST_BRANCH='master'
+
+## instwiz_gitversion ( file_path )
+## get the gitversion string from a file_path
+instwiz_gitversion () {
+    if [ $# -eq 0 ]; then return 0; fi
+    get_gitversion "${1}"
+    return 0
+}
+
+## instwiz_real_gitversion ( path = LIBINST_CLONE )
+## get the real GIT gitversion from a repo
+instwiz_real_gitversion () {
+    local oldpwd=$(pwd)
+    local clonedir="${1:-${LIBINST_CLONE}}"
+    cd "${clonedir}" && gitversion && cd "${oldpwd}"
+    return 0
+}
+
+## instwiz_remoteversion ( path = LIBINST_CLONE , branch = HEAD )
+## get the last GIT commit SHA from the remote in branch
+instwiz_remoteversion () {
+    local clonedir="${1:-${LIBINST_CLONE}}"
+    local branch="${2:-HEAD}"
+    local result=$(git ls-remote "${clonedir}" | awk "/${branch}/ {print \$1}" | sort -u)
+    echo ${result}
+    return 0
+}
+
+## instwiz_prepare_install_cmd ()
+instwiz_prepare_install_cmd () {
+    local installcmd=""
+    # all files
+    for file in "${SCRIPT_FILES[@]}"; do
+        local _originalfilepath="${LIBINST_CLONE}/${file}"
+        local _targetfilepath="${LIBINST_TARGET}/${file}"
+        if [ -e ${_originalfilepath} ]; then
+            if [ `strlen "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
+            if [ -d ${_originalfilepath} ]
+            then installcmd+="cp -rf '${_originalfilepath}' '${_targetfilepath}'"
+            else installcmd+="cp -f '${_originalfilepath}' '${_targetfilepath}'"
+            fi
+        else
+            echo "! > file '${LIBINST_CLONE}/${file}' not found and won't be installed!"
+        fi
+    done
+    # binary files
+    for file in "${SCRIPT_FILES_BIN[@]}"; do
+        local _originalfilepath="${LIBINST_CLONE}/${file}"
+        local _targetfilepath="${LIBINST_TARGET}/${file}"
+        if [ -f ${_originalfilepath} ]; then
+            if [ `strlen "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
+            installcmd+="chmod a+x '${_targetfilepath}'"
+        fi
+    done
+# @TODO : install man and conf
+    # command to execute
+    echo "${installcmd}"
+    return 0
+}
+
+## instwiz_prepare_uninstall_cmd ()
+instwiz_prepare_uninstall_cmd () {
+    local uninstallcmd=""
+    # all files
+    for file in "${SCRIPT_FILES[@]}"; do
+        local _targetfilepath="${LIBINST_TARGET}/${file}"
+        if [ -e ${_targetfilepath} ]; then
+            if [ `strlen "${uninstallcmd}"` -gt 0 ]; then uninstallcmd+=" && "; fi
+            if [ -d ${_targetfilepath} ]
+            then uninstallcmd+="rm -rf '${_targetfilepath}'"
+            else uninstallcmd+="rm -f '${_targetfilepath}'"
+            fi
+        fi
+    done
+# @TODO : un-install man and conf
+    # command to execute
+    echo "${uninstallcmd}"
+    return 0
+}
+
+#### script_installation_target ( target_dir = $HOME/bin )
+script_installation_target () {
+	export LIBINST_TARGET="${1:-${HOME}/bin}"
+    if [ ! -d ${LIBINST_TARGET} ]; then
+        mkdir -p ${LIBINST_TARGET} || simple_error "target path '${LIBINST_TARGET}' not found and can't be created!"
+    fi
+    return 0
+}
+
+#### script_installation_source ( clone_repo = SCRIPT_REPOSITORY_URL , clone_dir = LIB_SYSCACHEDIR )
+script_installation_source () {
+    if [ $# -gt 0 ]; then
+        export SCRIPT_REPOSITORY_URL="$1"
+    fi
+        local _dirname=$(basename ${repourl})
+        _dirname="${_dirname/.git/}"
+        local target="${LIB_SYSCACHEDIR}/${_dirname}"
+        make_cachedir
+    if [ $# -gt 1 ]; then
+        export SCRIPT_HOME="$1"
+    fi
+	export LIBINST_TARGET="${1:-${HOME}/bin}"
+    if [ ! -d ${LIBINST_TARGET} ]; then
+        mkdir -p ${LIBINST_TARGET} || simple_error "target path '${LIBINST_TARGET}' not found and can't be created!"
+    fi
+    return 0
+}
+
+#### script_install ( path = $HOME/bin/ )
+script_install () {
+    local installcmd=$(instwiz_prepare_install_cmd)
+    log "script_install: '${installcmd}'"
+    iexec "${installcmd}"
+    quietecho ">> ok, script installed in '${LIBINST_TARGET}'"
+    return 0
+}
+
+#### script_check ( file_name , original = LIBINST_CLONE , target = LIBINST_TARGET )
+##@param file_name: the file to check and compare on both sides
+script_check () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local filename="$1"
+    local clonedir="${2:-${LIBINST_CLONE}}"
+    local targetdir="${3:-${LIBINST_TARGET}}"
+    # target
+    local targetvers=$(instwiz_gitversion "${targetdir}/${filename}")
+    local targetvers_sha=$(gitversion_extract_sha "${targetvers}")
+    local targetvers_branch=$(gitversion_extract_branch "${targetvers}")
+    # distant GIT
+    local remotevers_sha=$(instwiz_remoteversion "${clonedir}" "${targetvers_branch}");
+    if [ "${targetvers_sha}" != "${remotevers_sha}" ]
+        then echo "New version ${remotevers_sha} available ..."; return 1;
+        else echo "Up-to-date"; touch "${targetdir}/${filename}";
+    fi
+    return 0
+}
+
+#### script_update ( path = $HOME/bin/ )
+script_update () {
+    local installcmd=$(instwiz_prepare_install_cmd)
+    log "script_update: '${installcmd}'"
+    iexec "${installcmd}"
+    quietecho ">> ok, script updated in '${LIBINST_TARGET}'"
+    return 0
+}
+
+#### script_uninstall ( path = $HOME/bin/ )
+script_uninstall () {
+    local uninstallcmd=$(instwiz_prepare_uninstall_cmd)
+    if [ "${uninstallcmd}" == '' ]; then
+        quietecho ">> nothing to un-install!"
+        return 1
+    fi
+    log "script_uninstall: '${uninstallcmd}'"
+    iexec "${uninstallcmd}"
+    quietecho ">> ok, script removed from '${LIBINST_TARGET}'"
+    return 0
+}
+
 
 #### COMPATIBILITY #####################################################################
 # to be deleted in next major version !!
@@ -1878,26 +2207,19 @@ declare -rx LIBRARY_REALPATH=$(realpath ${BASH_SOURCE[0]})
 if [ "`basename $0`" != "`basename ${BASH_SOURCE[0]}`" ]; then return 0; fi
 #echo "BASH LIBRARY !!!"
 
-declare -x INTLIB_REALPATH="`realpath $BASH_SOURCE`"
-declare -x INTLIB_REALPATH_DIR="`dirname $INTLIB_REALPATH`"
-declare -x INTLIB_BASEDIR="`dirname $INTLIB_REALPATH_DIR`"
-declare -x INTLIB_SOURCE="`basename $INTLIB_REALPATH`"
+declare -x INTLIB_BIN_FILENAME="${LIB_FILENAME_DEFAULT}.sh"
 declare -x INTLIB_DEVDOC_FILENAME="${LIB_FILENAME_DEFAULT}-DOC.md"
 declare -x INTLIB_README_FILENAME="${LIB_FILENAME_DEFAULT}-README.md"
 declare -x INTLIB_MAN_FILENAME="${LIB_FILENAME_DEFAULT}.man"
 declare -x INTLIB_PRESET='default'
 declare -x INTLIB_BRANCH='master'
+declare -x INTLIB_TARGET
 # days to make automatic version check
 declare -x INTLIB_OUTDATED_CHECK=30
 # days to force user update (message is always shown)
 declare -x INTLIB_OUTDATED_FORCE=90
-declare -x INTLIB_HOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}"
-declare -x INTLIB_CLONEDIR="${INTLIB_HOMEDIR}/cache"
 declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
-declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help usage documentation )
-declare -x INTLIB_TARGET
-declare -x INTLIB_TARGET_BRANCH
-declare -x INTLIB_TARGET_GITVERSION
+declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help usage documentation mddocumentation clean )
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
@@ -1919,7 +2241,8 @@ DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COL
 \t<bold>update</bold>\t\t\t\tupdate a copy with newer version if so\n\
 \t<bold>uninstall</bold>\t\t\tuninstall a copy from a system path\n\
 \t<bold>version</bold>\t\t\t\tget a copy version infos ; use option '-q' to get only the version number\n\
-\t<bold>documentation</bold>\t\t\tsee the library documentation ; use option '-v' to increase verbosity\n\n\
+\t<bold>documentation</bold>\t\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
+\t<bold>clean</bold>\t\t\t\tclean library cache\n\n\
 \tTry 'man piwi-bash-library(.sh)', 'man ./piwi-bash-library.man' or '$0 --man' for the library full manpage.";
 OPTIONS="<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
 \t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
@@ -1937,9 +2260,10 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \tupdate\n\
 \tuninstall\n\
 \tdocumentation\n\
+\tclean\n\
 ";
 FILES="The following files are installed by default:\n\
-\t<underline>${INTLIB_SOURCE}</underline>\t\tthe standalone library source file \n\
+\t<underline>${LIBRARY_SOURCEFILE}</underline>\t\tthe standalone library source file \n\
 \t<underline>${INTLIB_MAN_FILENAME}</underline>\t\tthe manpage of the library, installed in section 3 of system manpages for a global installation\n\n\
 \tThe following files can be installed using the 'preset' option:\n\
 \t<underline>${INTLIB_README_FILENAME}</underline>\tthe README of the library (Markdown syntax - installed in 'user' and 'full' presets)\n\
@@ -1963,199 +2287,108 @@ intlib_optionerror () {
 # -> check preset validity
 preset_valid () {
     in_array "$INTLIB_PRESET" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '$INTLIB_PRESET'!";
-    return 0
-}
-
-# -> which target
-target_required () {
-    if [ -z "$INTLIB_TARGET" ]; then
-		INTLIB_TARGET="${HOME}/bin"
-	fi
-    if [ ! -d "$INTLIB_TARGET" ]; then
-        mkdir $INTLIB_TARGET || simple_error "target path '$INTLIB_TARGET' not found and can't be created!"
-    fi
-    return 0
-}
-
-# -> get the gitversion string from INTLIB_TARGET
-get_target_gitversion () {
-    get_gitversion "${INTLIB_TARGET}/piwi-bash-library.sh"
-    return 0
-}
-
-# -> get the gitversion from current temp clone
-get_clone_gitversion () {
-    get_gitversion "${INTLIB_CLONEDIR}/src/piwi-bash-library.sh"
-    return 0
-}
-
-# -> get the real GIT gitversion from a repo
-## get_real_gitversion ( path = INTLIB_CLONEDIR )
-get_real_gitversion () {
-    local oldpwd=$(pwd)
-    local clonedir="${1:-${INTLIB_CLONEDIR}}"
-    cd "${clonedir}" && gitversion && cd "${oldpwd}"
-}
-
-# -> get the last GIT commit SHA from the remote in branch
-## get_remoteversion ( branch = HEAD )
-get_remoteversion () {
-    local branch="${1:-HEAD}"
-    git ls-remote "${LIB_HOME}" | awk "/${branch}/ {print \$1}"
-}
-
-# -> make dir '$HOME/.piwi-bash-library' if it doesn't exist
-make_homedir () {
-    if [ ! -d "${INTLIB_CLONEDIR}" ]; then mkdir "${INTLIB_HOMEDIR}"; fi
-    return 0
-}
-
-# -> make lib clone
-make_clone () {
-    make_homedir
-    local tocreate=true
-    if [ -d "${INTLIB_CLONEDIR}" ]; then
-        if `isgitclone "${INTLIB_CLONEDIR}" "${LIB_HOME}"`; then tocreate=false; fi
-    fi
-    if $tocreate; then
-        rm -rf "${INTLIB_CLONEDIR}" && mkdir "${INTLIB_CLONEDIR}"
-        local gitcmd=$(which git)
-        if [ -z $gitcmd ]; then commanderror 'git'; fi
-        verecho "- cloning library into '${INTLIB_CLONEDIR}' ..."
-        git clone -q "${LIB_HOME}" "${INTLIB_CLONEDIR}"
-    fi
-    return 0
-}
-
-# -> update lib clone
-update_clone () {
-    local gitcmd=$(which git)
-    if [ -z $gitcmd ]; then commanderror 'git'; fi
-    verecho "- updating library clone in '${INTLIB_CLONEDIR}' ..."
-    iexec "git pull -q \"${INTLIB_CLONEDIR}\""
-    return 0
-}
-
-# -> change lib clone branch
-change_branch () {
-    local gitcmd=$(which git)
-    local oldpwd=$(pwd)
-    if [ -z $gitcmd ]; then commanderror 'git'; fi
-    cd ${INTLIB_CLONEDIR}
-    if [ ${INTLIB_BRANCH} != `get_gitbranch` ]; then
-		verecho "- switching library clone branch '${INTLIB_BRANCH}' in '${INTLIB_CLONEDIR}' ..."
-		iexec "git checkout -q \"${INTLIB_BRANCH}\" && git pull"
-    fi
-    cd $oldpwd
-    return 0
-}
-
-# -> do update or install target files
-do_update () {
-    local installcmd=""
-    installcmd+="cp -f '${INTLIB_CLONEDIR}/src/piwi-bash-library.sh' '${INTLIB_TARGET}/piwi-bash-library.sh'"
-    installcmd+=" && cp -f '${INTLIB_CLONEDIR}/src/piwi-bash-library.man' '${INTLIB_TARGET}/piwi-bash-library.man'"
+    SCRIPT_FILES=( ${INTLIB_BIN_FILENAME} ${INTLIB_MAN_FILENAME} )
+    SCRIPT_FILES_BIN=( ${INTLIB_BIN_FILENAME} )
+    SCRIPT_FILES_MAN=( ${INTLIB_MAN_FILENAME} )
     if [ "$INTLIB_PRESET" = 'dev' -o "$INTLIB_PRESET" = 'full' ]; then
-        installcmd+=" && cp -f '${INTLIB_CLONEDIR}/DOCUMENTATION.md' '${INTLIB_TARGET}/piwi-bash-library-DOC.md'"
+        SCRIPT_FILES=( "${SCRIPT_FILES[@]}" ${INTLIB_DEVDOC_FILENAME} )
     fi
     if [ "$INTLIB_PRESET" = 'user' -o "$INTLIB_PRESET" = 'full' ]; then
-        installcmd+=" && cp -f '${INTLIB_CLONEDIR}/README.md' '${INTLIB_TARGET}/piwi-bash-library-README.md'"
+        SCRIPT_FILES=( "${SCRIPT_FILES[@]}" ${INTLIB_README_FILENAME} )
     fi
-    iexec "$installcmd"
+    export SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN
     return 0
 }
 
-# -> do uninstall target files
-do_uninstall () {
-    local installcmd=""
-    installcmd+="rm -f '${INTLIB_TARGET}/piwi-bash-library.sh'"
-    installcmd+=" '${INTLIB_TARGET}/piwi-bash-library.man'"
-    if [ -f "${INTLIB_TARGET}/piwi-bash-library-DOC.md" ]; then
-        installcmd+=" '${INTLIB_TARGET}/piwi-bash-library-DOC.md'"
-    fi
-    if [ -f "${INTLIB_TARGET}/piwi-bash-library-README.md" ]; then
-        installcmd+=" '${INTLIB_TARGET}/piwi-bash-library-README.md'"
-    fi
-    iexec "$installcmd"
+# -> prepare a clone of the library repo
+prepare_libclone () {
+    export SCRIPT_REPOSITORY_URL="${LIB_HOME}"
+    make_git_clone ${SCRIPT_REPOSITORY_URL}
+    export LIBINST_CLONE=${CURRENT_GIT_CLONE_DIR}
+    change_git_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
+    update_git_clone ${LIBINST_CLONE}
     return 0
 }
 
+# -> prepare required install files in ${clone}/tmp/
+prepare_install () {
+    prepare_libclone
+    local tmpdir="${LIBINST_CLONE}/tmp"
+    rm -rf "${tmpdir}" && mkdir "${tmpdir}"
+    cp -f "${LIBINST_CLONE}/src/piwi-bash-library.sh" "${tmpdir}/${INTLIB_BIN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/src/piwi-bash-library.man" "${tmpdir}/${INTLIB_MAN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/DOCUMENTATION.md" "${tmpdir}/${INTLIB_DEVDOC_FILENAME}"
+    cp -f "${LIBINST_CLONE}/README.md" "${tmpdir}/${INTLIB_README_FILENAME}"
+    export LIBINST_CLONE=${tmpdir}
+    return 0
+}
 
-# action doc
+# internal library actions
 intlibaction_documentation () {
     build_documentation
     return 0
 }
-
 intlibaction_documentation_tomd () {
     build_documentation 'markdown'
     return 0
 }
-
+intlibaction_clean () {
+    clean_cachedir
+    quietecho ">> cache cleaned"
+    return 0
+}
 intlibaction_check () {
-    target_required
-    # target
-    local targetvers=$(get_target_gitversion)
-    local targetvers_sha=$(gitversion_extract_sha "${targetvers}")
-    local targetvers_branch=$(gitversion_extract_branch "${targetvers}")
-    if [ "${targetvers_branch}" != 'master' ]; then
-        export INTLIB_BRANCH="${targetvers_branch}"
-    fi
-    # distant GIT
-    if [ "${INTLIB_BRANCH}" = 'master' ]
-        then local remotevers_sha=$(get_remoteversion);
-        else local remotevers_sha=$(get_remoteversion "${INTLIB_BRANCH}");
-    fi
-    if [ "${targetvers_sha}" != "${remotevers_sha}" ]
-        then echo "New version ${remotevers_sha} available ..."; return 1;
-        else echo "Up-to-date"; touch "${INTLIB_TARGET}/piwi-bash-library.sh";
-    fi
+    script_installation_target ${INTLIB_TARGET}
+    prepare_libclone
+    script_check ${INTLIB_BIN_FILENAME} 
     return 0
 }
-
 intlibaction_install () {
-    target_required
+    script_installation_target ${INTLIB_TARGET}
     preset_valid
-    make_clone
-    if [ "${INTLIB_BRANCH}" != 'master' ]; then change_branch; fi;
-    do_update
-    quietecho ">> ok, library installed in '${INTLIB_TARGET}'"
+    prepare_install
+    local oldquiet=${QUIET}
+    export QUIET=true
+    script_install
+    export QUIET=${oldquiet}
+    quietecho ">> ok, library installed in '${LIBINST_TARGET}'"
     return 0
 }
-
 intlibaction_update () {
-    target_required
+    script_installation_target ${INTLIB_TARGET}
     preset_valid
-    make_homedir
-    make_clone
-    if [ "${INTLIB_BRANCH}" != 'master' ]; then change_branch; fi;
-    do_update
-    quietecho ">> ok, library updated in '${INTLIB_TARGET}'"
+    prepare_install
+    local oldquiet=${QUIET}
+    export QUIET=true
+    script_update
+    export QUIET=${oldquiet}
+    quietecho ">> ok, library updated in '${LIBINST_TARGET}'"
     return 0
 }
-
 intlibaction_uninstall () {
-    target_required
+    script_installation_target ${INTLIB_TARGET}
     preset_valid
-    do_uninstall
-    quietecho ">> ok, library deleted from '${INTLIB_TARGET}'"
+    local oldquiet=${QUIET}
+    export QUIET=true
+    local result=$(script_uninstall)
+    export QUIET=${oldquiet}
+    if $result
+    then quietecho ">> ok, library deleted from '${LIBINST_TARGET}'"
+    else quietecho "nothing to un-install"
+    fi
     return 0
 }
-
 intlibaction_version () {
-    target_required
+    script_installation_target ${INTLIB_TARGET}
     library_version $QUIET
     return 0
 }
-
 intlibaction_help () {
     clear; usage; return 0
 }
-
 intlibaction_usage () {
     simple_usage; return 0
 }
-
 intlib_check_uptodate () {
     if $QUIET; then return 0; fi
     local now=$(date "+%s")
@@ -2197,12 +2430,12 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         h|f|i|q|v|x|V|d|l) ;;
         t) export INTLIB_TARGET="${OPTARG}";;
         p) export INTLIB_PRESET="${OPTARG}";;
-        b) export INTLIB_BRANCH="${OPTARG}";;
+        b) export LIBINST_BRANCH="${OPTARG}";;
         -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
             case $OPTARG in
                 target*) export INTLIB_TARGET="${LONGOPTARG}";;
                 preset*) export INTLIB_PRESET="${LONGOPTARG}";;
-                branch*) export INTLIB_BRANCH="${LONGOPTARG}";;
+                branch*) export LIBINST_BRANCH="${LONGOPTARG}";;
                 ?) ;;
             esac ;;
         ?) ;;
@@ -2218,11 +2451,12 @@ if [ -z $ACTION ]; then simple_error 'nothing to do'; fi
 in_array "$ACTION" "${INTLIB_ACTION_ALLOWED[@]}" || simple_error "unknown action '$ACTION'!";
 
 # prepare
-INTLIB_TARGET="${INTLIB_TARGET/\~/${HOME}}"
+INTLIB_TARGET=$(resolve ${INTLIB_TARGET})
 
 # executing action
 if $DEBUG; then library_debug "$*"; fi
 case $ACTION in
+    clean) intlibaction_clean; exit 0;;
     check) intlibaction_check; exit 0;;
     install) intlibaction_install; exit 0;;
     update) intlibaction_update; exit 0;;

@@ -73,7 +73,7 @@ commands or to always prompt for confirmation
 
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
+<GNU coding standards> to keep user in
 a known environment ...
 
 .SS INTERFACE
@@ -297,10 +297,6 @@ For documentation, sources & updates, see <http://github.com/atelierspierrot/piw
 
 .PP
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
-
-.PP
-This is free software: you are free to change and redistribute it ; there is NO WARRANTY,
-to the extent permitted by law.
 
 .SH BUGS
 
