@@ -16,7 +16,8 @@ fi
 NAME="Bash boolean tests"
 VERSION="0.0.1-test"
 DESCRIPTION="A script to test boolean values manipulations and equalities in bash."
-parsecommonoptions "$@"
+SCRIPT_VCS='git'
+parse_common_options "$@"
 quietecho "_ go"
 
 export TRUEVAL=false
@@ -51,10 +52,10 @@ if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
 if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 echo
 
-# onoffbit
-echo "# test of the fct 'onoffbit'"
-echo "TRUEVAL is `onoffbit $TRUEVAL`"
-echo "FALSEVAL is `onoffbit $FALSEVAL`"
+# onoff_bit
+echo "# test of the fct 'onoff_bit'"
+echo "TRUEVAL is `onoff_bit $TRUEVAL`"
+echo "FALSEVAL is `onoff_bit $FALSEVAL`"
 
 quietecho "_ ok"
 if ! $QUIET; then libdebug "$*"; fi

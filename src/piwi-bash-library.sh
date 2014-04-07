@@ -1,8 +1,8 @@
 #!/bin/bash
 #
 # Piwi Bash Library - An open source day-to-day bash library
-# Copyright (C) 2013-2014 "Les Ateliers Pierrot"
-# Create & maintained by Pierre Cassat & contributors
+# Copyright (C) 2013-2014 Les Ateliers Pierrot
+# Created & maintained by Pierre Cassat & contributors
 # <http://github.com/atelierspierrot/piwi-bash-library>
 # <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
 # 
@@ -21,6 +21,8 @@
 # 
 ##@!@##
 
+#set -e
+
 #### REFERENCES #####################################################################
 
 ##@ Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>
@@ -29,9 +31,56 @@
 ##@ GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>
 
 
-#### SETTINGS #####################################################################
+#### ENVIRONMENT #############################################################################
 
-#set -e
+##@ SCRIPT_VARS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
+declare -rxa SCRIPT_VARS=(NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE)
+
+##@ MANPAGE_VARS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
+# see http://en.wikipedia.org/wiki/Man_page
+declare -rxa MANPAGE_VARS=(SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO)
+
+##@ VERSION_VARS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
+# see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
+declare -rxa VERSION_VARS=(NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO)
+
+##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
+declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
+
+##@ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
+# common colors
+declare -rxa COLOR_VARS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+
+##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey )
+## terminal colors
+declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
+declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
+declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
+
+##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden )
+## terminal text options
+declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
+declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
+
+##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
+##@ WORKINGDIR = pwd
+declare -x INTERACTIVE=false
+declare -x QUIET=false
+declare -x VERBOSE=false
+declare -x FORCED=false
+declare -x DEBUG=false
+declare -x DRYRUN=false
+declare -x WORKINGDIR=$(pwd)
+declare -x LOGFILE=""
+declare -x LOGFILEPATH=""
+declare -x TEMPDIR=""
+
+##@ USEROS="$(uname)"
+declare -rx USEROS="$(uname)"
+declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
+
+
+#### SETTINGS #####################################################################
 
 # lib error codes
 # Error codes in Bash must return an exit code between 0 and 255
@@ -42,24 +91,7 @@ declare -x E_OPTS=81
 declare -x E_CMD=82
 declare -x E_PATH=83
 
-##@ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
-# see http://en.wikipedia.org/wiki/Man_page
-declare -rxa SCRIPT_INFOS=(NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE)
-
-##@ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
-# see http://en.wikipedia.org/wiki/Man_page
-declare -rxa MANPAGE_INFOS=(SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO)
-
-##@ VERSION_INFOS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
-# see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
-declare -rxa VERSION_INFOS=(NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO)
-
-##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
-declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
-
-##@ LIB_COLORS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
-# common colors
-declare -rxa LIB_COLORS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+# colors settings depending on OS
 case $USEROS in
     Linux|FreeBSD|OpenBSD|SunOS) 
         declare -x COLOR_LIGHT=yellow
@@ -81,17 +113,6 @@ case $USEROS in
         ;;
 esac
 
-##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey )
-## terminal colors
-declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
-declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
-
-##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden )
-## terminal text options
-declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
-declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
-
 ##@ LIB_FILENAME_DEFAULT = "piwi-bash-library"
 declare -rx LIB_FILENAME_DEFAULT="piwi-bash-library"
 ##@ LIB_NAME_DEFAULT = "piwibashlib"
@@ -107,25 +128,6 @@ declare -rx LIB_SYSCACHEDIR="${LIB_SYSHOMEDIR}/cache"
 
 declare -rx GITVERSION_MASK="@gitversion@"
 declare -x TEST_VAR="test"
-
-#### ENVIRONMENT #############################################################################
-
-##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
-##@ WORKINGDIR = pwd
-declare -x INTERACTIVE=false
-declare -x QUIET=false
-declare -x VERBOSE=false
-declare -x FORCED=false
-declare -x DEBUG=false
-declare -x DRYRUN=false
-declare -x WORKINGDIR=$(pwd)
-declare -x LOGFILE=""
-declare -x LOGFILEPATH=""
-declare -x TEMPDIR=""
-
-##@ USEROS="$(uname)"
-declare -rx USEROS="$(uname)"
-declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
 
 
 #### COMMON OPTIONS #############################################################################
@@ -188,7 +190,7 @@ autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet u
 ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.";
 
 
-#### LIBRARY INFOS #####################################################################
+#### LIBRARY SETUP #######################################################################
 
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
 declare -rx LIB_NAME="Piwi Bash library"
@@ -199,6 +201,7 @@ declare -rx LIB_PRESENTATION="An open source day-to-day bash library"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
+declare -rx LIB_VCS='git'
 declare -rx LIB_HOME="http://github.com/atelierspierrot/piwi-bash-library"
 declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
@@ -218,35 +221,11 @@ declare -rx LIB_COPYRIGHT="${LIB_COPYRIGHT_TYPE} - Some rights reserved. \n\
 declare -rx LIB_DEPEDENCY_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_PRESENTATION}\". \n\
 \t${LIB_COPYRIGHT}";
 
-## Documentation builder rules, tags and masks
-declare -xa DOCBUILDER_MASKS=()
-declare -x DOCBUILDER_MARKER='##@!@##'
-declare -xa DOCBUILDER_RULES=(
-    '^####.[^#]*$'                          # fct name line     : #### name ( what ever )
-    '^####.[^#]*#*$'                        # title line        : #### title # (this will be followed by the line number and a new line)
-    '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
-    '^##([^!]*)$'                           # comment line      : ## comment (will NOT match "##! comment")
-    '^##@[^ ]* .*$'                         # alone tag line
-);
-declare -xa DOCBUILDER_TERMINAL_MASKS=(
-    "s|^#### \(.* (.*)\)$|\\\t\1|g"         # fct name line
-    "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
-    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
-    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # simple tag line
-);
-declare -xa DOCBUILDER_MARKDOWN_MASKS=(
-    "s|^#### \(.* (.*)\)$|-   \*\*\1\*\*|g"     # fct name line
-    "s|^#### \(.*\) #*$|\\\n## \1|g"            # title line
-    "s|^##\(@.*\) \(.*\)$|    \1 \2|g"          # tag line
-    "s|^##* \(.*\)$|\\\n    \1|g"               # comment line
-    "s|^##\(@.*\) \(.*\)$|-   \1 \2|g"          # simple tag line
-);
 
 #### SYSTEM #############################################################################
 
-#### getsysteminfo ()
-getsysteminfo () {
+#### get_system_info ()
+get_system_info () {
     if `in_array $USEROS ${LINUX_OS[@]}`
         then uname -osr
         else uname -vsr
@@ -254,8 +233,8 @@ getsysteminfo () {
     return 0
 }
 
-#### getmachinename ()
-getmachinename () {
+#### get_machine_name ()
+get_machine_name () {
     if `in_array $USEROS ${LINUX_OS[@]}`
         then uname -n
         else uname -n
@@ -263,15 +242,21 @@ getmachinename () {
     return 0
 }
 
-#### addpath ( path )
+#### add_path ( path )
 ## add a path to global environment PATH
 add_path () {
     if [ -n "$1" ]; then export PATH=$PATH:$1; fi; return 0;
 }
 
-#### getscriptpath ( script = $0 )
+#### get_path ()
+## read current PATH values as human readable string
+get_path () {
+    echo -e $PATH | tr : \\n; return 0;
+}
+
+#### get_script_path ( script = $0 )
 ## get the full real path of a script directory (passed as argument) or from current executed script
-getscriptpath () {
+get_script_path () {
     local arg="${1:-${0}}"
     local relpath=$(dirname "$arg")
     local abspath=$(cd "$relpath" && pwd)
@@ -280,66 +265,85 @@ getscriptpath () {
     return 0
 }
 
-#### setworkingdir ( path )
+#### set_working_directory ( path )
 ## handles the '-d' option for instance
 ## throws an error if 'path' does not exist
-setworkingdir () {
+set_working_directory () {
     if [ $# -eq 0 ]; then return 0; fi
     local _wd=$(resolve "$1")
     if [ -d $1 ]
         then export WORKINGDIR=${_wd}
-        else patherror "$1"
+        else path_error "$1"
     fi
     cd $WORKINGDIR
     return 0
 }
 
-#### setlogfilename ( path )
+#### set_log_filename ( path )
 ## handles the '-l' option for instance
-setlogfilename () {
+set_log_filename () {
     if [ ! -z $1 ]; then export LOGFILE=$1; fi
+    return 0
+}
+
+#### get_date ( timestamp = NOW )
+## cf. <http://www.admin-linux.fr/?p=1965>
+get_date () {
+    [ ! -z ${1} ] && date -d @${1} +'%d/%m/%Y (%A) %X (UTC %z)' || date +'%d/%m/%Y (%A) %X (UTC %z)';
+    return 0
+}
+
+#### get_ip ()
+## this will load current IP address in USERIP & USERISP
+get_ip () {
+    export USERIP=$(ifconfig | awk '/inet / { print $2 } ' | sed -e s/addr:// 2>&-)
+    export USERISP=$(ifconfig | awk '/P-t-P/ { print $3 } ' | sed -e s/P-t-P:// 2>&-)
     return 0
 }
 
 #### FILES #############################################################################
 
-#### getextension ( path = $0 )
+#### get_extension ( path = $0 )
 ## retrieve a file extension
-getextension () {
+get_extension () {
     local arg="${1:-${0}}"
     echo "${arg##*.}" && return 0 || return 1
 }
 
-#### getfilename ( path = $0 )
+#### get_filename ( path = $0 )
 ## isolate a file name without dir & extension
-getfilename () {
+get_filename () {
     local arg="${1:-${0}}"
-    filename=$(getbasename "$arg")
+    filename=$(get_basename "$arg")
     echo "${filename%.*}" && return 0 || return 1
 }
 
-#### getbasename ( path = $0 )
+#### get_basename ( path = $0 )
 ## isolate a file name
-getbasename () {
+get_basename () {
     local arg="${1:-${0}}"
     echo "`basename ${arg}`" && return 0 || return 1
 }
 
-#### getdirname ( path = $0 )
+#### get_dirname ( path = $0 )
 ## isolate a file directory name
-getdirname () {
+get_dirname () {
     local arg="${1:-${0}}"
     echo "`dirname ${arg}`" && return 0 || return 1
 }
 
-#### realpath ( script = $0 )
+#### get_absolute_path ( script = $0 )
 ## get the real path of a script (passed as argument) or from current executed script
-realpath () {
+get_absolute_path () {
     local arg="${1:-${0}}"
-    local dirpath=$(getscriptpath "$arg")
+    local dirpath=$(get_script_path "$arg")
     if [ -z "$dirpath" ]; then return 1; fi
     echo "${dirpath}/`basename $arg`" && return 0 || return 1
 }
+
+#### / realpath ( string )
+## alias of 'get_absolute_path'
+realpath () { get_absolute_path "$*"; }
 
 #### resolve ( path )
 ## resolve a system path replacing '~' and '.'
@@ -388,35 +392,51 @@ array_filter () {
 
 #### STRING #############################################################################
 
-#### strlen ( string )
+#### string_length ( string )
 ##@return the number of characters in string
-strlen () {
+string_length () {
     echo ${#1}; return 0;
 }
 
-#### strtoupper ( string )
-strtoupper () {
+#### / strlen ( string )
+## alias of 'string_length'
+strlen () { string_length "$*"; }
+
+#### string_to_upper ( string )
+string_to_upper () {
     if [ -n "$1" ]; then
         echo "$1" | tr '[:lower:]' '[:upper:]'; return 0;
     fi
     return 1
 }
 
-#### strtolower ( string )
-strtolower () {
+#### / strtoupper ( string )
+## alias of 'string_to_upper'
+strtoupper () { string_to_upper "$*"; }
+
+#### string_to_lower ( string )
+string_to_lower () {
     if [ -n "$1" ]; then
         echo "$1" | tr '[:upper:]' '[:lower:]'; return 0;
     fi
     return 1
 }
 
-#### ucfirst ( string )
-ucfirst () {
+#### / strtolower ( string )
+## alias of 'string_to_lower'
+strtolower () { string_to_lower "$*"; }
+
+#### upper_case_first ( string )
+upper_case_first () {
     if [ -n "$1" ]; then
-        echo "`strtoupper ${1:0:1}`${1:1:${#1}}"; return 0;
+        echo "`string_to_upper ${1:0:1}`${1:1:${#1}}"; return 0;
     fi
     return 1
 }
+
+#### / ucfirst ( string )
+## alias of 'upper_case_first'
+ucfirst () { upper_case_first "$*"; }
 
 #### explode ( str , delim = ' ' )
 # explode a string in an array using a delimiter
@@ -448,10 +468,10 @@ implode () {
     return 1
 }
 
-#### explodeletters ( str )
+#### explode_letters ( str )
 # explode a string in an array of single letters
 # result is loaded in '$EXPLODED_ARRAY'
-explodeletters () {
+explode_letters () {
     if [ -n "$1" ]; then
         local _input="${1}"
         local i=0
@@ -466,154 +486,10 @@ explodeletters () {
 
 #### BOOLEAN #############################################################################
 
-#### onoffbit ( bool )
+#### onoff_bit ( bool )
 ## echoes 'on' if bool=true, 'off' if it is false
-onoffbit () {
+onoff_bit () {
     if $1; then echo 'on'; else echo 'off'; fi; return 0;
-}
-
-
-#### VCS #############################################################################
-
-#### isgitclone ( path = pwd , remote_url = null )
-## check if a path, or `pwd`, is a git clone of a remote if 2nd argument is set
-isgitclone () {
-    local curpath=$(pwd)
-    local targetpath="${1:-${curpath}}"
-    local gitcmd=$(which git)
-    if [ -n "$2" ]; then
-        if [ -n "$gitcmd" ]
-        then
-            cd $targetpath
-            local gitremote=$(git config --get remote.origin.url)
-            if [ "${gitremote}" == "${2}.git" -o "${gitremote}" == "${2}" ]
-                then return 0; else return 1;
-            fi
-            cd $curpath
-        else
-            commanderror 'git'
-        fi
-    fi
-    local gitpath="${1:-${curpath}}/.git"
-    if [ -d "$gitpath" ]; then return 0; else return 1; fi;
-}
-
-#### get_gitbranch ()
-get_gitbranch () {
-    if isgitclone; then
-        local gitcmd=$(which git)
-        if [ -n "$gitcmd" ]; then
-            echo "`git rev-parse --abbrev-ref HEAD`"
-            return 0
-        fi
-    fi
-    return 1
-}
-
-#### get_gitcommit ()
-get_gitcommit () {
-    if isgitclone; then
-        local gitcmd=$(which git)
-        if [ -n "$gitcmd" ]; then
-            echo "`git rev-parse HEAD`"
-            return 0
-        fi
-    fi
-    return 1
-}
-
-#### gitversion ( quiet = false )
-gitversion () {
-    if isgitclone; then
-        local gitcmd=$(which git)
-        if [ -n "$gitcmd" ]; then
-            echo "`get_gitbranch`@`get_gitcommit`"
-            return 0
-        fi
-    fi
-    return 1
-}
-
-#### make_git_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
-## create a git clone of a distant repository in $CURRENT_GIT_CLONE_DIR
-make_git_clone () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local repourl="$1"
-    if [ $# -eq 1 ]
-    then
-        local _dirname=$(basename ${repourl})
-        _dirname="${_dirname/.git/}"
-        local target="${LIB_SYSCACHEDIR}/${_dirname}"
-        make_library_cachedir
-    else
-        local target="$2"
-        if [ ! -d $target ]; then mkdir -p $target; fi
-    fi
-    local oldpwd=$(pwd)
-    local gitcmd=$(which git)
-    if [ -z $gitcmd ]; then commanderror 'git'; fi
-    local tocreate=true
-    if [ -d "${target}" ]; then
-        if `isgitclone "${target}" "${repourl}"`; then tocreate=false; fi
-    fi
-    if $tocreate; then
-        rm -rf "${target}" && mkdir "${target}"
-        verecho "- creating git clone of repository '${repourl}' into '${target}' ..."
-        git clone -q "${repourl}" "${target}"
-        cd $oldpwd
-    fi
-    export CURRENT_GIT_CLONE_DIR=${target}
-    return 0
-}
-
-#### update_git_clone ( target_dir )
-## update a git clone
-##@param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
-update_git_clone () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local oldpwd=$(pwd)
-    local gitcmd=$(which git)
-    if [ -z $gitcmd ]; then commanderror 'git'; fi
-    local target="$1"
-    if [ ! -d ${target} ]; then
-        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
-        if [ ! -d ${fulltarget} ]; then
-            patherror "git clone target '${target}' not found"
-        fi
-        target="${fulltarget}"
-    fi
-    cd ${target}
-    verecho "- updating git clone in '${target}' ..."
-    git pull -q
-    cd $oldpwd
-    export CURRENT_GIT_CLONE_DIR=${target}
-    return 0
-}
-
-#### change_git_branch ( target_dir , branch = 'master' )
-## change a git clone tracking branch
-##@param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
-change_git_branch () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local oldpwd=$(pwd)
-    local gitcmd=$(which git)
-    if [ -z $gitcmd ]; then commanderror 'git'; fi
-    local target="$1"
-    if [ ! -d ${target} ]; then
-        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
-        if [ ! -d ${fulltarget} ]; then
-            patherror "git clone target '${target}' not found"
-        fi
-        target="${fulltarget}"
-    fi
-    local targetbranch="${2:-master}"
-    cd ${target}
-    if [ ${targetbranch} != `get_gitbranch` ]; then
-		verecho "- switching git clone branch to '${targetbranch}' in '${target}' ..."
-		git checkout -q "${targetbranch}" && git pull -q
-    fi
-    cd $oldpwd
-    return 0
 }
 
 
@@ -790,9 +666,9 @@ warning () {
     printf -v TMPSTR \
         "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
         0 $LINELENGTH "$PADDER" \
-        $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
-        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE<${COLOR_WARNING}>";
-    parsecolortags "\n<${COLOR_WARNING}>$TMPSTR</${COLOR_WARNING}>\n"
+        $(($LINELENGTH-`string_length $FIRSTLINE`)) "$FIRSTLINE" \
+        $(($LINELENGTH-`string_length $SECONDLINE`)) "$SECONDLINE<${COLOR_WARNING}>";
+    parse_color_tags "\n<${COLOR_WARNING}>$TMPSTR</${COLOR_WARNING}>\n"
     return 0
 }
 
@@ -811,32 +687,32 @@ error () {
     printf -v TMPSTR \
         "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
         0 $LINELENGTH "$PADDER" \
-        $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
-        $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE<${COLOR_ERROR}>";
-    parsecolortags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n" >&2
+        $(($LINELENGTH-`string_length $FIRSTLINE`)) "$FIRSTLINE" \
+        $(($LINELENGTH-`string_length $SECONDLINE`)) "$SECONDLINE<${COLOR_ERROR}>";
+    parse_color_tags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n" >&2
     exit ${ERRSTATUS}
 }
 
-#### nooptionerror ()
+#### nooption_error ()
 ## no script option error
 ##@error exits with status E_OPTS (81)
-nooptionerror () {
+nooption_error () {
     error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### commanderror ( cmd )
+#### command_error ( cmd )
 ## command not found error
 ##@error exits with status E_CMD (82)
-commanderror () {
+command_error () {
     error "'$1' command seems not installed on your machine ... The process can't be done !" \
         "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### patherror ( path )
+#### path_error ( path )
 ## path not found error
 ##@error exits with status E_PATH (83)
-patherror () {
+path_error () {
     error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
@@ -858,7 +734,7 @@ simple_usage () {
     else
         ERRSYNOPSIS=$(_echo "$LIB_SYNOPSIS_ERROR")
     fi
-    printf "`parsecolortags \"<bold>usage:</bold> %s \nRun option '-h' for help.\"`" "$ERRSYNOPSIS";
+    printf "`parse_color_tags \"<bold>usage:</bold> %s \nRun option '-h' for help.\"`" "$ERRSYNOPSIS";
     echo
     return 0
 }
@@ -870,42 +746,42 @@ simple_error () {
     local ERRSTRING="${1:-unknown error}"
     local ERRSTATUS="${2:-${E_ERROR}}"
     if $DEBUG; then
-        ERRSTRING=$(gnuerrorstr "$ERRSTRING" '' "${3}" "${4}")
+        ERRSTRING=$(gnu_error_string "$ERRSTRING" '' "${3}" "${4}")
     fi
     if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
-    printf "`parsecolortags \"<bold>error:</bold> %s\"`" "$ERRSTRING" >&2;
+    printf "`parse_color_tags \"<bold>error:</bold> %s\"`" "$ERRSTRING" >&2;
     echo >&2
     simple_usage "$3" >&2
     exit ${ERRSTATUS}
 }
 
-#### nooptionsimpleerror ()
+#### nooption_simple_error ()
 ## no script option simple error
 ##@error exits with status E_OPTS (81)
-nooptionsimpleerror () {
+nooption_simple_error () {
     simple_error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### commandsimpleerror ( cmd )
+#### command_simple_error ( cmd )
 ## command not found simple error
 ##@error exits with status E_CMD (82)
-commandsimpleerror () {
+command_simple_error () {
     simple_error "'$1' command seems not installed on your machine ... The process can't be done !" \
         "${E_CMD}" ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### pathsimpleerror ( path )
+#### path_simple_error ( path )
 ## path not found simple error
 ##@error exits with status E_PATH (83)
-pathsimpleerror () {
+path_simple_error () {
     simple_error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
         ${FUNCNAME[1]} ${BASH_LINENO[0]};
 }
 
-#### gnuerrorstr ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
+#### gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
 ## must echoes something like 'sourcefile:lineno: message'
-gnuerrorstr () {
+gnu_error_string () {
     local errorstr=""
     local _source=$(echo "${2:-${BASH_SOURCE[2]}}")
     if [ -n "$_source" ]; then errorstr+="${_source}:"; fi
@@ -918,12 +794,293 @@ gnuerrorstr () {
 }
 
 
+#### VCS #############################################################################
+
+##@ VCSVERSION : variable used as version marker like `branch@commit_sha`
+
+##@ SCRIPT_VCS : VCS type of the script (only 'git' for now)
+declare -x SCRIPT_VCS=""
+
+#### get_version_string ( file_path = $0 , constant_name = VCSVERSION )
+## get the version string from a file_path
+get_version_string () {
+    local fpath="${1:-$0}"
+    local cstname="${2:-VCSVERSION}"
+    if [ ! -f "${fpath}" ]; then error "file '${fpath}' not found!"; fi
+    local _infile=$(head -n200 "${fpath}" | grep -o -e "${cstname}=\".*\"" | sed "s|^${cstname}=\"\(.*\)\"$|\1|g")
+    if [ ! -z ${_infile} ]
+    then echo ${_infile}
+    elif [ "${SCRIPT_VCS}" == 'git' ]; then
+        if git_is_clone; then
+            git_get_version
+        fi
+    fi
+    return 0
+}
+
+#### get_version_sha ( get_version_string )
+## get last commit sha from a GIT version string
+get_version_sha () {
+    if [ $# -gt 0 ]; then
+        echo "$1" | cut -d'@' -f 2
+        return 0
+    fi
+    return 1
+}
+
+#### get_version_branch ( get_version_string )
+## get the branch name from a GIT version string
+get_version_branch () {
+    if [ $# -gt 0 ]; then
+        echo "$1" | cut -d'@' -f 1
+        return 0
+    fi
+    return 1
+}
+
+#### vcs_is_clone ( path = pwd , remote_url = null )
+vcs_is_clone () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_is_clone "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_get_branch ( path = pwd )
+vcs_get_branch () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_get_branch "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_get_commit ( path = pwd )
+vcs_get_commit () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_get_commit "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_get_version ( path = pwd )
+vcs_get_version () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_get_version "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_get_remote_version ( path = pwd , branch = HEAD )
+vcs_get_remote_version () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_get_remote_version "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
+vcs_make_clone () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_make_clone "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_update_clone ( target_dir )
+vcs_update_clone () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_update_clone "$*" && return 0 || return 1; fi
+    return 1
+}
+
+#### vcs_change_branch ( target_dir , branch = 'master' )
+vcs_change_branch () {
+    if [ "${SCRIPT_VCS}" == '' ]; then 
+        error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
+    fi
+    if [ "${SCRIPT_VCS}" == 'git' ]; then git_change_branch "$*" && return 0 || return 1; fi
+    return 1
+}
+
+##@ CURRENT_GIT_CLONE_DIR : environment variable to store current clone directory
+declare -x CURRENT_GIT_CLONE_DIR
+
+#### git_is_clone ( path = pwd , remote_url = null )
+## check if a path, or `pwd`, is a git clone of a remote if 2nd argument is set
+git_is_clone () {
+    local curpath=$(pwd)
+    local targetpath="${1:-${curpath}}"
+    local gitcmd=$(which git)
+    if [ -n "$2" ]; then
+        if [ -n "$gitcmd" ]
+        then
+            cd $targetpath
+            local gitremote=$(git config --get remote.origin.url)
+            if [ "${gitremote}" == "${2}.git" -o "${gitremote}" == "${2}" ]
+                then return 0; else return 1;
+            fi
+            cd $curpath
+        else
+            command_error 'git'
+        fi
+    fi
+    local gitpath="${targetpath}/.git"
+    if [ -d "$gitpath" ]; then return 0; fi;
+    targetpath=$(get_absolute_path ${targetpath})
+    local subdir="${targetpath/${curpath}/}"
+    if [ "${subdir}" != "${targetpath}" ]; then
+        local subdirgitpath="${subdir}/.git"
+        if [ -d "$subdirgitpath" ]; then cd ${curpath} && return 0; fi;
+    fi
+    return 1
+}
+
+#### git_get_branch ( path = pwd )
+git_get_branch () {
+    if [ $# -gt 0 ]; then cd $1; fi
+    if git_is_clone; then
+        local gitcmd=$(which git)
+        if [ -n "$gitcmd" ]; then
+            echo "`git rev-parse --abbrev-ref HEAD`"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+#### git_get_commit ( path = pwd )
+git_get_commit () {
+    if [ $# -gt 0 ]; then cd $1; fi
+    if git_is_clone; then
+        local gitcmd=$(which git)
+        if [ -n "$gitcmd" ]; then
+            echo "`git rev-parse HEAD`"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+#### git_get_version ( path = pwd )
+git_get_version () {
+    if [ $# -gt 0 ]; then cd $1; fi
+    if git_is_clone; then
+        local gitcmd=$(which git)
+        if [ -n "$gitcmd" ]; then
+            echo "`git_get_branch`@`git_get_commit`"
+            return 0
+        fi
+    fi
+    return 1
+}
+
+#### git_get_remote_version ( path = pwd , branch = HEAD )
+## get the last GIT commit SHA from the remote in branch
+git_get_remote_version () {
+    local clonedir="${1:-`pwd`}"
+    local branch="${2:-HEAD}"
+    echo $(git ls-remote "${clonedir}" | awk "/${branch}/ {print \$1}" | sort -u)
+    return 0
+}
+
+#### git_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
+## create a git clone of a distant repository in CURRENT_GIT_CLONE_DIR
+##@env clone directory is loaded in CURRENT_GIT_CLONE_DIR
+git_make_clone () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local repourl="$1"
+    if [ $# -eq 1 ]
+    then
+        local _dirname=$(basename ${repourl})
+        _dirname="${_dirname/.git/}"
+        local target="${LIB_SYSCACHEDIR}/${_dirname}"
+        make_library_cachedir
+    else
+        local target="$2"
+        if [ ! -d $target ]; then mkdir -p $target; fi
+    fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then command_error 'git'; fi
+    local tocreate=true
+    if [ -d "${target}" ]; then
+        if `git_is_clone "${target}" "${repourl}"`; then tocreate=false; fi
+    fi
+    if $tocreate; then
+        rm -rf "${target}" && mkdir "${target}"
+        verecho "- creating git clone of repository '${repourl}' into '${target}' ..."
+        git clone -q "${repourl}" "${target}"
+        cd $oldpwd
+    fi
+    export CURRENT_GIT_CLONE_DIR=${target}
+    return 0
+}
+
+#### git_update_clone ( target_dir )
+## update a git clone
+##@param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
+git_update_clone () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then command_error 'git'; fi
+    local target="$1"
+    if [ ! -d ${target} ]; then
+        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
+        if [ ! -d ${fulltarget} ]; then
+            path_error "git clone target '${target}' not found"
+        fi
+        target="${fulltarget}"
+    fi
+    cd ${target}
+    verecho "- updating git clone in '${target}' ..."
+    git pull -q
+    cd $oldpwd
+    export CURRENT_GIT_CLONE_DIR=${target}
+    return 0
+}
+
+#### git_change_branch ( target_dir , branch = 'master' )
+## change a git clone tracking branch
+##@param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
+git_change_branch () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local oldpwd=$(pwd)
+    local gitcmd=$(which git)
+    if [ -z $gitcmd ]; then command_error 'git'; fi
+    local target="$1"
+    if [ ! -d ${target} ]; then
+        local fulltarget="${LIB_SYSCACHEDIR}/${target}"
+        if [ ! -d ${fulltarget} ]; then
+            path_error "git clone target '${target}' not found"
+        fi
+        target="${fulltarget}"
+    fi
+    local targetbranch="${2:-master}"
+    cd ${target}
+    if [ ${targetbranch} != `git_get_branch` ]; then
+		verecho "- switching git clone branch to '${targetbranch}' in '${target}' ..."
+		git checkout -q "${targetbranch}" && git pull -q
+    fi
+    cd $oldpwd
+    return 0
+}
+
+
 #### COLORIZED CONTENTS #############################################################################
 
-#### gettextformattag ( code )
+#### get_text_format_tag ( code )
 ##@param code must be one of the library colors or text-options codes
 ## echoes the terminal tag code for color: "\ 033[CODEm"
-gettextformattag () {
+get_text_format_tag () {
     if [ -n "$1" ]; then
         if `in_array $USEROS ${LINUX_OS[@]}`
             then echo "\033[${1}m"
@@ -934,9 +1091,9 @@ gettextformattag () {
     return 1
 }
 
-#### getcolorcode ( name , background = false )
+#### get_color_code ( name , background = false )
 ##@param name must be in LIBCOLORS
-getcolorcode () {
+get_color_code () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBCOLORS[@]}`; then
             if [ ! -z $2 ]
@@ -949,14 +1106,14 @@ getcolorcode () {
     return 1
 }
 
-#### getcolortag ( name , background = false )
+#### get_color_tag ( name , background = false )
 ##@param name must be in LIBCOLORS
-getcolortag () {
+get_color_tag () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBCOLORS[@]}`; then
             if [ ! -z $2 ]
-                then echo $(gettextformattag "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
-                else echo $(gettextformattag "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
+                then echo $(get_text_format_tag "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
+                else echo $(get_text_format_tag "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
             fi
         else return 1
         fi
@@ -964,9 +1121,9 @@ getcolortag () {
     return 1
 }
 
-#### gettextoptioncode ( name )
+#### get_text_option_code ( name )
 ##@param name must be in LIBTEXTOPTIONS
-gettextoptioncode () {
+get_text_option_code () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
             then echo "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}"
@@ -976,24 +1133,24 @@ gettextoptioncode () {
     return 1
 }
 
-#### gettextoptiontag ( name )
+#### get_text_option_tag ( name )
 ##@param name must be in LIBTEXTOPTIONS
-gettextoptiontag () {
+get_text_option_tag () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
-            then echo $(gettextformattag "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
+            then echo $(get_text_format_tag "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
             else return 1
         fi
     fi
     return 1
 }
 
-#### gettextoptiontagclose ( name )
+#### get_text_option_tagclose ( name )
 ##@param name must be in LIBTEXTOPTIONS
-gettextoptiontagclose () {
+get_text_option_tagclose () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
-            then echo $(gettextformattag "2${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
+            then echo $(get_text_format_tag "2${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
             else return 1
         fi
     fi
@@ -1008,11 +1165,11 @@ gettextoptiontagclose () {
 colorize () {
     if [ $# -eq 0 ]; then return 0; fi
     local textopt
-    if [ ! -z $2 ]; then textopt=`gettextoptioncode "$2"`; fi
+    if [ ! -z $2 ]; then textopt=`get_text_option_code "$2"`; fi
     local fgopt
-    if [ ! -z $3 ]; then fgopt=`getcolorcode "$3"`; fi
+    if [ ! -z $3 ]; then fgopt=`get_color_code "$3"`; fi
     local bgopt
-    if [ ! -z $4 ]; then bgopt=`getcolorcode "$4" true`; fi
+    if [ ! -z $4 ]; then bgopt=`get_color_code "$4" true`; fi
     local add=""
     if [ ! -z $textopt ]; then add+="${textopt}"; fi
     if [ ! -z $fgopt ]; then
@@ -1021,20 +1178,20 @@ colorize () {
     if [ ! -z $bgopt ]; then
         if [ -n "$add" ]; then add+=";${bgopt}"; else add+="${bgopt}"; fi
     fi
-    opentag=$(gettextformattag "${add}")
-    closetag=$(gettextformattag "$(gettextoptioncode normal)")
+    opentag=$(get_text_format_tag "${add}")
+    closetag=$(get_text_format_tag "$(get_text_option_code normal)")
     if [ ! -n "$add" ]
         then echo "${1}"
         else echo "${opentag}${1}${closetag}"
     fi
 }
 
-#### parsecolortags ( "string with <bold>tags</bold>" )
+#### parse_color_tags ( "string with <bold>tags</bold>" )
 ## parse in-text tags like:
 ##     ... <bold>my text</bold> ...     // "tag" in LIBTEXTOPTIONS
 ##     ... <red>my text</red> ...       // "tag" in LIBCOLORS
 ##     ... <bgred>my text</bgred> ...   // "tag" in LIBCOLORS, constructed as "bgTAG"
-parsecolortags () {
+parse_color_tags () {
     if [ $# -eq 0 ]; then return 0; fi
     transformed=""
     while read -r line; do
@@ -1045,20 +1202,20 @@ parsecolortags () {
             if `in_array "$opt" ${doneopts[@]}`; then continue; fi
             doneopts+=($opt)
             if `in_array $opt ${LIBTEXTOPTIONS[@]}`; then
-                code=$(gettextoptioncode $opt)
-                tag=$(gettextoptiontag $opt)
+                code=$(get_text_option_code $opt)
+                tag=$(get_text_option_tag $opt)
                 if `in_array $USEROS ${LINUX_OS[@]}`
-                    then normaltag=$(gettextoptiontagclose $opt)
-                    else normaltag=$(gettextoptiontag normal)
+                    then normaltag=$(get_text_option_tagclose $opt)
+                    else normaltag=$(get_text_option_tag normal)
                 fi
             elif `in_array $opt ${LIBCOLORS[@]}`; then
-                code=$(getcolorcode $opt)
-                tag=$(getcolortag $opt)
-                normaltag=$(getcolortag default)
+                code=$(get_color_code $opt)
+                tag=$(get_color_tag $opt)
+                normaltag=$(get_color_tag default)
             else
-                code=$(getcolorcode ${opt/bg/} true)
-                 tag=$(getcolortag ${opt/bg/} true)
-                normaltag=$(getcolortag default true)
+                code=$(get_color_code ${opt/bg/} true)
+                 tag=$(get_color_tag ${opt/bg/} true)
+                normaltag=$(get_color_tag default true)
            fi
             if `in_array $USEROS ${LINUX_OS[@]}`; then
                  tag=$(printf '\%s' "$tag")
@@ -1076,8 +1233,8 @@ parsecolortags () {
     return 0
 }
 
-#### stripcolors ( string )
-stripcolors () {
+#### strip_colors ( string )
+strip_colors () {
     if [ $# -eq 0 ]; then return 0; fi
     transformed=""
     while read -r line; do
@@ -1096,11 +1253,11 @@ stripcolors () {
 
 #### TEMPORARY FILES #####################################################################
 
-#### gettempdirpath ( dirname = "LIB_TEMPDIR" )
+#### get_tempdir_path ( dirname = "LIB_TEMPDIR" )
 ##@param dirname The name of the directory to create (default is `tmp/`)
 ## creates a default temporary dir with fallback: first in current dir then in system '/tmp/'
 ## the real temporary directory path is loaded in the global `TEMPDIR`
-gettempdirpath () {
+get_tempdir_path () {
     if [ -n "$TEMPDIR" ]; then return 0; fi
     local tmpdir="${1:-${LIB_TEMPDIR}}"
     local tmpsyspath="/tmp/${LIB_NAME_DEFAULT}"
@@ -1123,18 +1280,18 @@ gettempdirpath () {
     return 0
 }
 
-#### gettempfilepath ( filename , dirname = "LIB_TEMPDIR" )
+#### get_temp_filepath ( filename , dirname = "LIB_TEMPDIR" )
 ##@param filename The temporary filename to use
 ##@param dirname The name of the directory to create (default is `tmp/`)
 ## this will echoes a unique new temporary file path
-gettempfilepath () {
+get_temp_filepath () {
     if [ -z "$1" ]; then return 0; fi
     local tmpfile="$1"
     if [ ! -z "$2" ]
         then
             export TEMPDIR=""
-            gettempdirpath "$2"
-        else gettempdirpath
+            get_tempdir_path "$2"
+        else get_tempdir_path
     fi
     local filepath="${TEMPDIR}/${tmpfile}"
     while [ -f "$filepath" ]; do
@@ -1145,27 +1302,27 @@ gettempfilepath () {
     return 0
 }
 
-#### createtempdir ( dirname = "LIB_TEMPDIR" )
+#### create_tempdir ( dirname = "LIB_TEMPDIR" )
 ##@param dirname The name of the directory to create (default is `tmp/`)
 ## this will create a temporary directory in the working directory with full rights
 ## use this method to over-write an existing temporary directory
-createtempdir () {
+create_tempdir () {
     if [ ! -z "$1" ]
         then
             export TEMPDIR=""
-            gettempdirpath "$1"
-        else gettempdirpath
+            get_tempdir_path "$1"
+        else get_tempdir_path
     fi
     return 0
 }
 
-#### cleartempdir ( dirname = "LIB_TEMPDIR" )
+#### clear_tempdir ( dirname = "LIB_TEMPDIR" )
 ##@param dirname The name of the directory (default is `tmp/`)
 ## this will deletes the temporary directory
-cleartempdir () {
+clear_tempdir () {
     if [ ! -z "$1" ]
-        then gettempdirpath "$1"
-        else gettempdirpath
+        then get_tempdir_path "$1"
+        else get_tempdir_path
     fi
     if [ -d "$TEMPDIR" ]; then
         rm -rf $TEMPDIR
@@ -1173,13 +1330,13 @@ cleartempdir () {
     return 0
 }
 
-#### cleartempfiles ( dirname = "LIB_TEMPDIR" )
+#### clear_tempfiles ( dirname = "LIB_TEMPDIR" )
 ##@param dirname The name of the directory (default is `tmp/`)
 ## this will deletes the temporary directory contents (not the directory itself)
-cleartempfiles () {
+clear_tempfiles () {
     if [ ! -z "$1" ]
-        then gettempdirpath "$1"
-        else gettempdirpath
+        then get_tempdir_path "$1"
+        else get_tempdir_path
     fi
     if [ -d "$TEMPDIR" ]; then
         rm -rf ${TEMPDIR}/*
@@ -1190,10 +1347,10 @@ cleartempfiles () {
 
 #### LOG FILES #####################################################################
 
-#### getlogfilepath ()
+#### get_log_filepath ()
 ## creates a default placed log file with fallback: first in '/var/log' then in LIB_SYSHOMEDIR, finally in current dir
 ## the real log file path is loaded in the global `LOGFILEPATH
-getlogfilepath () {
+get_log_filepath () {
     if [ ! -n "$LOGFILE" ]; then export LOGFILE=$LIB_LOGFILE; fi
     local logsys="/var/log/${LOGFILE}"
     touch ${logsys} 2&> /dev/null;
@@ -1217,15 +1374,15 @@ log () {
     if [ $# -eq 0 ]; then return 0; fi
     local add=""
     if [ ! -z $2 ]; then add=" <${2}>"; fi
-    if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
-    echo "`date '+%B %d %T'` `getmachinename` [${USER}] [$$]${add} - ${1}" >> ${LOGFILEPATH}
+    if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
+    echo "`date '+%B %d %T'` `get_machine_name` [${USER}] [$$]${add} - ${1}" >> ${LOGFILEPATH}
     return 0
 }
 
-#### readlog ()
+#### read_log ()
 ## this will read the LOGFILEPATH content
-readlog () {
-    if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+read_log () {
+    if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
     if [ -r "$LOGFILEPATH" -a -f "$LOGFILEPATH" ]; then cat "$LOGFILEPATH"; fi
     return 0
 }
@@ -1233,10 +1390,10 @@ readlog () {
 
 #### CONFIGURATION FILES #####################################################################
 
-#### getglobalconfigfile ( file_name )
-getglobalconfigfile () {
+#### get_global_configfile ( file_name )
+get_global_configfile () {
     if [ -z $1 ]; then
-        warning "'readconfigfile()' requires a file name as argument"
+        warning "'get_global_configfile()' requires a file name as argument"
         return 0
     fi
     local filename="$1"
@@ -1244,10 +1401,10 @@ getglobalconfigfile () {
     return 0
 }
 
-#### getuserconfigfile ( file_name )
-getuserconfigfile () {
+#### get_user_configfile ( file_name )
+get_user_configfile () {
     if [ -z $1 ]; then
-        warning "'readconfigfile()' requires a file name as argument"
+        warning "'get_user_configfile()' requires a file name as argument"
         return 0
     fi
     local filename="$1"
@@ -1255,11 +1412,11 @@ getuserconfigfile () {
     return 0
 }
 
-#### readconfig ( file_name )
+#### read_config ( file_name )
 ## read a default placed config file with fallback: first in 'etc/' then in '~/'
-readconfig () {
+read_config () {
     if [ -z $1 ]; then
-        warning "'readconfig()' requires a file name as argument"
+        warning "'read_config()' requires a file name as argument"
         return 0
     fi
     local filename="$1"
@@ -1274,11 +1431,11 @@ readconfig () {
     return 0
 }
 
-#### readconfigfile ( file_path )
+#### read_configfile ( file_path )
 ## read a config file
-readconfigfile () {
+read_configfile () {
     if [ -z $1 ]; then
-        warning "'readconfigfile()' requires a file path as argument"
+        warning "'read_configfile()' requires a file path as argument"
         return 0
     fi
     local filepath="$1"
@@ -1296,19 +1453,19 @@ readconfigfile () {
     return 0
 }
 
-#### writeconfigfile ( file_path , array_keys , array_values )
+#### write_configfile ( file_path , array_keys , array_values )
 ## array params must be passed as "array[@]" (no dollar sign)
-writeconfigfile () {
+write_configfile () {
     if [ -z $1 ]; then
-        warning "'writeconfigfile()' requires a file name as 1st argument"
+        warning "'write_configfile()' requires a file name as 1st argument"
         return 0
     fi
     if [ -z $2 ]; then
-        warning "'writeconfigfile()' requires a configuration keys array as 2nd argument"
+        warning "'write_configfile()' requires a configuration keys array as 2nd argument"
         return 0
     fi
     if [ -z $3 ]; then
-        warning "'writeconfigfile()' requires a configuration values array as 3rd argument"
+        warning "'write_configfile()' requires a configuration values array as 3rd argument"
         return 0
     fi
     local filepath="$1"
@@ -1316,7 +1473,7 @@ writeconfigfile () {
     declare -a array_values=("${!3}")
     touch $filepath
     cat > $filepath <<EOL
-$(buildconfigstring array_keys[@] array_values[@])
+$(build_configstring array_keys[@] array_values[@])
 EOL
     if [ -f "$filepath" ]
         then return 0
@@ -1324,18 +1481,18 @@ EOL
     fi
 }
 
-#### setconfigval ( file_path , key , value )
-setconfigval () {
+#### set_configval ( file_path , key , value )
+set_configval () {
     if [ -z "$1" ]; then
-        warning "'setconfigval()' requires a file name as 1st argument"
+        warning "'set_configval()' requires a file name as 1st argument"
         return 0
     fi
     if [ -z "$2" ]; then
-        warning "'setconfigval()' requires a configuration key as 2nd argument"
+        warning "'set_configval()' requires a configuration key as 2nd argument"
         return 0
     fi
     if [ -z "$3" ]; then
-        warning "'setconfigval()' requires a configuration value as 3rd argument"
+        warning "'set_configval()' requires a configuration value as 3rd argument"
         return 0
     fi
     local filepath="$1"
@@ -1350,14 +1507,14 @@ setconfigval () {
     return 0
 }
 
-#### getconfigval ( file_path , key )
-getconfigval () {
+#### get_configval ( file_path , key )
+get_configval () {
     if [ -z "$1" ]; then
-        warning "'getconfigval()' requires a file name as 1st argument"
+        warning "'get_configval()' requires a file name as 1st argument"
         return 0
     fi
     if [ -z "$2" ]; then
-        warning "'getconfigval()' requires a configuration key as 2nd argument"
+        warning "'get_configval()' requires a configuration key as 2nd argument"
         return 0
     fi
     local filepath="$1"
@@ -1371,9 +1528,9 @@ getconfigval () {
     return 0
 }
 
-#### buildconfigstring ( array_keys , array_values )
+#### build_configstring ( array_keys , array_values )
 ## params must be passed as "array[@]" (no dollar sign)
-buildconfigstring () {
+build_configstring () {
     if [ $# -eq 0 ]; then return 0; fi
     declare -a array_keys=("${!1}")
     declare -a array_values=("${!2}")
@@ -1392,10 +1549,10 @@ buildconfigstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
-#### getshortoptionsarray ()
-getshortoptionsarray () {
+#### get_short_options_array ()
+get_short_options_array () {
     local -a short_options=()
-    explodeletters "$OPTIONS_ALLOWED"
+    explode_letters "$OPTIONS_ALLOWED"
     for i in ${EXPLODED_ARRAY[@]}; do
         if [ "$i" != ":" -a "$i" != "-" ]; then
             short_options+=( "$i" )
@@ -1404,15 +1561,15 @@ getshortoptionsarray () {
     echo "${short_options[@]}"
 }
 
-#### getshortoptionsstring ( delimiter = '|' )
-getshortoptionsstring () {
+#### get_short_options_string ( delimiter = '|' )
+get_short_options_string () {
     local delimiter="${1:-|}"
-    local -a short_options=( $(getshortoptionsarray) )
+    local -a short_options=( $(get_short_options_array) )
     echo $(implode short_options[@] "${delimiter}")
 }
 
-#### getlongoptionsarray ()
-getlongoptionsarray () {
+#### get_long_options_array ()
+get_long_options_array () {
     local -a long_options=()
     explode "$LONG_OPTIONS_ALLOWED" ","
     for i in ${EXPLODED_ARRAY[@]}; do
@@ -1421,22 +1578,22 @@ getlongoptionsarray () {
     echo "${long_options[@]}"
 }
 
-#### getlongoptionsstring ( delimiter = '|' )
-getlongoptionsstring () {
+#### get_long_options_string ( delimiter = '|' )
+get_long_options_string () {
     local delimiter="${1:-|}"
-    local -a long_options=( $(getlongoptionsarray) )
+    local -a long_options=( $(get_long_options_array) )
     echo $(implode long_options[@] "${delimiter}")
 }
 
-#### getoptionarg ( "$x" )
+#### get_option_arg ( "$x" )
 ## echoes the argument of an option
-getoptionarg () {
+get_option_arg () {
     if [ -n "$1" ]; then echo "${1#=}"; fi; return 0;
 }
 
-#### getlongoption ( "$x" )
+#### get_long_option ( "$x" )
 ## echoes the name of a long option
-getlongoption () {
+get_long_option () {
     local arg="$1"
     if [ -n "$arg" ]; then
         if [[ "$arg" =~ .*=.* ]]; then arg="${arg%=*}"; fi
@@ -1446,9 +1603,9 @@ getlongoption () {
     return 1
 }
 
-#### getlongoptionarg ( "$x" )
+#### get_long_optionarg ( "$x" )
 ## echoes the argument of a long option
-getlongoptionarg () {
+get_long_optionarg () {
     local arg="$1"
     if [ -n "$arg" ]; then
         if [[ "$arg" =~ .*=.* ]]
@@ -1461,10 +1618,10 @@ getlongoptionarg () {
     return 1
 }
 
-#### getnextargument ()
+#### get_next_argument ()
 ## get next script argument according to current `ARGIND`
 ## load it in `ARGUMENT` and let `ARGIND` incremented
-getnextargument () {
+get_next_argument () {
     if [ $ARGIND -lt ${#SCRIPT_ARGS[@]} ]
     then
         ARGUMENT="${SCRIPT_ARGS[${ARGIND}]}"
@@ -1475,20 +1632,20 @@ getnextargument () {
     fi
 }
 
-#### getlastargument ()
+#### get_last_argument ()
 ## echoes the last script argument
-getlastargument () {
+get_last_argument () {
     if [ ${#SCRIPT_ARGS[@]} -gt 0 ]; then
         echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"; return 0;
     else return 1
     fi
 }
 
-#### rearrangescriptoptions ( "$@" )
+#### rearrange_script_options ( "$@" )
 ## this will separate script options from script arguments (emulation of GNU "getopt")
 ## options are loaded in $SCRIPT_OPTS with their arguments
 ## arguments are loaded in $SCRIPT_ARGS
-rearrangescriptoptions () {
+rearrange_script_options () {
     SCRIPT_OPTS=()
     SCRIPT_ARGS=()
     local oldoptind=$OPTIND
@@ -1512,8 +1669,8 @@ rearrangescriptoptions () {
         OPTARG="${OPTARG#=}"
         local argindex=false
         case $OPTION in
-            -) LONGOPT="`getlongoption \"${OPTARG}\"`"
-               LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+            -) LONGOPT="`get_long_option \"${OPTARG}\"`"
+               LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
                 case $OPTARG in
                     -) eoo=true; break;;
                     *) if ! $eoo; then
@@ -1541,21 +1698,21 @@ rearrangescriptoptions () {
     return 0
 }
 
-#### parsecommonoptions_strict ( "$@" = SCRIPT_OPTS )
+#### parse_common_options_strict ( "$@" = SCRIPT_OPTS )
 ## parse common script options as described in $COMMON_OPTIONS_INFO throwing an error for unknown options
 ## this will stop options treatment at '--'
-parsecommonoptions_strict () {
+parse_common_options_strict () {
     if [ $# -gt 0 ]
-        then parsecommonoptions "$@"
-        else parsecommonoptions
+        then parse_common_options "$@"
+        else parse_common_options
     fi
     local oldoptind=$OPTIND
     OPTIND=1
-    local -a short_options=( $(getshortoptionsarray) )
-    local -a long_options=( $(getlongoptionsarray) )
+    local -a short_options=( $(get_short_options_array) )
+    local -a long_options=( $(get_long_options_array) )
     while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         if [ "$OPTION" = '-' ]
-        then LONGOPT="`getlongoption \"${OPTARG}\"`"
+        then LONGOPT="`get_long_option \"${OPTARG}\"`"
             if ! $(in_array "$LONGOPT" "${long_options[@]}"); then
                 simple_error "unknown option '$LONGOPT'"
             fi
@@ -1570,10 +1727,10 @@ parsecommonoptions_strict () {
     return 0
 }
 
-#### parsecommonoptions ( "$@" = SCRIPT_OPTS )
+#### parse_common_options ( "$@" = SCRIPT_OPTS )
 ## parse common script options as described in $COMMON_OPTIONS_INFO
 ## this will stop options treatment at '--'
-parsecommonoptions () {
+parse_common_options () {
     local oldoptind=$OPTIND
     local actiontodo
     if [ $# -gt 0 ]
@@ -1581,7 +1738,7 @@ parsecommonoptions () {
         else local options=("${SCRIPT_OPTS[@]}")
     fi
     while getopts ":${OPTIONS_ALLOWED}" OPTION "${options[@]}"; do
-        OPTARG="`getoptionarg \"${OPTARG}\"`"
+        OPTARG="`get_option_arg \"${OPTARG}\"`"
         case $OPTION in
         # common options
             h) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
@@ -1590,10 +1747,10 @@ parsecommonoptions () {
             f) export FORCED=true;;
             x) export DEBUG=true;;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-            d) setworkingdir $OPTARG;;
-            l) setlogfilename $OPTARG;;
+            d) set_working_directory $OPTARG;;
+            l) set_log_filename $OPTARG;;
             V) if [ -z $actiontodo ]; then actiontodo='version'; fi;;
-            -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+            -) LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
                 case $OPTARG in
         # common options
                     help) if [ -z $actiontodo ]; then actiontodo='help'; fi;;
@@ -1604,10 +1761,10 @@ parsecommonoptions () {
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
                     debug) export DEBUG=true;;
-                    dry-run) export DRYRUN=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    dry-run) export DRYRUN=true; verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-                    working-dir*) setworkingdir $LONGOPTARG;;
-                    log*) setlogfilename $LONGOPTARG;;
+                    working-dir*) set_working_directory $LONGOPTARG;;
+                    log*) set_log_filename $LONGOPTARG;;
         # library options
                     libvers) if [ -z $actiontodo ]; then actiontodo='libversion'; fi;;
         # no error for others
@@ -1625,9 +1782,9 @@ parsecommonoptions () {
     export OPTIND
     if [ ! -z $actiontodo ]; then
         case $actiontodo in
-            help) clear; usage; exit 0;;
-            usage) simple_usage; exit 0;;
-            man) manpage; exit 0;;
+            help) clear; script_help; exit 0;;
+            usage) script_usage; exit 0;;
+            man) script_manpage; exit 0;;
             version) script_version $QUIET; exit 0;;
             libversion) library_version $QUIET; exit 0;;
         esac
@@ -1638,9 +1795,9 @@ parsecommonoptions () {
 
 #### SCRIPT INFOS #####################################################################
 
-#### version ( quiet = false )
-version () {
-    local gitvers=$(gitversion)
+#### get_script_version_string ( quiet = false )
+get_script_version_string () {
+    local gitvers=$(vcs_get_version)
     if [ -n "$gitvers" ]
         then echo "$gitvers"
         else 
@@ -1649,16 +1806,16 @@ version () {
     return 0
 }
 
-#### title ( lib = false )
+#### script_title ( lib = false )
 ## this function must echo an information about script NAME and VERSION
 ## setting `$lib` on true will add the library infos
-title () {
+script_title () {
     local TITLE="${NAME}"
     if [ "x$VERSION" != 'x' ]; then TITLE="${TITLE} - v. [${VERSION}]"; fi    
     _echo $(colorize "##  ${TITLE}  ##" bold)
-    local gitvers=$(gitversion)
-    if [ -n "$gitvers" ]; then
-        _echo "[$gitvers]"
+    local _vers=$(get_version_string)
+    if [ -n "$_vers" ]; then
+        _echo "[$_vers]"
     fi
     if [ ! -z "$1" ]; then
         _echo "[using `library_version` - ${LIB_HOME}]"
@@ -1666,16 +1823,23 @@ title () {
     return 0
 }
 
-#### usage ( lib_info = true )
-## this function must echo the usage information USAGE (with option "-h")
-usage () {
+#### script_usage ()
+## this function must echo the simple usage
+script_usage () {
+    simple_usage
+    return 0
+}
+
+#### script_help ( lib_info = true )
+## this function must echo the help information USAGE (with option "-h")
+script_help () {
     local lib_info="${1:-true}"
     local TMP_VERS="`library_info`"
     local USAGESTR=""
     if [ ! "x${USAGE}" = 'x' -a "$lib_info" == 'true' ]; then
-        USAGESTR+=$(title)
-        USAGESTR+=$(parsecolortags "\n$USAGE\n")
-        USAGESTR+=$(parsecolortags "\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>")
+        USAGESTR+=$(script_title)
+        USAGESTR+=$(parse_color_tags "\n$USAGE\n")
+        USAGESTR+=$(parse_color_tags "\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>")
     else
         local TMP_TITLE="${NAME:-?}"
         if [ -n "$VERSION" ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
@@ -1684,7 +1848,7 @@ usage () {
             TMP_USAGE+="\n\t${PRESENTATION}";
         fi
         TMP_USAGE+="\n";
-        for section in "${MANPAGE_INFOS[@]}"; do
+        for section in "${MANPAGE_VARS[@]}"; do
             eval "section_ctt=\"\$$section\""
             if [ "$section" != 'NAME' -a -n "$section_ctt" ]; then
                 TMP_USAGE+="\n<bold>${section}</bold>\n\t${section_ctt}\n";
@@ -1696,11 +1860,11 @@ usage () {
             fi
         fi
         TMP_USAGE+="\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>";
-        USAGESTR+=$(parsecolortags "$TMP_USAGE")
+        USAGESTR+=$(parse_color_tags "$TMP_USAGE")
     fi
     local _done=false
     if [ "${#SCRIPT_PROGRAMS[@]}" -gt 0 ]; then
-        local _tmpfile=$(gettempfilepath "`getfilename $0`.usage")
+        local _tmpfile=$(get_temp_filepath "`get_filename $0`.usage")
         if $(in_array "less" "${SCRIPT_PROGRAMS[@]}"); then
             echo "$USAGESTR" > "$_tmpfile"
             cat "$_tmpfile" | less -cfre~
@@ -1715,12 +1879,12 @@ usage () {
     return 0;
 }
 
-#### manpage ( cmd = $0 , section = 3 )
+#### script_manpage ( cmd = $0 , section = 3 )
 ## will open the manpage of $0 if found in system manpages or if `$0.man` exists
-## else will trigger 'usage' method
-manpage () {
+## else will trigger 'script_help' method
+script_manpage () {
     local cmd="${1:-${0}}"
-    local cmd_filename=$(getfilename "$cmd")
+    local cmd_filename=$(get_filename "$cmd")
     local cmd_localman="${cmd%.*}.man"
     local section="${2:-3}"
     if $(man -w -s "$section" "$cmd_filename" 2> /dev/null); then
@@ -1729,13 +1893,13 @@ manpage () {
         man "./${cmd_localman}"
     else
         quietecho "- no manpage for '$cmd' ; running 'help'"
-        clear; usage
+        clear; script_help
     fi
     return 0
 }
 
-#### script_shortversion ( quiet = false )
-script_shortversion () {
+#### script_short_version ( quiet = false )
+script_short_version () {
     local bequiet="${1:-false}"
     if $bequiet; then
         echo "${VERSION:-?}"
@@ -1747,7 +1911,7 @@ script_shortversion () {
             then TMP_STR="${NAME} ${TMP_STR}"
             else TMP_STR="${0} ${TMP_STR}"
         fi
-        local gitvers=$(gitversion)
+        local gitvers=$(get_version_string)
         if [ -n "$gitvers" ]; then TMP_STR+=" ${gitvers}"; fi
         echo "${TMP_STR}"
     fi
@@ -1761,8 +1925,8 @@ script_version () {
         echo "${VERSION:-?}"
         return 0
     fi
-    script_shortversion
-    for section in "${VERSION_INFOS[@]}"; do
+    script_short_version
+    for section in "${VERSION_VARS[@]}"; do
         case $section in
             NAME|VERSION|DATE);;
             *) if [ -n "${!section}" ]; then echo "${!section}"; fi;;
@@ -1771,12 +1935,43 @@ script_version () {
     return 0;
 }
 
+
+#### DOCBUILDER ##########################################################################
+
+## Documentation builder rules, tags and masks
+##@ DOCBUILDER_MASKS = ()
+declare -xa DOCBUILDER_MASKS=()
+##@ DOCBUILDER_MARKER = '##@!@##'
+declare -x DOCBUILDER_MARKER='##@!@##'
+##@ DOCBUILDER_RULES = ( ... )
+declare -xa DOCBUILDER_RULES=(
+    '^####.[^#]*$'                          # fct name line     : #### name ( what ever )
+    '^####.[^#]*#*$'                        # title line        : #### title # (this will be followed by the line number and a new line)
+    '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
+    '^##([^!]*)$'                           # comment line      : ## comment (will NOT match "##! comment")
+    '^##@[^ ]* .*$'                         # alone tag line
+);
+declare -xa DOCBUILDER_TERMINAL_MASKS=(
+    "s|^#### \(.* (.*)\)$|\\\t\1|g"         # fct name line
+    "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
+    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
+    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
+    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # simple tag line
+);
+declare -xa DOCBUILDER_MARKDOWN_MASKS=(
+    "s|^#### \(.* (.*)\)$|-   \*\*\1\*\*|g"     # fct name line
+    "s|^#### \(.*\) #*$|\\\n## \1|g"            # title line
+    "s|^##\(@.*\) \(.*\)$|    \1 \2|g"          # tag line
+    "s|^##* \(.*\)$|\\\n    \1|g"               # comment line
+    "s|^##\(@.*\) \(.*\)$|-   \1 \2|g"          # simple tag line
+);
+
 #### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
 build_documentation () {
     local type="${1:-TERMINAL}"
     local output="${2}"
     local source="${3:-${BASH_SOURCE[0]}}"
-    local type_var="DOCBUILDER_`strtoupper ${type}`_MASKS"
+    local type_var="DOCBUILDER_`string_to_upper ${type}`_MASKS"
     if [ -z "${!type_var}" ]; then
         error "unknown doc-builder type '${type}'"
     fi
@@ -1789,7 +1984,7 @@ build_documentation () {
 #### generate_documentation ( filepath = BASH_SOURCE[0] , output = null )
 generate_documentation () {
     local sourcefile="${1:-${BASH_SOURCE[0]}}"
-    if [ ! -f $sourcefile ]; then patherror "$sourcefile"; fi
+    if [ ! -f $sourcefile ]; then path_error "$sourcefile"; fi
     local output="${2}"
     local docstr=""
     if [ -n "$DOCUMENTATION_TITLE" ]
@@ -1855,37 +2050,22 @@ generate_documentation () {
 
 #### LIBRARY INFOS #####################################################################
 
-#### get_gitversion ( path = $0 )
+#### get_library_version_string ( path = $0 )
 ## extract the GIT version string from a file matching line 'LIB_GITVERSION=...'
-get_gitversion () {
+get_library_version_string () {
     local fpath="${1:-$0}"
     if [ ! -f "${fpath}" ]; then error "file '${fpath}' not found!"; fi
-    echo $(head -n200 "${fpath}" | grep -o -e "LIB_GITVERSION=\".*\"" | sed "s|^LIB_GITVERSION=\"\(.*\)\"$|\1|g") && return 0 || return 1
-}
-
-#### gitversion_extract_sha ( gitversion_string )
-## get last commit sha from a GIT version string
-gitversion_extract_sha () {
-    if [ $# -gt 0 ]; then
-        echo "$1" | cut -d'@' -f 2
-        return 0
+    local _vers=$(get_version_string ${fpath})
+    if [ -z $_vers ]; then
+        _vers=$(get_version_string ${fpath} LIB_GITVERSION)
     fi
-    return 1
-}
-
-#### gitversion_extract_branch ( gitversion_string )
-## get the branch name from a GIT version string
-gitversion_extract_branch () {
-    if [ $# -gt 0 ]; then
-        echo "$1" | cut -d'@' -f 1
-        return 0
-    fi
-    return 1
+    echo "${_vers}"
+    return 0
 }
 
 #### library_info ()
 library_info () {
-    echo "`library_shortversion`"
+    echo "`library_short_version`"
     return 0;
 }
 
@@ -1898,20 +2078,26 @@ library_path () {
 #### library_help ()
 library_help () {
 	local _lib=`library_path`
-    ${_lib} help
+    if `in_array $USEROS ${LINUX_OS[@]}`
+        then ${_lib} help
+        else $(which sh) ${_lib} help
+    fi
     return 0
 }
 
 #### library_usage ()
 library_usage () {
 	local _lib=`library_path`
-    ${_lib} usage
+    if `in_array $USEROS ${LINUX_OS[@]}`
+        then ${_lib} usage
+        else $(which sh) ${_lib} usage
+    fi
     return 0
 }
 
-#### library_shortversion ( quiet = false )
+#### library_short_version ( quiet = false )
 ## this function must echo an information about library name & version
-library_shortversion () {
+library_short_version () {
     local bequiet="${1:-false}"
     if $bequiet; then
         echo "${LIB_VERSION}"
@@ -1920,15 +2106,15 @@ library_shortversion () {
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
     local _done=false
-    if $(isgitclone "$LIB_MODULE" "$LIB_HOME"); then
-        add=$(gitversion)
+    if $(git_is_clone "$LIB_MODULE" "$LIB_HOME"); then
+        add=$(git_get_version)
         if [ -n "$add" ]; then
             _done=true
             TMP_VERS+=" ${add}"
         fi
     fi
     if ! $_done; then
-        TMP_VERS+=" `get_gitversion \"${BASH_SOURCE}\"`"
+        TMP_VERS+=" `get_library_version_string \"${BASH_SOURCE}\"`"
     fi
     echo "${TMP_VERS}"
     return 0
@@ -1967,14 +2153,14 @@ ${TOP_STR}\n\
     printf -v TMP_DEBUG "$TMP_DEBUG_MASK" \
         $(colorize 'USEROS' bold) $(colorize "${USEROS}" bold $COLOR_INFO) \
         $(colorize 'WORKINGDIR' bold) $(colorize "${WORKINGDIR}" bold $COLOR_INFO) \
-        $(colorize 'VERBOSE' bold) $(colorize "$(onoffbit $VERBOSE)" bold $COLOR_INFO) "-v" \
-        $(colorize 'INTERACTIVE' bold) $(colorize "$(onoffbit $INTERACTIVE)" bold $COLOR_INFO) "-i" \
-        $(colorize 'FORCED' bold) $(colorize "$(onoffbit $FORCED)" bold $COLOR_INFO) "-f" \
-        $(colorize 'DEBUG' bold) $(colorize "$(onoffbit $DEBUG)" bold $COLOR_INFO) "-x" \
-        $(colorize 'QUIET' bold) $(colorize "$(onoffbit $QUIET)" bold $COLOR_INFO) "-q" \
-        "$?" "$$" "`whoami`" "`getsysteminfo`";
+        $(colorize 'VERBOSE' bold) $(colorize "$(onoff_bit $VERBOSE)" bold $COLOR_INFO) "-v" \
+        $(colorize 'INTERACTIVE' bold) $(colorize "$(onoff_bit $INTERACTIVE)" bold $COLOR_INFO) "-i" \
+        $(colorize 'FORCED' bold) $(colorize "$(onoff_bit $FORCED)" bold $COLOR_INFO) "-f" \
+        $(colorize 'DEBUG' bold) $(colorize "$(onoff_bit $DEBUG)" bold $COLOR_INFO) "-x" \
+        $(colorize 'QUIET' bold) $(colorize "$(onoff_bit $QUIET)" bold $COLOR_INFO) "-q" \
+        "$?" "$$" "`whoami`" "`get_system_info`";
     _echo "$TMP_DEBUG"
-    parsecolortags "<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
+    parse_color_tags "<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
     return 0
 }
 
@@ -2034,30 +2220,18 @@ declare -x LIBINST_TARGET=""
 declare -x LIBINST_CLONE=""
 declare -x LIBINST_BRANCH='master'
 
-## instwiz_gitversion ( file_path )
-## get the gitversion string from a file_path
-instwiz_gitversion () {
-    if [ $# -eq 0 ]; then return 0; fi
-    get_gitversion "${1}"
-    return 0
-}
-
-## instwiz_real_gitversion ( path = LIBINST_CLONE )
-## get the real GIT gitversion from a repo
-instwiz_real_gitversion () {
-    local oldpwd=$(pwd)
+## instwiz_get_real_version ( path = LIBINST_CLONE )
+## get the real vcs_get_version from a repo
+instwiz_get_real_version () {
     local clonedir="${1:-${LIBINST_CLONE}}"
-    cd "${clonedir}" && gitversion && cd "${oldpwd}"
+    vcs_get_version "${clonedir}"
     return 0
 }
 
 ## instwiz_remoteversion ( path = LIBINST_CLONE , branch = HEAD )
-## get the last GIT commit SHA from the remote in branch
+## get the last commit SHA from the remote in branch
 instwiz_remoteversion () {
-    local clonedir="${1:-${LIBINST_CLONE}}"
-    local branch="${2:-HEAD}"
-    local result=$(git ls-remote "${clonedir}" | awk "/${branch}/ {print \$1}" | sort -u)
-    echo ${result}
+    vcs_get_remote_version "${1:-${LIBINST_CLONE}}" "${2:-HEAD}"
     return 0
 }
 
@@ -2069,7 +2243,7 @@ instwiz_prepare_install_cmd () {
         local _originalfilepath="${LIBINST_CLONE}/${file}"
         local _targetfilepath="${LIBINST_TARGET}/${file}"
         if [ -e ${_originalfilepath} ]; then
-            if [ `strlen "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
+            if [ `string_length "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
             if [ -d ${_originalfilepath} ]
             then installcmd+="cp -rf '${_originalfilepath}' '${_targetfilepath}'"
             else installcmd+="cp -f '${_originalfilepath}' '${_targetfilepath}'"
@@ -2083,7 +2257,7 @@ instwiz_prepare_install_cmd () {
         local _originalfilepath="${LIBINST_CLONE}/${file}"
         local _targetfilepath="${LIBINST_TARGET}/${file}"
         if [ -f ${_originalfilepath} ]; then
-            if [ `strlen "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
+            if [ `string_length "${installcmd}"` -gt 0 ]; then installcmd+=" && "; fi
             installcmd+="chmod a+x '${_targetfilepath}'"
         fi
     done
@@ -2100,7 +2274,7 @@ instwiz_prepare_uninstall_cmd () {
     for file in "${SCRIPT_FILES[@]}"; do
         local _targetfilepath="${LIBINST_TARGET}/${file}"
         if [ -e ${_targetfilepath} ]; then
-            if [ `strlen "${uninstallcmd}"` -gt 0 ]; then uninstallcmd+=" && "; fi
+            if [ `string_length "${uninstallcmd}"` -gt 0 ]; then uninstallcmd+=" && "; fi
             if [ -d ${_targetfilepath} ]
             then uninstallcmd+="rm -rf '${_targetfilepath}'"
             else uninstallcmd+="rm -f '${_targetfilepath}'"
@@ -2124,16 +2298,13 @@ script_installation_target () {
 
 #### script_installation_source ( clone_repo = SCRIPT_REPOSITORY_URL , clone_dir = LIB_SYSCACHEDIR )
 script_installation_source () {
-    if [ $# -gt 0 ]; then
-        export SCRIPT_REPOSITORY_URL="$1"
-    fi
-        local _dirname=$(basename ${repourl})
-        _dirname="${_dirname/.git/}"
-        local target="${LIB_SYSCACHEDIR}/${_dirname}"
-        make_cachedir
-    if [ $# -gt 1 ]; then
-        export SCRIPT_HOME="$1"
-    fi
+    if [ $# -gt 0 ]; then export SCRIPT_REPOSITORY_URL="$1"; fi
+    local _dirname=$(basename ${repourl})
+    _dirname="${_dirname/.git/}"
+    if [ "${_dirname}" != "`basename ${repourl}`" ]; then export SCRIPT_VCS='git'; fi
+    local target="${LIB_SYSCACHEDIR}/${_dirname}"
+    make_cachedir
+    if [ $# -gt 1 ]; then export SCRIPT_HOME="$1"; fi
 	export LIBINST_TARGET="${1:-${HOME}/bin}"
     if [ ! -d ${LIBINST_TARGET} ]; then
         mkdir -p ${LIBINST_TARGET} || simple_error "target path '${LIBINST_TARGET}' not found and can't be created!"
@@ -2158,9 +2329,9 @@ script_check () {
     local clonedir="${2:-${LIBINST_CLONE}}"
     local targetdir="${3:-${LIBINST_TARGET}}"
     # target
-    local targetvers=$(instwiz_gitversion "${targetdir}/${filename}")
-    local targetvers_sha=$(gitversion_extract_sha "${targetvers}")
-    local targetvers_branch=$(gitversion_extract_branch "${targetvers}")
+    local targetvers=$(get_version_string "${targetdir}/${filename}")
+    local targetvers_sha=$(get_version_sha "${targetvers}")
+    local targetvers_branch=$(get_version_branch "${targetvers}")
     # distant GIT
     local remotevers_sha=$(instwiz_remoteversion "${clonedir}" "${targetvers_branch}");
     if [ "${targetvers_sha}" != "${remotevers_sha}" ]
@@ -2223,9 +2394,11 @@ declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
-for section in "${MANPAGE_INFOS[@]}"; do eval "$section=\$LIB_$section"; done
-for section in "${SCRIPT_INFOS[@]}"; do eval "$section=\$LIB_$section"; done
-for section in "${VERSION_INFOS[@]}"; do eval "$section=\$LIB_$section"; done
+SCRIPT_VCS="${LIB_VCS}"
+VCSVERSION="${LIB_GITVERSION}"
+for section in "${MANPAGE_VARS[@]}"; do eval "$section=\$LIB_$section"; done
+for section in "${SCRIPT_VARS[@]}"; do eval "$section=\$LIB_$section"; done
+for section in "${VERSION_VARS[@]}"; do eval "$section=\$LIB_$section"; done
 OPTIONS_ALLOWED="b:t:p:${COMMON_OPTIONS_ALLOWED}"
 LONG_OPTIONS_ALLOWED="branch:,target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=""
@@ -2244,7 +2417,7 @@ DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COL
 \t<bold>documentation</bold>\t\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
 \t<bold>clean</bold>\t\t\t\tclean library cache\n\n\
 \tTry 'man piwi-bash-library(.sh)', 'man ./piwi-bash-library.man' or '$0 --man' for the library full manpage.";
-OPTIONS="<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - will be prompted if absent)\n\
+OPTIONS="<bold>-t | --target=PATH</bold>\t\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
 \t<bold>-p | --preset=TYPE</bold>\t\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t<bold>-b | --branch=NAME</bold>\t\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\n\
 \t<underline>Common options</underline> available for any script using the library:\n\
@@ -2303,10 +2476,10 @@ preset_valid () {
 # -> prepare a clone of the library repo
 prepare_libclone () {
     export SCRIPT_REPOSITORY_URL="${LIB_HOME}"
-    make_git_clone ${SCRIPT_REPOSITORY_URL}
+    git_make_clone ${SCRIPT_REPOSITORY_URL}
     export LIBINST_CLONE=${CURRENT_GIT_CLONE_DIR}
-    change_git_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
-    update_git_clone ${LIBINST_CLONE}
+    git_change_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
+    git_update_clone ${LIBINST_CLONE}
     return 0
 }
 
@@ -2384,10 +2557,10 @@ intlibaction_version () {
     return 0
 }
 intlibaction_help () {
-    clear; usage; return 0
+    clear; script_help; return 0
 }
 intlibaction_usage () {
-    simple_usage; return 0
+    script_usage; return 0
 }
 intlib_check_uptodate () {
     if $QUIET; then return 0; fi
@@ -2418,11 +2591,11 @@ intlib_check_uptodate () {
 intlib_check_uptodate
 
 # parsing options
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions_strict
+parse_common_options_strict
 OPTIND=1
 while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
@@ -2431,7 +2604,7 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         t) export INTLIB_TARGET="${OPTARG}";;
         p) export INTLIB_PRESET="${OPTARG}";;
         b) export LIBINST_BRANCH="${OPTARG}";;
-        -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+        -) LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
             case $OPTARG in
                 target*) export INTLIB_TARGET="${LONGOPTARG}";;
                 preset*) export INTLIB_PRESET="${LONGOPTARG}";;
@@ -2441,7 +2614,7 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         ?) ;;
     esac
 done
-getnextargument
+get_next_argument
 ACTION="$ARGUMENT"
 
 # checking env

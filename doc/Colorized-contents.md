@@ -37,14 +37,14 @@ options. These codes can be used to build the final terminal colorization tag:
 
 Some helping methods are defined to get these full fromated tags:
 
--    `gettextformattag ( code )` to get a formated tag for this code,
--    `getcolorcode ( name , background=FALSE )` to get a color code by color name (`foreground`
+-    `get_text_format_tag ( code )` to get a formated tag for this code,
+-    `get_color_code ( name , background=FALSE )` to get a color code by color name (`foreground`
      by default, set the second argument on `true` to get background code),
--    `getcolortag ( name , background=FALSE )` to get a color formated tag by color name (`foreground`
+-    `get_color_tag ( name , background=FALSE )` to get a color formated tag by color name (`foreground`
      by default, set the second argument on `true` to get background code),
--    `gettextoptioncode ( name )` to get a text option code by text option name,
--    `gettextoptiontag ( name )` to get a text option formated tag by text option name,
--    `gettextoptiontagclose ( name )` to get a closing text option formated tag by text option name,
+-    `get_text_option_code ( name )` to get a text option code by text option name,
+-    `get_text_option_tag ( name )` to get a text option formated tag by text option name,
+-    `get_text_option_tagclose ( name )` to get a closing text option formated tag by text option name,
 
 You can also build a complete string colorized (fully) calling method:
 
@@ -75,12 +75,12 @@ on user's system).
 
 To build the final colorized string, just run:
 
-    parsecolortags "the string"
+    parse_color_tags "the string"
 
 If your string is contained in a bash variable, you HAVE to surround the variable name between
 doubel quotes like:
 
-    parsecolortags "$MYSTRING"
+    parse_color_tags "$MYSTRING"
 
 
 --------------

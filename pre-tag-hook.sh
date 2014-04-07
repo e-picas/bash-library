@@ -15,7 +15,7 @@ BRANCH_NAME="$3"
 
 _VERSION="${TAG_NAME/v/}"
 _DATE=$(git log -1 --format="%ci" --date=short | cut -s -f 1 -d ' ')
-_GITVERSION=$(gitversion)
+_GITVERSION=$(git_get_version)
 _LIBFILE="src/piwi-bash-library.sh"
 _MANFILE="MANPAGE.md"
 _MANMANFILE="src/piwi-bash-library.man"

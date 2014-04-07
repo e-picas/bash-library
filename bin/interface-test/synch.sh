@@ -13,7 +13,7 @@ root_required
 targetdir_required
 
 BASETARGET=${_TARGET%%/$_BASEDIR}
-if [ ! -d $BASETARGET ]; then patherror "${BASETARGET}"; fi
+if [ ! -d $BASETARGET ]; then path_error "${BASETARGET}"; fi
 
 BASESCRIPT=`basename $0`
 BASELIB_DIR="${_BASEDIR}/../../src/"

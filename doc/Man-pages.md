@@ -13,7 +13,7 @@ The library builds its manpages using some variables defined in each script. As 
 of these variables is defined, it will be shown in the concerned manpage. You can create rich
 contents using [tagged strings](Colorized-contents.md) for all of these texts.
 
-These variables are the entries of the `MANPAGE_INFOS` array and tries to follow the common
+These variables are the entries of the `MANPAGE_VARS` array and tries to follow the common
 manpages structure:
 
     SYNOPSIS
@@ -32,7 +32,7 @@ To define a script description, just write in your script:
     my <bold>tagged text</bold>\n\
     ...";
 
-Doing so for each `MANPAGE_INFOS` entries, these values will be used to construct the final
+Doing so for each `MANPAGE_VARS` entries, these values will be used to construct the final
 manpage.
 
 NOTE - Please note that the result is NOT a true UNIX manpage but just a string written on

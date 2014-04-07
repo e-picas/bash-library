@@ -12,34 +12,34 @@ This is free software: you are free to change and redistribute it ; there is NO 
 ----
 
 
-## REFERENCES (line 21)
+## REFERENCES (line 22)
 
 -   @ Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>
 -   @ Bash Guide for Beginners: <http://www.tldp.org/LDP/Bash-Beginners-Guide/html/Bash-Beginners-Guide.html>
 -   @ Advanced Bash-Scripting Guide: <http://www.tldp.org/LDP/abs/html/abs-guide.html>
 -   @ GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>
 
-## SETTINGS (line 26)
+## ENVIRONMENT (line 27)
 
--   @ SCRIPT_INFOS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
--   @ MANPAGE_INFOS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
--   @ VERSION_INFOS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
+-   @ SCRIPT_VARS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
+-   @ MANPAGE_VARS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
+-   @ VERSION_VARS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
 -   @ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
--   @ LIB_COLORS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
+-   @ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
 -   @ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey )
 -   @ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden )
+-   @ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
+-   @ WORKINGDIR = pwd
+-   @ USEROS="$(uname)"
+
+## SETTINGS (line 65)
+
 -   @ LIB_FILENAME_DEFAULT = "piwi-bash-library"
 -   @ LIB_NAME_DEFAULT = "piwibashlib"
 -   @ LIB_LOGFILE = "piwibashlib.log"
 -   @ LIB_TEMPDIR = "tmp"
 -   @ LIB_SYSHOMEDIR = "${HOME}/.piwi-bash-library/"
 -   @ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/"
-
-## ENVIRONMENT (line 93)
-
--   @ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
--   @ WORKINGDIR = pwd
--   @ USEROS="$(uname)"
 
 ## COMMON OPTIONS (line 109)
 
@@ -58,29 +58,30 @@ This is free software: you are free to change and redistribute it ; there is NO 
 
 -   @ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE
 
-## LIBRARY INFOS (line 159)
+## LIBRARY SETUP (line 159)
 
 -   @ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
 
-## SYSTEM (line 209)
+## SYSTEM (line 186)
 
--   **getsysteminfo ()**
--   **getmachinename ()**
--   **addpath ( path )**
--   **getscriptpath ( script = $0 )**
--   **setworkingdir ( path )**
--   **setlogfilename ( path )**
+-   **get_system_info ()**
+-   **get_machine_name ()**
+-   **add_path ( path )**
+-   **get_script_path ( script = $0 )**
+-   **set_working_directory ( path )**
+-   **set_log_filename ( path )**
 
-## FILES (line 260)
+## FILES (line 237)
 
--   **getextension ( path = $0 )**
--   **getfilename ( path = $0 )**
--   **getbasename ( path = $0 )**
--   **getdirname ( path = $0 )**
--   **realpath ( script = $0 )**
+-   **get_extension ( path = $0 )**
+-   **get_filename ( path = $0 )**
+-   **get_basename ( path = $0 )**
+-   **get_dirname ( path = $0 )**
+-   **get_absolute_path ( script = $0 )**
+-   **/ realpath ( string )**
 -   **resolve ( path )**
 
-## ARRAY (line 303)
+## ARRAY (line 283)
 
 -   **array_search ( item , $array[@] )**
     @return the index of an array item, 0 based
@@ -89,34 +90,26 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **array_filter ( $array[@] )**
     @return array with cleaned values
 
-## STRING (line 333)
+## STRING (line 313)
 
--   **strlen ( string )**
+-   **string_length ( string )**
     @return the number of characters in string
--   **strtoupper ( string )**
--   **strtolower ( string )**
--   **ucfirst ( string )**
+-   **/ strlen ( string )**
+-   **string_to_upper ( string )**
+-   **/ strtoupper ( string )**
+-   **string_to_lower ( string )**
+-   **/ strtolower ( string )**
+-   **upper_case_first ( string )**
+-   **/ ucfirst ( string )**
 -   **explode ( str , delim = ' ' )**
 -   **implode ( array[@] , delim = ' ' )**
--   **explodeletters ( str )**
+-   **explode_letters ( str )**
 
-## BOOLEAN (line 403)
+## BOOLEAN (line 395)
 
--   **onoffbit ( bool )**
+-   **onoff_bit ( bool )**
 
-## VCS (line 409)
-
--   **isgitclone ( path = pwd , remote_url = null )**
--   **get_gitbranch ()**
--   **get_gitcommit ()**
--   **gitversion ( quiet = false )**
--   **make_git_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )**
--   **update_git_clone ( target_dir )**
--   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
--   **change_git_branch ( target_dir , branch = 'master' )**
--   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
-
-## UTILS (line 544)
+## UTILS (line 401)
 
 -   **_echo ( string )**
 -   **_necho ( string )**
@@ -134,123 +127,154 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )**
 -   **error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )**
 -   @error default status is E_ERROR (90)
--   **nooptionerror ()**
+-   **nooption_error ()**
 -   @error exits with status E_OPTS (81)
--   **commanderror ( cmd )**
+-   **command_error ( cmd )**
 -   @error exits with status E_CMD (82)
--   **patherror ( path )**
+-   **path_error ( path )**
 -   @error exits with status E_PATH (83)
 -   **simple_usage ( synopsis = SYNOPSIS_ERROR )**
 -   **simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
 -   @error default status is E_ERROR (90)
--   **nooptionsimpleerror ()**
+-   **nooption_simple_error ()**
 -   @error exits with status E_OPTS (81)
--   **commandsimpleerror ( cmd )**
+-   **command_simple_error ( cmd )**
 -   @error exits with status E_CMD (82)
--   **pathsimpleerror ( path )**
+-   **path_simple_error ( path )**
 -   @error exits with status E_PATH (83)
--   **gnuerrorstr ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
+-   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
 
-## COLORIZED CONTENTS (line 819)
+## VCS (line 676)
 
--   **gettextformattag ( code )**
+-   @ VCSVERSION : variable used as version marker like `branch@commit_sha`
+-   @ SCRIPT_VCS = VCS type of the script
+-   **get_version_string ( file_path = $0 , constant_name = VCSVERSION )**
+-   **get_version_sha ( get_version_string )**
+-   **get_version_branch ( get_version_string )**
+-   **vcs_is_clone ( path = pwd , remote_url = null )**
+-   **vcs_get_branch ( path = pwd )**
+-   **vcs_get_commit ( path = pwd )**
+-   **vcs_get_version ( path = pwd )**
+-   **vcs_get_remote_version ( path = pwd , branch = HEAD )**
+-   **vcs_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )**
+-   **vcs_update_clone ( target_dir )**
+-   **vcs_change_branch ( target_dir , branch = 'master' )**
+-   **git_is_clone ( path = pwd , remote_url = null )**
+-   **git_get_branch ( path = pwd )**
+-   **git_get_commit ( path = pwd )**
+-   **git_get_version ( path = pwd )**
+-   **git_get_remote_version ( path = pwd , branch = HEAD )**
+-   **git_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )**
+-   **git_update_clone ( target_dir )**
+-   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+-   **git_change_branch ( target_dir , branch = 'master' )**
+-   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+
+## COLORIZED CONTENTS (line 930)
+
+-   **get_text_format_tag ( code )**
     @param code must be one of the library colors or text-options codes
--   **getcolorcode ( name , background = false )**
+-   **get_color_code ( name , background = false )**
     @param name must be in LIBCOLORS
--   **getcolortag ( name , background = false )**
+-   **get_color_tag ( name , background = false )**
     @param name must be in LIBCOLORS
--   **gettextoptioncode ( name )**
+-   **get_text_option_code ( name )**
     @param name must be in LIBTEXTOPTIONS
--   **gettextoptiontag ( name )**
+-   **get_text_option_tag ( name )**
     @param name must be in LIBTEXTOPTIONS
--   **gettextoptiontagclose ( name )**
+-   **get_text_option_tagclose ( name )**
     @param name must be in LIBTEXTOPTIONS
 -   **colorize ( string , text_option , foreground , background )**
     @param text_option must be in LIBTEXTOPTIONS
     @param foreground must be in LIBCOLORS
     @param background must be in LIBCOLORS
--   **parsecolortags ( "string with <bold>tags</bold>" )**
--   **stripcolors ( string )**
+-   **parse_color_tags ( "string with <bold>tags</bold>" )**
+-   **strip_colors ( string )**
 
-## TEMPORARY FILES (line 985)
+## TEMPORARY FILES (line 1096)
 
--   **gettempdirpath ( dirname = "LIB_TEMPDIR" )**
+-   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
--   **gettempfilepath ( filename , dirname = "LIB_TEMPDIR" )**
+-   **get_temp_filepath ( filename , dirname = "LIB_TEMPDIR" )**
     @param filename The temporary filename to use
     @param dirname The name of the directory to create (default is `tmp/`)
--   **createtempdir ( dirname = "LIB_TEMPDIR" )**
+-   **create_tempdir ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
--   **cleartempdir ( dirname = "LIB_TEMPDIR" )**
+-   **clear_tempdir ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
--   **cleartempfiles ( dirname = "LIB_TEMPDIR" )**
+-   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 1072)
+## LOG FILES (line 1183)
 
--   **getlogfilepath ()**
+-   **get_log_filepath ()**
 -   **log ( message , type='' )**
--   **readlog ()**
+-   **read_log ()**
 
-## CONFIGURATION FILES (line 1110)
+## CONFIGURATION FILES (line 1221)
 
--   **getglobalconfigfile ( file_name )**
--   **getuserconfigfile ( file_name )**
--   **readconfig ( file_name )**
--   **readconfigfile ( file_path )**
--   **writeconfigfile ( file_path , array_keys , array_values )**
--   **setconfigval ( file_path , key , value )**
--   **getconfigval ( file_path , key )**
--   **buildconfigstring ( array_keys , array_values )**
+-   **get_global_configfile ( file_name )**
+-   **get_user_configfile ( file_name )**
+-   **read_config ( file_name )**
+-   **read_configfile ( file_path )**
+-   **write_configfile ( file_path , array_keys , array_values )**
+-   **set_configval ( file_path , key , value )**
+-   **get_configval ( file_path , key )**
+-   **build_configstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1260)
+## SCRIPT OPTIONS / ARGUMENTS (line 1371)
 
--   **getshortoptionsarray ()**
--   **getshortoptionsstring ( delimiter = '|' )**
--   **getlongoptionsarray ()**
--   **getlongoptionsstring ( delimiter = '|' )**
--   **getoptionarg ( "$x" )**
--   **getlongoption ( "$x" )**
--   **getlongoptionarg ( "$x" )**
--   **getnextargument ()**
--   **getlastargument ()**
--   **rearrangescriptoptions ( "$@" )**
--   **parsecommonoptions_strict ( "$@" = SCRIPT_OPTS )**
--   **parsecommonoptions ( "$@" = SCRIPT_OPTS )**
+-   **get_short_options_array ()**
+-   **get_short_options_string ( delimiter = '|' )**
+-   **get_long_options_array ()**
+-   **get_long_options_string ( delimiter = '|' )**
+-   **get_option_arg ( "$x" )**
+-   **get_long_option ( "$x" )**
+-   **get_long_optionarg ( "$x" )**
+-   **get_next_argument ()**
+-   **get_last_argument ()**
+-   **rearrange_script_options ( "$@" )**
+-   **parse_common_options_strict ( "$@" = SCRIPT_OPTS )**
+-   **parse_common_options ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1492)
+## SCRIPT INFOS (line 1603)
 
--   **version ( quiet = false )**
--   **title ( lib = false )**
--   **usage ( lib_info = true )**
--   **manpage ( cmd = $0 , section = 3 )**
--   **script_shortversion ( quiet = false )**
+-   **get_script_version_string ( quiet = false )**
+-   **script_title ( lib = false )**
+-   **script_usage ()**
+-   **script_help ( lib_info = true )**
+-   **script_manpage ( cmd = $0 , section = 3 )**
+-   **script_short_version ( quiet = false )**
 -   **script_version ( quiet = false )**
+
+## DOCBUILDER (line 1737)
+
+-   @ DOCBUILDER_MASKS = ()
+-   @ DOCBUILDER_MARKER = '##@!@##'
+-   @ DOCBUILDER_RULES = ( ... )
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 1699)
+## LIBRARY INFOS (line 1844)
 
--   **get_gitversion ( path = $0 )**
--   **gitversion_extract_sha ( gitversion_string )**
--   **gitversion_extract_branch ( gitversion_string )**
+-   **get_library_version_string ( path = $0 )**
 -   **library_info ()**
 -   **library_path ()**
 -   **library_help ()**
 -   **library_usage ()**
--   **library_shortversion ( quiet = false )**
+-   **library_short_version ( quiet = false )**
 -   **library_version ( quiet = false )**
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 
-## LIBRARY INTERNALS (line 1818)
+## LIBRARY INTERNALS (line 1956)
 
 -   @ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 -   **make_library_homedir ()**
 -   **make_library_cachedir ()**
 -   **clean_library_cachedir ()**
 
-## INSTALLATION WIZARD (line 1843)
+## INSTALLATION WIZARD (line 1981)
 
 -   @ SCRIPT_REPOSITORY_URL = url of your distant repository
 -   @ SCRIPT_FILES = array of installable files
@@ -265,9 +289,9 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **script_update ( path = $HOME/bin/ )**
 -   **script_uninstall ( path = $HOME/bin/ )**
 
-## COMPATIBILITY (line 2007)
+## COMPATIBILITY (line 2131)
 
 
 ----
 
-[*Doc generated at 05-4-2014 17:08:15 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 06-4-2014 22:51:49 from path 'src/piwi-bash-library.sh'*]

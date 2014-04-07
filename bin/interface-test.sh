@@ -40,6 +40,7 @@ OPTIONS="<bold>-z | --actions</bold>\t\tget the list of available actions\n\
 \t<bold>-t | --target=PATH</bold>\ttarget directory used for some actions\n\n\
 \t<underline>Common options</underline> (to use first):\n\
 \t${COMMON_OPTIONS_FULLINFO}";
+SCRIPT_VCS='git'
 
 #### internal lib ##########################
 
@@ -57,7 +58,7 @@ list_actions () {
         fi
     done
     actions_str="${actions_str}\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
-    parsecolortags "${actions_str}\n"
+    parse_color_tags "${actions_str}\n"
 }
 
 #### root_required ()
@@ -106,11 +107,11 @@ fi
 
 OPTIONS_ALLOWED="zs:p:t:${COMMON_OPTIONS_ALLOWED}"
 
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions
+parse_common_options
 
 OPTIND=1
 ACTION="${SCRIPT_ARGS[0]}"
@@ -118,13 +119,13 @@ while getopts "${OPTIONS_ALLOWED}" OPTION $options; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         d|f|h|i|l|q|v|V|x) rien=rien;;
-        z) title; list_actions; exit 0;;
+        z) script_title; list_actions; exit 0;;
         s) _SET=$OPTARG;;
         p) _PROJECT=$OPTARG;;
         t) _TARGET=$OPTARG;;
-        -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+        -) LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
             case $OPTARG in
-                actions) title; list_actions; exit 0;;
+                actions) script_title; list_actions; exit 0;;
                 set*) _SET=$LONGOPTARG;;
                 project*) _PROJECT=$LONGOPTARG;;
                 target*) _TARGET=$LONGOPTARG;;

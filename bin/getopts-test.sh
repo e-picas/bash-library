@@ -28,6 +28,7 @@ DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \t\t- the custom 'a' option is parsed and considered by this script,\n\
 \t\t- the last common option 'x' is NOT parsed at all as it is after '--'.";
 SYNOPSIS="$LIB_SYNOPSIS_ACTION"
+SCRIPT_VCS='git'
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_FULLINFO
@@ -49,13 +50,13 @@ echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
 echo "- received arguments: '$@'";
 echo
 echo "# re-arranging options and arguments:"
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[@]}'"
 echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[@]}'"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions_strict
+parse_common_options_strict
 echo "- rearranged arguments: '$@'";
 echo
 
@@ -67,8 +68,8 @@ while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
-        -)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
-            LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+        -)  # for long options with argument, use fct 'get_long_optionarg ( $arg )'
+            LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
             case $OPTARG in
                 test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
                 ?) echo " - unknown long option '$OPTARG'";;
@@ -93,16 +94,16 @@ echo
 echo "# test for the last 'action' argument";
 echo "# to test it, run:"
 echo "#      ~\$ $0 ... action -x"
-lastarg=$(getlastargument)
+lastarg=$(get_last_argument)
 echo " - last argument is '${lastarg}'"
 echo
 
 echo "# test for the 'action' arguments";
 echo "# to test it, run:"
 echo "#      ~\$ $0 action1 action2 ... -x"
-getnextargument
+get_next_argument
 echo " - first argument is '$ARGUMENT'"
-getnextargument
+get_next_argument
 echo " - next argument is '$ARGUMENT'"
 echo
 echo "# finally:"

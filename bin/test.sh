@@ -25,32 +25,33 @@ Each file of the package like 'bin/***-test.sh' is a demo or test for a specific
 \t${COMMON_OPTIONS_FULLINFO}\n\n\
 <bold>LIBRARY</bold>\n\
 \t${LIB_DEPEDENCY_INFO}";
+SCRIPT_VCS='git'
 
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions_strict
+parse_common_options_strict
 quietecho "_ go"
 
-# getsysteminfo
-echo "## getsysteminfo is: '`getsysteminfo`'"
+# get_system_info
+echo "## get_system_info is: '`get_system_info`'"
 echo
 
-# getmachinename
-echo "## getmachinename is: '`getmachinename`'"
+# get_machine_name
+echo "## get_machine_name is: '`get_machine_name`'"
 echo
 
-# getscriptpath
+# get_script_path
 echo "## pwd is: '`pwd`'"
 echo
 
 # files
-echo "## getscriptpath: '`getscriptpath`'"
-echo "## dirname: '`getdirname`'"
-echo "## basename: '`getbasename`'"
-echo "## filename: '`getfilename`'"
-echo "## extension: '`getextension`'"
+echo "## get_script_path: '`get_script_path`'"
+echo "## dirname: '`get_dirname`'"
+echo "## basename: '`get_basename`'"
+echo "## filename: '`get_filename`'"
+echo "## extension: '`get_extension`'"
 echo
 
 ## arrays
@@ -68,22 +69,22 @@ echo
 
 # strings
 teststr="my test string"
-echo "## tests of fct 'strlen':"
-echo "strlen of test string '$teststr' (14) : `strlen \"$teststr\"`"
-echo "strlen of test string '' (0) : `strlen`"
+echo "## tests of fct 'string_length':"
+echo "string_length of test string '$teststr' (14) : `string_length \"$teststr\"`"
+echo "string_length of test string '' (0) : `string_length`"
 echo 
-echo "## strtoupper: `strtoupper \"$teststr\"`"
-echo "## strtolower: `strtolower \"$teststr\"`"
-echo "## ucfirst: `ucfirst \"$teststr\"`"
+echo "## string_to_upper: `string_to_upper \"$teststr\"`"
+echo "## string_to_lower: `string_to_lower \"$teststr\"`"
+echo "## upper_case_first: `upper_case_first \"$teststr\"`"
 echo
 
-# isgitclone
-echo "## test of fct 'isgitclone' on current dir:"
-if isgitclone; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
-echo "## test of fct 'isgitclone' on current dir for remote '${LIB_HOME}':"
-if $(isgitclone `pwd` "${LIB_HOME}"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
-echo "## test of fct 'isgitclone' on current dir for remote 'https://github.com/atelierspierrot/dev-tools':"
-if $(isgitclone `pwd` "https://github.com/atelierspierrot/dev-tools"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+# git_is_clone
+echo "## test of fct 'git_is_clone' on current dir:"
+if git_is_clone; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+echo "## test of fct 'git_is_clone' on current dir for remote '${LIB_HOME}':"
+if $(git_is_clone `pwd` "${LIB_HOME}"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+echo "## test of fct 'git_is_clone' on current dir for remote 'https://github.com/atelierspierrot/dev-tools':"
+if $(git_is_clone `pwd` "https://github.com/atelierspierrot/dev-tools"); then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
 echo
 
 # colorize
@@ -92,9 +93,9 @@ _echo $(colorize " My string in bold black grey" bold green blue)
 echo
 
 TESTSTR1="my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred> to test <bgred>some <bold>imbricated</bold> tags</bgred>"
-echo "## tests of fct 'parsecolortags':"
+echo "## tests of fct 'parse_color_tags':"
 echo $TESTSTR1
-parsecolortags "$TESTSTR1"
+parse_color_tags "$TESTSTR1"
 echo
 
 # verecho() usage

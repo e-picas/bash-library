@@ -18,7 +18,7 @@ VERSION="0.0.1-test"
 DESCRIPTION="A script to test library automatic manpages ...\n\
 \tTo test it, run:\n\
 \t\t~\$ path/to/manpage-test.sh\n\
-\tResult is the default script manpage using in-script variables ${MANPAGE_INFOS[@]}.\n\
+\tResult is the default script manpage using in-script variables ${MANPAGE_VARS[@]}.\n\
 \tThen run:\n\
 \t\t~\$ path/to/manpage-test.sh --testusage\n\
 \tResult is a simple custom manpage using in-script variable USAGE.\n\
@@ -28,6 +28,7 @@ DESCRIPTION="A script to test library automatic manpages ...\n\
 \tYou can use option '-v' to add the DEPENDENCIES section of the default manpage.\n\
 \tYou can use special program name long option like '--less' or '--more'.";
 SYNOPSIS="$LIB_SYNOPSIS"
+SCRIPT_VCS='git'
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_INFO
@@ -35,7 +36,7 @@ OPTIONS="<bold>--testusage</bold>\tget a sample USAGE manpage\n\
 \t<bold>--default</bold>\tthe default script manpage (this is the default action)\n\
 \t<bold>--library</bold>\tthe library manpage";
 
-parsecommonoptions "$@"
+parse_common_options "$@"
 quietecho "_ go"
 
 if ! $VERBOSE; then 
@@ -61,7 +62,7 @@ while getopts "${COMMON_OPTIONS_ALLOWED}" OPTION; do
 This is a simple test of in-script full 'USAGE' custom string (so automatic manpage construction is avoid).\n\n\
 <bold>USAGE</bold>\n\
 \t~\$ ${0} -option(s) --longoption(s)";
-                usage
+                script_help
                 actiondone=true
                 ;;
             esac ;;
@@ -70,7 +71,7 @@ This is a simple test of in-script full 'USAGE' custom string (so automatic manp
 done
 
 if ! $actiondone; then
-    usage
+    script_help
 fi
 
 quietecho "_ ok"

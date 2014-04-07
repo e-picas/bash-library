@@ -30,12 +30,13 @@ OPTIONS="\n\
 \t<bold>delete</bold>\t\tdelete log file\n\n\
 \t<underline>Common options</underline> (to use first):\n\
 \t${COMMON_OPTIONS_FULLINFO}";
+SCRIPT_VCS='git'
 
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions
+parse_common_options
 quietecho "_ go"
 
 OPTIND=1
@@ -44,7 +45,7 @@ if [ ! -z "$ACTION" ]
 then
     case $ACTION in
         write)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Writing 10 test messages in log file '$LOGFILEPATH':"
             for i in {1..10}; do
                 log "my test message (item $i)"
@@ -54,19 +55,19 @@ then
             verecho "_ ok"
             echo
             verecho "New log file content is:"
-            readlog
+            read_log
             ;;
         read)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Reading log file '$LOGFILEPATH':"
-            readlog
+            read_log
             ;;
         throw)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             error "test throwing error"
             ;;
         delete)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Deleting log file '$LOGFILEPATH':"
             iexec "rm -f $LOGFILEPATH"
             ;;

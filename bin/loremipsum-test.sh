@@ -16,13 +16,14 @@ fi
 NAME="Lorem-Ipsum-Test"
 VERSION="0.0.1-dev"
 DESCRIPTION="A test for 'program' long option usage. Run with no long option, then with '--less' for instance."
+SCRIPT_VCS='git'
 
-parsecommonoptions "$@"
+parse_common_options "$@"
 quietecho "_ go"
 
 _MAX=100
 _TESTSTR=""
-_TMPFILE=$(gettempfilepath loremipsum-test)
+_TMPFILE=$(get_temp_filepath loremipsum-test)
 
 for ((i=0; i<$_MAX; i++)); do
     _TESTSTR="${_TESTSTR}\n${LOREMIPSUM_MULTILINE}\n"
