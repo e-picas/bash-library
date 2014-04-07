@@ -202,7 +202,7 @@ declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_VCS='git'
-declare -rx LIB_HOME="http://github.com/atelierspierrot/piwi-bash-library"
+declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
 declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
 declare -rx LIB_SOURCES_TYPE="Sources & updates: <${LIB_HOME}>"
@@ -1353,13 +1353,13 @@ clear_tempfiles () {
 get_log_filepath () {
     if [ ! -n "$LOGFILE" ]; then export LOGFILE=$LIB_LOGFILE; fi
     local logsys="/var/log/${LOGFILE}"
-    touch ${logsys} 2&> /dev/null;
+    touch ${logsys} 2> /dev/null;
     if [ -w "$logsys" ]
     then export LOGFILEPATH="$logsys"
     else
         make_library_homedir
         local logsys="${LIB_SYSHOMEDIR}/${LOGFILE}"
-        touch ${logsys} 2&> /dev/null;
+        touch ${logsys} 2> /dev/null;
         if [ -w "$logsys" ]
         then export LOGFILEPATH="$logsys"
         else export LOGFILEPATH="$LOGFILE"
