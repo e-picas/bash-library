@@ -194,7 +194,7 @@ custom options '-t' and '--test' with arguments):
 
 To get any long option argument, you can use:
 
-    LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
+    LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
 
 
 ### Options parsing and error reporting
@@ -236,8 +236,8 @@ test script).
         case $OPTION in
             t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
             a) echo " - test option A";;
-            -)  # for long options with argument, use fct 'get_long_optionarg ( $arg )'
-                LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
+            -)  # for long options with argument, use fct 'get_long_option_arg ( $arg )'
+                LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
                 case $OPTARG in
                     test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
                     ?) echo " - unknown long option '$OPTARG'";;

@@ -23,7 +23,7 @@ quietecho "_ go"
 
 _MAX=100
 _TESTSTR=""
-_TMPFILE=$(get_temp_filepath loremipsum-test)
+_TMPFILE=$(get_tempfile_path loremipsum-test)
 
 for ((i=0; i<$_MAX; i++)); do
     _TESTSTR="${_TESTSTR}\n${LOREMIPSUM_MULTILINE}\n"

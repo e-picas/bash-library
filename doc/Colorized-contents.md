@@ -44,7 +44,7 @@ Some helping methods are defined to get these full fromated tags:
      by default, set the second argument on `true` to get background code),
 -    `get_text_option_code ( name )` to get a text option code by text option name,
 -    `get_text_option_tag ( name )` to get a text option formated tag by text option name,
--    `get_text_option_tagclose ( name )` to get a closing text option formated tag by text option name,
+-    `get_text_option_tag_close ( name )` to get a closing text option formated tag by text option name,
 
 You can also build a complete string colorized (fully) calling method:
 

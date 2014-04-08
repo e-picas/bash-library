@@ -123,7 +123,7 @@ while getopts "${OPTIONS_ALLOWED}" OPTION $options; do
         s) _SET=$OPTARG;;
         p) _PROJECT=$OPTARG;;
         t) _TARGET=$OPTARG;;
-        -) LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
+        -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
             case $OPTARG in
                 actions) script_title; list_actions; exit 0;;
                 set*) _SET=$LONGOPTARG;;

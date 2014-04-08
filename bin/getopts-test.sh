@@ -68,8 +68,8 @@ while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
-        -)  # for long options with argument, use fct 'get_long_optionarg ( $arg )'
-            LONGOPTARG="`get_long_optionarg \"${OPTARG}\"`"
+        -)  # for long options with argument, use fct 'get_long_option_arg ( $arg )'
+            LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
             case $OPTARG in
                 test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
                 ?) echo " - unknown long option '$OPTARG'";;
