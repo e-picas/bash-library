@@ -13,7 +13,8 @@ a command using the library works: the available options and their meanings, the
 actions featured by the script and other informations as a presentation, the concerned
 files etc. The library can help building these informations in four ways:
 
--   it can build a very simple "synopsis" in case of error
+-   it can build a very simple "synopsis" in case of error and displayed using the
+    `--usage` option
 -   it can build a simple "usage" string ; it is displayed using the `--help` option
 	or after an error
 -   it can build a less simple "manpage-like" information, displayed using the `--man` option
@@ -182,46 +183,92 @@ To define these strings in your script, you must define each item of the `VERSIO
 Below is the sample of the `bin/getopts-test.sh` manpage ; have a look in the script to
 learn how it is constructed.
 
-    NAME
-        Bash-Lib script options & arguments test - v. [0.0.1-test]
+-   the `--version` option:
 
-    SYNOPSIS
-        ~$ bin/getopts-test.sh -[COMMON OPTIONS] -[SCRIPT OPTIONS [=VALUE]] [ARGUMENTS] --
+        Piwi Bash library 1.0.1 wip@292de0572d7a45e71bc22eaf9427908725a64ec3
+        An open source day-to-day bash library
+        Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>
+        License GPL-3.0: <http://www.gnu.org/licenses/gpl-3.0.html>
+        Sources & updates: <https://github.com/atelierspierrot/piwi-bash-library>
+        This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.
 
-    DESCRIPTION
+-   the `--usage` option:
+
+        usage: bin/getopts-test.sh  [-h|f|i|q|v|x|V|d|l]
+            [-a]  [-t [=value]]  [--test [=value]]  --  <arguments>
+        Run option '-h' for help.
+
+-   the `--help` option:
+
+        Bash-Lib script options & arguments test 0.1.0 [wip@292de0572d7a45e71bc22eaf9427908725a64ec3]
         A script to test custom script options & arguments usage ...
         To test it, run:
-            ~$ path/to/getopts-test.sh -vi -t "two words" -a -q --test="three wor ds" -- -x
-        Result is:
-            - the first common options 'v' and 'i' are parsed and considered by the library,
-            - the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,
-            - the custom 't' and 'test' options are parsed and considered by this script and their multi-words arguments are red,
-            - the custom 'a' option is parsed and considered by this script,
-            - the last common option 'x' is NOT parsed at all as it is after '--'.
 
-    OPTIONS
-        -t, --test=ARG	test a short and long option with argument
-        -a		a single short option to test options order
+            ~$ path/to/getopts-test.sh myaction1 -vi -t "two words" -a -f --test="three wor ds" myaction2 -- myaction3 -x
 
-        Common options (to use first):
-        -h, --help	show this information message 
-        -v, --verbose	increase script verbosity 
-        -q, --quiet	decrease script verbosity, nothing will be written unless errors 
-        -f, --force	force some commands to not prompt confirmation 
-        -i, --interactive	ask for confirmation before any action 
-        -x, --debug	see commands to run but not run them actually 
-        --libvers	see the library version 
-        --libhelp	see the library manpage 
+        usage: bin/getopts-test.sh -[common options] -[script options [=value]] [--] [arguments]
 
-    You can group short options like '-xc', set an option argument like '-d(=)value' 
-    or '--long=value' and use '--' to explicitly specify the end of the script options.
+            -t, --test=ARG		    test a short and long option with argument
+            -a			            a single short option to test options order
+            -v, --verbose		    increase script verbosity
+            -q, --quiet		        decrease script verbosity, nothing will be written unless errors
+            -f, --force		        force some commands to not prompt confirmation
+            -i, --interactive	    ask for confirmation before any action
+            -x, --debug		        enable debug mode
+            -d, --working-dir=PATH	redefine the working directory (default is 'pwd' - 'PATH' must exist)
+            -l, --log=FILENAME	    define the log filename to use (default is 'piwibashlib.log')
+            --dry-run		        see commands to run but not run them actually
 
-    DEPENDENCIES
-        This script is based on the Bash shell library, "The open source bash library of Les Ateliers Pierrot". 
-        Package [atelierspierrot/piwi-bash-library] version [0.0.1]. 
-        Licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
-        For sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
-        For bug reports, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
+            -V, --version	see the script version when available
+                            use option '-q' to get the version number only
+            -h, --help		show this information message
+            --usage			show quick usage information
+            --man			see the current script manpage if available
+                            a 'manpage-like' output will be guessed otherwise
+            --libvers		see the library version
+
+-   the `--man` option:
+
+        NAME
+            Bash-Lib script options & arguments test - v. [0.0.1-test]
+
+        SYNOPSIS
+            ~$ bin/getopts-test.sh -[COMMON OPTIONS] -[SCRIPT OPTIONS [=VALUE]] [ARGUMENTS] --
+
+        DESCRIPTION
+            A script to test custom script options & arguments usage ...
+            To test it, run:
+                ~$ path/to/getopts-test.sh -vi -t "two words" -a -q --test="three wor ds" -- -x
+            Result is:
+                - the first common options 'v' and 'i' are parsed and considered by the library,
+                - the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,
+                - the custom 't' and 'test' options are parsed and considered by this script and their multi-words arguments are red,
+                - the custom 'a' option is parsed and considered by this script,
+                - the last common option 'x' is NOT parsed at all as it is after '--'.
+
+        OPTIONS
+            -t, --test=ARG	test a short and long option with argument
+            -a		a single short option to test options order
+
+            Common options (to use first):
+            -h, --help	show this information message
+            -v, --verbose	increase script verbosity
+            -q, --quiet	decrease script verbosity, nothing will be written unless errors
+            -f, --force	force some commands to not prompt confirmation
+            -i, --interactive	ask for confirmation before any action
+            -x, --debug	see commands to run but not run them actually
+            --libvers	see the library version
+            --libhelp	see the library manpage
+
+        You can group short options like '-xc', set an option argument like '-d(=)value'
+        or '--long=value' and use '--' to explicitly specify the end of the script options.
+
+        DEPENDENCIES
+            This script is based on the Bash shell library, "The open source bash library of Les Ateliers Pierrot".
+            Package [atelierspierrot/piwi-bash-library] version [0.0.1].
+            Licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved.
+            For sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
+            For bug reports, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 
 --------------
 

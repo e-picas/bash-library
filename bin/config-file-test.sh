@@ -3,12 +3,12 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -16,12 +16,17 @@ fi
 NAME="Bash-Lib script test for configuration files"
 VERSION="0.1.0"
 DESCRIPTION="A script to test library configuration files management ...";
-SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
-SYNOPSIS_MANPAGE="${COMMON_SYNOPSIS_ACTION_MANPAGE}"
 SCRIPT_VCS='git'
 
-# for custom options, write an info string about usage
-# you can use the common library options string with COMMON_OPTIONS_FULLINFO_MANPAGE
+SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
+SYNOPSIS_MANPAGE="${COMMON_SYNOPSIS_ACTION_MANPAGE}"
+SYNOPSIS_ERROR="${COMMON_SYNOPSIS_ACTION}\n\
+\tread\n\
+\twrite\n\
+\tadd\n\
+\treplace\n\
+\tget\n\
+\tdelete";
 OPTIONS_MANPAGE="<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the configuration file (default action)\n\
 \t<bold>write</bold>\t\twrite the configuration file\n\

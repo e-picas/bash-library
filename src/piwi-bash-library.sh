@@ -41,14 +41,14 @@ declare -rxa SCRIPT_VARS=(NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSI
 declare -rxa USAGE_VARS=(NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE)
 declare -rx USAGE_SUFFIX="_USAGE"
 
-##@ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO ) (read-only)
+##@ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO ) (read-only)
 # see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
-declare -rxa VERSION_VARS=(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO)
+declare -rxa VERSION_VARS=(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO)
 
-##@ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
+##@ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
 ##@ MANPAGE_SUFFIX = "_MANPAGE"
 # see http://en.wikipedia.org/wiki/Man_page
-declare -rxa MANPAGE_VARS=(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)
+declare -rxa MANPAGE_VARS=(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)
 declare -rx MANPAGE_SUFFIX="_MANPAGE"
 
 ##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED ) (read-only)
@@ -100,7 +100,7 @@ declare -x E_CMD=82
 declare -x E_PATH=83
 
 # colors settings depending on OS
-case $USEROS in
+case ${USEROS} in
     Linux|FreeBSD|OpenBSD|SunOS) 
         declare -x COLOR_LIGHT=yellow
         declare -x COLOR_DARK=lightgrey
@@ -1869,6 +1869,8 @@ script_title () {
     local _vers=$(get_version_string)
     if [ -n "${_vers}" ]; then
         _echo "[${_vers}]"
+    elif [ -n "${DATE}" ]; then
+        _echo "[${DATE}]"
     fi
     if [ ! -z "$1" ]; then
         _echo "[using `library_version` - ${LIB_HOME}]"
@@ -1883,7 +1885,9 @@ script_short_title () {
     if [ "x${VERSION}" != 'x' ]; then TITLE="${TITLE} ${VERSION}"; fi
     local _vers=$(get_version_string)
     if [ -n "${_vers}" ]; then
-        TITLE="${TITLE} [${_vers}]"
+        TITLE+=" [${_vers}]"
+    elif [ -n "${DATE}" ]; then
+        TITLE+=" [${DATE}]"
     fi
     echo "${TITLE}"
     return 0
@@ -1932,8 +1936,8 @@ script_long_usage () {
         fi
     elif [ -n "${OPTIONS_USAGE}" ]; then
         OPTIONS_STR="${OPTIONS_USAGE}"
-    else
-        OPTIONS_STR="${COMMON_OPTIONS_USAGE}"
+    elif [ -n "${OPTIONS}" ]; then
+        OPTIONS_STR="${OPTIONS}"
     fi
     printf "`parse_color_tags \"\n%s\n\n<bold>usage:</bold> %s\n%s\n\n<${COLOR_COMMENT}>%s</${COLOR_COMMENT}>\"`" \
         "$(_echo ${TMP_USAGE})" "$(_echo ${SYNOPSIS_STR})" "$(_echo ${OPTIONS_STR})" \
@@ -1961,24 +1965,23 @@ script_help () {
             eval "section_name=\"${section/${MANPAGE_SUFFIX}/}\""
             eval "section_ctt=\"\$${section}\""
             eval "glob_section_ctt=\"\$${section_name}\""
-            eval "section_default_ctt=\"\$COMMON_${section}\""
-            eval "section_global_default_ctt=\"\$COMMON_${section/${MANPAGE_SUFFIX}/}\""
             local toshow=""
             if [ "${section_name}" != 'NAME' -a "${section_name}" != 'DATE' -a "${section_name}" != 'VERSION' ]; then
                 if [ -n "${section_ctt}" ]; then
                     toshow="${section_ctt}"
                 elif [ -n "${glob_section_ctt}" ]; then
                     toshow="${glob_section_ctt}"
-                elif [ -n "${section_default_ctt}" ]; then
-                    toshow="${section_default_ctt}"
-                elif [ -n "${section_global_default_ctt}" ]; then
-                    toshow="${section_global_default_ctt}"
-                fi
-                if [ -n "${toshow}" ]; then
-                    if [ "${section_name}" == 'DESCRIPTION' ]
-                    then TMP_USAGE+="\n\t${toshow}\n";
-                    else TMP_USAGE+="\n<bold>${section_name}</bold>\n\t${toshow}\n";
+                elif [ "${section_name}" == 'SYNOPSIS' ]; then
+                    eval "section_default_ctt=\"\$COMMON_${section}\""
+                    eval "section_global_default_ctt=\"\$COMMON_${section/${MANPAGE_SUFFIX}/}\""
+                    if [ -n "${section_default_ctt}" ]; then
+                        toshow="${section_default_ctt}"
+                    elif [ -n "${section_global_default_ctt}" ]; then
+                        toshow="${section_global_default_ctt}"
                     fi
+                fi
+                if [ -n "${toshow}" -a "${toshow}" != '' ]; then
+                    TMP_USAGE+="\n<bold>${section_name}</bold>\n\t${toshow}\n";
                 fi
             fi
         done
@@ -2029,7 +2032,7 @@ script_manpage () {
 #### script_short_version ( quiet = false )
 script_short_version () {
     local bequiet="${1:-false}"
-    if $bequiet; then
+    if ${bequiet}; then
         echo "${VERSION:-?}"
         return 0
     fi
@@ -2040,7 +2043,9 @@ script_short_version () {
             else TMP_STR="${0} ${TMP_STR}"
         fi
         local gitvers=$(get_version_string)
-        if [ -n "${gitvers}" ]; then TMP_STR+=" ${gitvers}"; fi
+        if [ -n "${gitvers}" ]; then TMP_STR+=" ${gitvers}"
+        elif [ -n "${DATE}" ]; then TMP_STR+=" ${DATE}"
+        fi
         echo "${TMP_STR}"
     fi
     return 0;
@@ -2049,7 +2054,7 @@ script_short_version () {
 #### script_version ( quiet = false )
 script_version () {
     local bequiet="${1:-false}"
-    if $bequiet; then
+    if ${bequiet}; then
         echo "${VERSION:-?}"
         return 0
     fi
@@ -2542,7 +2547,8 @@ INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
 done
-DESCRIPTION="${LIB_DESCRIPTION}\n\n\
+DESCRIPTION="${LIB_DESCRIPTION}"
+DESCRIPTION_USAGE="${LIB_DESCRIPTION}\n\n\
 To use the library, just include its source file using: \`source path/to/piwi-bash-library.sh\` and call its methods.\n\
 Try option '--man' for the library full manpage.";
 OPTIONS_USAGE="\n\
@@ -2555,9 +2561,9 @@ OPTIONS_USAGE="\n\
 \tdocumentation\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
 \tclean\t\t\tclean library cache\n\n\
 `parse_color_tags \"<bold>available options:</bold>\"`\n\
-\t-t | --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
-\t-p | --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
-\t-b | --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\
+\t-t, --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
+\t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
+\t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\
 ${COMMON_OPTIONS_USAGE}";
 SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  ...\n\
