@@ -8,7 +8,51 @@ Some test scripts (not required to use the library) are defined in the `bin/` di
 For a full example, run the `bin/test.sh` script.
 
 
-## Methods & Variables
+## Usage of the library
+
+To use the library in a bash script, just `source` it at the top of your code or before any
+call of its methods or variables:
+
+    #!/bin/bash
+    source path/to/piwi-bash-library.sh
+
+For a complete loading writing an error if the library is not found (if it is a requirement), use the following:
+
+    LIBFILE="path/to/piwi-bash-library.sh"
+    if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
+        PADDER=$(printf '%0.1s' "#"{1..1000})
+        printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+            "Unable to find required library file '${LIBFILE}'!" \
+            "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
+            0 $(tput cols) "${PADDER}";
+        exit 1
+    fi
+
+This way, if the library was not found, your script will end with an error and write:
+
+    ### ERROR! ###########################################################
+        Unable to find required library file 'path/to/piwi-bash-library.sh'!
+        Sent in 'current-file.sh' line '0' by 'username' - pwd is '...'
+    ######################################################################
+
+For more informations about library's usage in your scripts, please see the following
+documentations:
+
+-	[Scripts Usage](Scripts-Usage.md) explains how to use the [Common options](Common-Options.md)
+	handled by the library ; the "common options" are defined according to the best practices
+	and usages in *NIX commands
+-	[Help & Manpages](Help-Manpages.md) will show you how to create information strings and 
+	manuals for your scripts ; a special [Versioning & Licensing](Versioning-Licensing.md) documentation
+	explains the usage of "in-script"'s variables to correctly name and versioned your scripts
+-	[Colorized Contents](Colorized-Contents.md) explains how the library handles the construction of
+	colorized and styled terminal output
+-	[Scripts Install](Scripts-Install.md) describes the library's installation wizard you can use for
+	your scripts
+-	finally, the [Development](Development.md) explains the rules to follow to write well-coded and
+	well-documentated scripts
+
+
+## Internal Methods & Variables
 
 A full list of the current library methods and defined variables can be constructed
 parsing the library file itself using common option `documentation` action of the 
@@ -29,6 +73,15 @@ The documentation output follows some simple rules:
 	-	the `@return` mark describes the return type of the method (type or status)
 	-	the `@param` mark describes a method's parameter
 	-	the `@error` mark describes the condition of a thrown error
+
+
+## Script Methods & Variables
+
+When using the library, you can overwrite any method by defining it again after having
+sourced the library. This way, your implementation will be used by bash.
+
+You can do so for variables, as long as they are not "read-only" (please refer to the
+library's documentation).
 
 
 --------------

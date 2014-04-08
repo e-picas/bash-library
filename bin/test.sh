@@ -14,7 +14,7 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib-Test"
-VERSION="0.0.1-dev"
+VERSION="0.1.0"
 DESCRIPTION="A global test file for the Piwi-Bash-Library"
 USAGE="\n\
 This file is the global test script of the library. You can play with options below to modify its behavior.\n\
@@ -22,9 +22,9 @@ Each file of the package like 'bin/***-test.sh' is a demo or test for a specific
 <bold>USAGE</bold>\n\
 \t~\$ ${0} -option(s) --longoption(s)\n\n\
 <bold>COMMON OPTIONS</bold>\n\
-\t${COMMON_OPTIONS_FULLINFO}\n\n\
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}\n\n\
 <bold>LIBRARY</bold>\n\
-\t${LIB_DEPEDENCY_INFO}";
+\t${LIB_DEPEDENCY_MANPAGE_INFO}";
 SCRIPT_VCS='git'
 
 rearrange_script_options "$@"

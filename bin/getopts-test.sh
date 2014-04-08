@@ -17,8 +17,13 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib script options & arguments test"
-VERSION="0.0.1-test"
-DESCRIPTION="A script to test custom script options & arguments usage ...\n\
+VERSION="0.1.0"
+SYNOPSIS="${COMMON_SYNOPSIS}"
+SCRIPT_VCS='git'
+
+DESCRIPTION_USAGE="A script to test custom script options & arguments usage ...\n\
+To test it, run:\n\n\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- myaction3 -x";
+DESCRIPTION_MANPAGE="A script to test custom script options & arguments usage ...\n\
 \tTo test it, run:\n\
 \t\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- myaction3 -x\n\
 \tResult is:\n\
@@ -27,15 +32,16 @@ DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \t\t- the custom 't' and 'test' options are parsed and considered by this script and their multi-words arguments are red,\n\
 \t\t- the custom 'a' option is parsed and considered by this script,\n\
 \t\t- the last common option 'x' is NOT parsed at all as it is after '--'.";
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
-SCRIPT_VCS='git'
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_FULLINFO
-OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
+OPTIONS_MANPAGE="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
 \t<bold>-a</bold>\t\ta single short option to test options order\n\n\
 \t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO}";
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+\t-t, --test=ARG\t\ttest a short and long option with argument\n\
+\t-a\t\t\ta single short option to test options order${COMMON_OPTIONS_USAGE}";
 
 OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
 LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
@@ -43,13 +49,6 @@ SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[-a]  [-t [=value]]  
 
 quietecho "_ go"
 
-echo
-echo "# command line analysis:"
-echo "- allowed short options: '${OPTIONS_ALLOWED}'";
-echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
-echo "- received arguments: '$@'";
-echo
-echo "# re-arranging options and arguments:"
 rearrange_script_options "$@"
 echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[@]}'"
 echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[@]}'"
@@ -57,6 +56,14 @@ echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[@]}'"
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 parse_common_options_strict
+
+echo
+echo "# command line analysis:"
+echo "- allowed short options: '${OPTIONS_ALLOWED}'";
+echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
+echo "- received arguments: '${ORIGINAL_SCRIPT_OPTS}'";
+echo
+echo "# re-arranging options and arguments:"
 echo "- rearranged arguments: '$@'";
 echo
 

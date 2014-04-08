@@ -31,15 +31,20 @@ declare -x ACTION_DESCRIPTION=""
 declare -x SCRIPTMAN=false
 
 NAME="Test of a script interface"
-VERSION="0.0.1"
+VERSION="0.1.0"
 DESCRIPTION="A script to test a library usage for a central action script interface managing sub-scripts dependencies ..."
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
+SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
 OPTIONS="<bold>-z | --actions</bold>\t\tget the list of available actions\n\
 \t<bold>-s | --set=NAME</bold>\t\tpool set for action (default is '${_SET}')\n\
 \t<bold>-p | --project=NAME</bold>\tthe project name\n\
 \t<bold>-t | --target=PATH</bold>\ttarget directory used for some actions\n\n\
 \t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO}";
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+\t-z, --actions\t\tget the list of available actions\n\
+\t-s, --set=NAME\t\tpool set for action (default is '${_SET}')\n\
+\t-p, --project=NAME\tthe project name\n\
+\t-t, --target=PATH\ttarget directory used for some actions${COMMON_OPTIONS_USAGE}";
 SCRIPT_VCS='git'
 
 #### internal lib ##########################

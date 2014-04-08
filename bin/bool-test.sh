@@ -14,8 +14,9 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash boolean tests"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test boolean values manipulations and equalities in bash."
+OPTIONS="${COMMON_OPTIONS}"
 SCRIPT_VCS='git'
 parse_common_options "$@"
 quietecho "_ go"

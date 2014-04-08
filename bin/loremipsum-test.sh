@@ -14,7 +14,7 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Lorem-Ipsum-Test"
-VERSION="0.0.1-dev"
+VERSION="0.1.0"
 DESCRIPTION="A test for 'program' long option usage. Run with no long option, then with '--less' for instance."
 SCRIPT_VCS='git'
 

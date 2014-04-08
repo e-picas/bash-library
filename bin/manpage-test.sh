@@ -14,7 +14,7 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib script manpage test"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test library automatic manpages ...\n\
 \tTo test it, run:\n\
 \t\t~\$ path/to/manpage-test.sh\n\
@@ -27,7 +27,7 @@ DESCRIPTION="A script to test library automatic manpages ...\n\
 \tResult is the default library manpage.\n\n\
 \tYou can use option '-v' to add the DEPENDENCIES section of the default manpage.\n\
 \tYou can use special program name long option like '--less' or '--more'.";
-SYNOPSIS="$LIB_SYNOPSIS"
+SYNOPSIS="$COMMON_SYNOPSIS"
 SCRIPT_VCS='git'
 
 # for custom options, write an info string about usage

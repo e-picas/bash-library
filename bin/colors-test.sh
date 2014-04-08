@@ -14,7 +14,7 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib colors test"
-VERSION="0.0.1-dev"
+VERSION="0.1.0"
 DESCRIPTION="A script to test colorized functions of the Piwi-Bash-Library"
 SCRIPT_VCS='git'
 

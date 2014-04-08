@@ -33,19 +33,23 @@
 
 #### ENVIRONMENT #############################################################################
 
-##@ SCRIPT_VARS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE ) (read-only)
-declare -rxa SCRIPT_VARS=(NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE)
+##@ SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)
+declare -rxa SCRIPT_VARS=(NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS)
 
-##@ USAGE_VARS = ( NAME VERSION PRESENTATION RAW_OPTIONS ) (read-only)
-declare -rxa USAGE_VARS=(NAME VERSION PRESENTATION RAW_SYNOPSIS RAW_OPTIONS)
+##@ USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)
+##@ USAGE_SUFFIX = "_USAGE"
+declare -rxa USAGE_VARS=(NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE)
+declare -rx USAGE_SUFFIX="_USAGE"
 
-##@ VERSION_VARS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO ) (read-only)
+##@ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO ) (read-only)
 # see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
-declare -rxa VERSION_VARS=(NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO)
+declare -rxa VERSION_VARS=(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO)
 
-##@ MANPAGE_VARS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO ) (read-only)
+##@ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
+##@ MANPAGE_SUFFIX = "_MANPAGE"
 # see http://en.wikipedia.org/wiki/Man_page
-declare -rxa MANPAGE_VARS=(SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO)
+declare -rxa MANPAGE_VARS=(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)
+declare -rx MANPAGE_SUFFIX="_MANPAGE"
 
 ##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED ) (read-only)
 declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
@@ -157,14 +161,22 @@ declare -rx ORIGINAL_SCRIPT_OPTS="$@"
 declare -xi ARGIND=0
 declare -x ARGUMENT=""
 
-##@ OPTIONS_USAGE_INFOS : information string about command line options how-to (read-only)
-declare -rx OPTIONS_USAGE_INFOS="\tYou can group short options like '<bold>-xc</bold>', \
+##@ COMMON_SYNOPSIS COMMON_SYNOPSIS_ACTION COMMON_SYNOPSIS_ERROR COMMON_SYNOPSIS_MANPAGE COMMON_SYNOPSIS_ACTION_MANPAGE COMMON_SYNOPSIS_ERROR_MANPAGE (read-only)
+declare -rx COMMON_SYNOPSIS="${0}  -[common options]  -[script options [=value]]  [--]  [arguments]";
+declare -rx COMMON_SYNOPSIS_ACTION="${0}  -[common options]  -[script options [=value]]  [--]  <action>";
+declare -rx COMMON_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>";
+declare -rx COMMON_SYNOPSIS_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>arguments</underline>]";
+declare -rx COMMON_SYNOPSIS_ACTION_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]";
+declare -rx COMMON_SYNOPSIS_ERROR_MANPAGE="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>";
+
+##@ OPTIONS_ADDITIONAL_INFOS_MANPAGE : information string about command line options how-to (read-only)
+declare -rx OPTIONS_ADDITIONAL_INFOS_MANPAGE="\tYou can group short options like '<bold>-xc</bold>', \
 set an option argument like '<bold>-d(=)value</bold>' \n\
 \tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
 to explicitly specify the end of the script options.";
 
-##@ COMMON_OPTIONS_LIST : information string about common script options (read-only)
-declare -rx COMMON_OPTIONS_LIST="<bold>-h | --help</bold>\t\t\tshow this information message \n\
+##@ COMMON_OPTIONS_MANPAGE : information string about common script options (read-only)
+declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this information message \n\
 \t<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
 \t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
 \t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
@@ -185,18 +197,19 @@ declare -rx COMMON_OPTIONS_USAGE="\n\
 \t-f, --force\t\tforce some commands to not prompt confirmation \n\
 \t-i, --interactive\task for confirmation before any action \n\
 \t-x, --debug\t\tenable debug mode \n\
-\t-V, --version\t\tsee the script version when available\n\
-\t\t\t\tuse option '-q' to get the version number only\n\
 \t-d, --working-dir=PATH\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
 \t-l, --log=FILENAME\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t--dry-run\t\tsee commands to run but not run them actually \n\n\
+\t-V, --version\t\tsee the script version when available\n\
+\t\t\t\tuse option '-q' to get the version number only\n\
 \t-h, --help\t\tshow this information message \n\
 \t--usage\t\t\tshow quick usage information \n\
 \t--man\t\t\tsee the current script manpage if available \n\
+\t\t\t\ta 'manpage-like' output will be guessed otherwise\n\
 \t--libvers\t\tsee the library version";
 
-##@ COMMON_OPTIONS_FULLINFO : concatenation of COMMON_OPTIONS_LIST & OPTIONS_USAGE_INFOS (read-only)
-declare -rx COMMON_OPTIONS_FULLINFO="${COMMON_OPTIONS_LIST}\n\n${OPTIONS_USAGE_INFOS}";
+##@ COMMON_OPTIONS_FULLINFO_MANPAGE : concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
+declare -rx COMMON_OPTIONS_FULLINFO_MANPAGE="${COMMON_OPTIONS_MANPAGE}\n\n${OPTIONS_ADDITIONAL_INFOS_MANPAGE}";
 
 
 #### LOREM IPSUM #############################################################################
@@ -218,39 +231,34 @@ declare -rx LIB_NAME="Piwi Bash library"
 declare -rx LIB_VERSION="1.0.1"
 declare -rx LIB_DATE="2014-04-04"
 declare -rx LIB_VCSVERSION="master@fb34ed425a494bbe22f5e47f6a6a3d735c27e2ee"
-declare -rx LIB_PRESENTATION="An open source day-to-day bash library"
-declare -rx LIB_LICENSE="GPL-3.0"
+declare -rx LIB_DESCRIPTION="An open source day-to-day bash library"
+declare -rx LIB_LICENSE_TYPE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
+declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_SCRIPT_VCS='git'
 declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
 
-declare -rx LIB_COPYRIGHT_TYPE="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
-declare -rx LIB_LICENSE_TYPE="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
-declare -rx LIB_SOURCES_TYPE="Sources & updates: <${LIB_HOME}>"
+declare -rx LIB_LICENSE="License ${LIB_LICENSE_TYPE}: <${LIB_LICENSE_URL}>"
+declare -rx LIB_SOURCES="Sources & updates: <${LIB_HOME}>"
 declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
 
-##@ LIB_SYNOPSIS LIB_SYNOPSIS_ACTION LIB_SYNOPSIS_ERROR (read-only)
-declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>arguments</underline>]";
-declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]";
-declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>";
-
-declare -rx LIB_COPYRIGHT="${LIB_COPYRIGHT_TYPE} - Some rights reserved. \n\
+declare -rx LIB_COPYRIGHT_MANPAGE="${LIB_COPYRIGHT} - Some rights reserved. \n\
 \tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>].\n\
-\t${LIB_LICENSE_TYPE}.\n\
-\t${LIB_SOURCES_TYPE}.\n\
+\t${LIB_LICENSE}.\n\
+\t${LIB_SOURCES}.\n\
 \tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
 \t${LIB_ADDITIONAL_INFO}";
 
-declare -rx LIB_DEPEDENCY_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_PRESENTATION}\". \n\
-\t${LIB_COPYRIGHT}";
+declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_DESCRIPTION}\". \n\
+\t${LIB_COPYRIGHT_MANPAGE}";
 
 
 #### SYSTEM #############################################################################
 
 #### get_system_info ()
 get_system_info () {
-    if `in_array $USEROS ${LINUX_OS[@]}`
+    if `in_array ${USEROS} ${LINUX_OS[@]}`
         then uname -osr
         else uname -vsr
     fi
@@ -259,7 +267,7 @@ get_system_info () {
 
 #### get_machine_name ()
 get_machine_name () {
-    if `in_array $USEROS ${LINUX_OS[@]}`
+    if `in_array ${USEROS} ${LINUX_OS[@]}`
         then uname -n
         else uname -n
     fi
@@ -320,8 +328,8 @@ get_date () {
 #### get_ip ()
 ## this will load current IP address in USERIP & USERISP
 get_ip () {
-    export USERIP=$(ifconfig | awk '/inet / { print $2 } ' | sed -e s/addr:// 2>&-)
-    export USERISP=$(ifconfig | awk '/P-t-P/ { print $3 } ' | sed -e s/P-t-P:// 2>&-)
+    export USERIP=$(ifconfig | awk '/inet / { print $2 } ' | sed -e "s/addr://" 2>&-)
+    export USERISP=$(ifconfig | awk '/P-t-P/ { print $3 } ' | sed -e "s/P-t-P://" 2>&-)
     return 0
 }
 
@@ -720,21 +728,21 @@ error () {
 #### simple_usage ( synopsis = SYNOPSIS_ERROR )
 ## writes a synopsis usage info
 simple_usage () {
-    local ERRSYNOPSIS=""
+    local USAGESTR=""
     if [ ! -z "$1" ]; then
         if [ "$1" == 'lib' ]; then
-            ERRSYNOPSIS=$(_echo "${LIB_SYNOPSIS}")
+            USAGESTR=$(_echo "${COMMON_SYNOPSIS}")
         elif [ "$1" == 'action' ]; then
-            ERRSYNOPSIS=$(_echo "${LIB_SYNOPSIS_ACTION}")
+            USAGESTR=$(_echo "${COMMON_SYNOPSIS_ACTION}")
         else
-            ERRSYNOPSIS=$(_echo "$1")
+            USAGESTR=$(_echo "$1")
         fi
-    elif [ -n "$SYNOPSIS_ERROR" ]; then
-        ERRSYNOPSIS=$(_echo "${SYNOPSIS_ERROR}")
+    elif [ -n "${SYNOPSIS_ERROR}" ]; then
+        USAGESTR=$(_echo "${SYNOPSIS_ERROR}")
     else
-        ERRSYNOPSIS=$(_echo "${LIB_SYNOPSIS_ERROR}")
+        USAGESTR=$(_echo "${COMMON_SYNOPSIS_ERROR}")
     fi
-    printf "`parse_color_tags \"<bold>usage:</bold> %s \nRun option '-h' for help.\"`" "${ERRSYNOPSIS}";
+    printf "`parse_color_tags \"<bold>usage:</bold> %s \nRun option '-h' for help.\"`" "${USAGESTR}";
     echo
     return 0
 }
@@ -745,10 +753,10 @@ simple_usage () {
 simple_error () {
     local ERRSTRING="${1:-unknown error}"
     local ERRSTATUS="${2:-${E_ERROR}}"
-    if $DEBUG; then
+    if ${DEBUG}; then
         ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
     fi
-    if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
+    if [ -n "${LOGFILEPATH}" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
     printf "`parse_color_tags \"<bold>error:</bold> %s\"`" "${ERRSTRING}" >&2;
     echo >&2
     simple_usage "$3" >&2
@@ -760,11 +768,11 @@ simple_error () {
 gnu_error_string () {
     local errorstr=""
     local _source=$(echo "${2:-${BASH_SOURCE[2]}}")
-    if [ -n "$_source" ]; then errorstr+="${_source}:"; fi
+    if [ -n "${_source}" ]; then errorstr+="${_source}:"; fi
     local _func=$(echo "${3:-${FUNCNAME[2]}}")
-    if [ -n "$_func" ]; then errorstr+="${_func}:"; fi
+    if [ -n "${_func}" ]; then errorstr+="${_func}:"; fi
     local _line=$(echo "${4:-${BASH_LINENO[2]}}")
-    if [ -n "$_line" ]; then errorstr+="${_line}:"; fi
+    if [ -n "${_line}" ]; then errorstr+="${_line}:"; fi
     echo "${errorstr} ${1}"
     return 0
 }
@@ -1107,8 +1115,8 @@ git_change_branch () {
     local targetbranch="${2:-master}"
     cd ${target}
     if [ ${targetbranch} != `git_get_branch` ]; then
-		verecho "- switching git clone branch to '${targetbranch}' in '${target}' ..."
-		git checkout -q "${targetbranch}" && git pull -q
+        verecho "- switching git clone branch to '${targetbranch}' in '${target}' ..."
+        git checkout -q "${targetbranch}" && git pull -q
     fi
     cd ${oldpwd}
     return 0
@@ -1137,10 +1145,10 @@ get_color_code () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBCOLORS[@]}`; then
             if [ ! -z $2 ]
-                then echo "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}"
-                else echo "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}"
+                then echo "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}";
+                else echo "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}";
             fi
-        else return 1
+        else return 1;
         fi
     fi
     return 1
@@ -1152,10 +1160,10 @@ get_color_tag () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBCOLORS[@]}`; then
             if [ ! -z $2 ]
-                then echo $(get_text_format_tag "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
-                else echo $(get_text_format_tag "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}")
+                then echo $(get_text_format_tag "${LIBCOLORS_CODES_BACKGROUND[`array_search $1 ${LIBCOLORS[@]}`]}");
+                else echo $(get_text_format_tag "${LIBCOLORS_CODES_FOREGROUND[`array_search $1 ${LIBCOLORS[@]}`]}");
             fi
-        else return 1
+        else return 1;
         fi
     fi
     return 1
@@ -1166,8 +1174,8 @@ get_color_tag () {
 get_text_option_code () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
-            then echo "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}"
-            else return 1
+            then echo "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}";
+            else return 1;
         fi
     fi
     return 1
@@ -1178,8 +1186,8 @@ get_text_option_code () {
 get_text_option_tag () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
-            then echo $(get_text_format_tag "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
-            else return 1
+            then echo $(get_text_format_tag "${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}");
+            else return 1;
         fi
     fi
     return 1
@@ -1190,8 +1198,8 @@ get_text_option_tag () {
 get_text_option_tag_close () {
     if [ -n "$1" ]; then
         if `in_array $1 ${LIBTEXTOPTIONS[@]}`
-            then echo $(get_text_format_tag "2${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}")
-            else return 1
+            then echo $(get_text_format_tag "2${LIBTEXTOPTIONS_CODES[`array_search $1 ${LIBTEXTOPTIONS[@]}`]}");
+            else return 1;
         fi
     fi
     return 1
@@ -1262,7 +1270,7 @@ parse_color_tags () {
                  normaltag=$(printf '\%s' "${normaltag}")
             fi
             if [ ! -z ${tag} ]; then
-                strsubstituted=$(echo "${transformedline}" | sed "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g");
+                strsubstituted=$(echo "${transformedline}" | sed "s|<${opt}>|${tag}|g;s|</${opt}>|${normaltag}|g" 2> /dev/null);
                 if [ ! -z "${strsubstituted}" ]; then transformedline="${strsubstituted}"; fi
             fi
         done
@@ -1540,8 +1548,11 @@ set_configval () {
     local key="$2"
     local value="$3"
     touch ${filepath}
-    if grep -q "${key}=*" ${filepath}; then   
-       sed -i '' -e "s|\(${key}=\).*|\1${value}|" "${filepath}"
+    if grep -q "${key}=*" ${filepath}; then
+        if `in_array ${USEROS} ${LINUX_OS[@]}`
+            then sed -i -e "s|\(${key}=\).*|\1${value}|" "${filepath}"
+            else sed -i '' -e "s|\(${key}=\).*|\1${value}|" "${filepath}"
+        fi
     else
        echo "${key}=${value}" >> ${filepath}
     fi
@@ -1582,7 +1593,7 @@ build_configstring () {
         sep=""
         if [ -n "${CONFIG_STR}" ]; then sep="\n"; fi
         CONFIG_STR="${CONFIG_STR}${sep}${key}=${value}"
-       ((i++))
+        ((i++))
     done
     _echo "${CONFIG_STR}"
     return 0
@@ -1797,7 +1808,7 @@ parse_common_options () {
         # common options
                     help) if [ -z ${actiontodo} ]; then actiontodo='help'; fi;;
                     usage) if [ -z ${actiontodo} ]; then actiontodo='usage'; fi;;
-                    man) if [ -z ${actiontodo} ]; then actiontodo='man'; fi;;
+                    man*) if [ -z ${actiontodo} ]; then actiontodo='man'; fi;;
                     version) if [ -z ${actiontodo} ]; then actiontodo='version'; fi;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
@@ -1808,7 +1819,7 @@ parse_common_options () {
                     working-dir*) set_working_directory ${LONGOPTARG};;
                     log*) set_log_filename ${LONGOPTARG};;
         # library options
-                    libvers) if [ -z ${actiontodo} ]; then actiontodo='libversion'; fi;;
+                    libvers*) if [ -z ${actiontodo} ]; then actiontodo='libversion'; fi;;
         # no error for others
                     *) 
                         if [ -n "$LONGOPTARG" -a "`which $OPTARG`" ]; then
@@ -1889,29 +1900,33 @@ script_usage () {
 ## writes a long synopsis usage info
 script_long_usage () {
     local TMP_USAGE=$(parse_color_tags  "<bold>`script_short_title`</bold>")
-    if [ -n "${DESCRIPTION}" ]; then
+    if [ -n "${DESCRIPTION_USAGE}" ]; then
+        TMP_USAGE+="\n${DESCRIPTION_USAGE}";
+    elif [ -n "${DESCRIPTION}" ]; then
         TMP_USAGE+="\n${DESCRIPTION}";
     fi
     local SYNOPSIS_STR=""
     if [ ! -z "$1" ]; then
         if [ "$1" == 'lib' ]; then
-            SYNOPSIS_STR="${LIB_SYNOPSIS}"
+            SYNOPSIS_STR="${COMMON_SYNOPSIS}"
         elif [ "$1" == 'action' ]; then
-            SYNOPSIS_STR="${LIB_SYNOPSIS_ACTION}"
+            SYNOPSIS_STR="${COMMON_SYNOPSIS_ACTION}"
         else
             SYNOPSIS_STR="$1"
         fi
     elif [ -n "${SYNOPSIS_USAGE}" ]; then
         SYNOPSIS_STR="${SYNOPSIS_USAGE}"
+    elif [ -n "${SYNOPSIS}" ]; then
+        SYNOPSIS_STR="${SYNOPSIS}"
     elif [ -n "${SYNOPSIS_ERROR}" ]; then
         SYNOPSIS_STR="${SYNOPSIS_ERROR}"
     else
-        SYNOPSIS_STR="${LIB_SYNOPSIS_ERROR}"
+        SYNOPSIS_STR="${COMMON_SYNOPSIS_ERROR}"
     fi
     local OPTIONS_STR=""
     if [ ! -z "$1" ]; then
         if [ "$1" == 'lib' ]; then
-            OPTIONS_STR="${COMMON_OPTIONS_FULLINFO}"
+            OPTIONS_STR="${COMMON_OPTIONS_USAGE}"
         else
             OPTIONS_STR="$1"
         fi
@@ -1921,8 +1936,8 @@ script_long_usage () {
         OPTIONS_STR="${COMMON_OPTIONS_USAGE}"
     fi
     printf "`parse_color_tags \"\n%s\n\n<bold>usage:</bold> %s\n%s\n\n<${COLOR_COMMENT}>%s</${COLOR_COMMENT}>\"`" \
-		"$(_echo ${TMP_USAGE})" "$(_echo ${SYNOPSIS_STR})" "$(_echo ${OPTIONS_STR})" \
-		 "`library_info`";
+        "$(_echo ${TMP_USAGE})" "$(_echo ${SYNOPSIS_STR})" "$(_echo ${OPTIONS_STR})" \
+         "`library_info`";
     echo
     return 0
 }
@@ -1941,19 +1956,35 @@ script_help () {
         local TMP_TITLE="${NAME:-?}"
         if [ -n "${VERSION}" ]; then TMP_TITLE="${TMP_TITLE} - v. [${VERSION}]"; fi
         local TMP_USAGE="\n<bold>NAME</bold>\n\t<bold>${TMP_TITLE}</bold>";
-        if [ -n "${PRESENTATION}" ]; then
-            TMP_USAGE+="\n\t${PRESENTATION}";
-        fi
         TMP_USAGE+="\n";
         for section in "${MANPAGE_VARS[@]}"; do
-            eval "section_ctt=\"\$$section\""
-            if [ "$section" != 'NAME' -a -n "$section_ctt" ]; then
-                TMP_USAGE+="\n<bold>${section}</bold>\n\t${section_ctt}\n";
+            eval "section_name=\"${section/${MANPAGE_SUFFIX}/}\""
+            eval "section_ctt=\"\$${section}\""
+            eval "glob_section_ctt=\"\$${section_name}\""
+            eval "section_default_ctt=\"\$COMMON_${section}\""
+            eval "section_global_default_ctt=\"\$COMMON_${section/${MANPAGE_SUFFIX}/}\""
+            local toshow=""
+            if [ "${section_name}" != 'NAME' -a "${section_name}" != 'DATE' -a "${section_name}" != 'VERSION' ]; then
+                if [ -n "${section_ctt}" ]; then
+                    toshow="${section_ctt}"
+                elif [ -n "${glob_section_ctt}" ]; then
+                    toshow="${glob_section_ctt}"
+                elif [ -n "${section_default_ctt}" ]; then
+                    toshow="${section_default_ctt}"
+                elif [ -n "${section_global_default_ctt}" ]; then
+                    toshow="${section_global_default_ctt}"
+                fi
+                if [ -n "${toshow}" ]; then
+                    if [ "${section_name}" == 'DESCRIPTION' ]
+                    then TMP_USAGE+="\n\t${toshow}\n";
+                    else TMP_USAGE+="\n<bold>${section_name}</bold>\n\t${toshow}\n";
+                    fi
+                fi
             fi
         done
         if ! ${MANPAGE_NODEPEDENCY:-false}; then
             if [ "${lib_info}" == 'true' ]; then
-                TMP_USAGE+="\n<bold>DEPENDENCIES</bold>\n\t${LIB_DEPEDENCY_INFO}\n";
+                TMP_USAGE+="\n<bold>DEPENDENCIES</bold>\n\t${LIB_DEPEDENCY_MANPAGE_INFO}\n";
             fi
         fi
         TMP_USAGE+="\n<${COLOR_COMMENT}>${TMP_VERS}</${COLOR_COMMENT}>";
@@ -2169,13 +2200,13 @@ library_info () {
 
 #### library_path ()
 library_path () {
-	echo $(realpath ${BASH_SOURCE[0]})
-	return 0;
+    echo $(realpath ${BASH_SOURCE[0]})
+    return 0;
 }
 
 #### library_help ()
 library_help () {
-	local _lib=`library_path`
+    local _lib=`library_path`
     if `in_array ${USEROS} ${LINUX_OS[@]}`
         then ${_lib} help
         else $(which sh) ${_lib} help
@@ -2185,7 +2216,7 @@ library_help () {
 
 #### library_usage ()
 library_usage () {
-	local _lib=`library_path`
+    local _lib=`library_path`
     if `in_array ${USEROS} ${LINUX_OS[@]}`
         then ${_lib} usage
         else $(which sh) ${_lib} usage
@@ -2221,8 +2252,15 @@ library_short_version () {
 #### library_version ( quiet = false )
 ## this function must echo an FULL information about library name & version (GNU like)
 library_version () {
-	script_version ${1:-false}
-	return 0
+    for section in "${VERSION_VARS[@]}"; do
+        eval "export OLD_$section=\$$section"
+        eval "export $section=\$LIB_$section"
+    done
+    script_version ${1:-false}
+    for section in "${VERSION_VARS[@]}"; do
+        eval "export $section=\$OLD_$section"
+    done
+    return 0
 }
 
 #### library_debug ( "$*" )
@@ -2387,7 +2425,7 @@ instwiz_prepare_uninstall_cmd () {
 
 #### script_installation_target ( target_dir = $HOME/bin )
 script_installation_target () {
-	export LIBINST_TARGET="${1:-${HOME}/bin}"
+    export LIBINST_TARGET="${1:-${HOME}/bin}"
     if [ ! -d ${LIBINST_TARGET} ]; then
         mkdir -p ${LIBINST_TARGET} || simple_error "target path '${LIBINST_TARGET}' not found and can't be created!"
     fi
@@ -2403,7 +2441,7 @@ script_installation_source () {
     local target="${LIB_SYSCACHEDIR}/${_dirname}"
     make_cachedir
     if [ $# -gt 1 ]; then export SCRIPT_HOME="$1"; fi
-	export LIBINST_TARGET="${1:-${HOME}/bin}"
+    export LIBINST_TARGET="${1:-${HOME}/bin}"
     if [ ! -d ${LIBINST_TARGET} ]; then
         mkdir -p ${LIBINST_TARGET} || simple_error "target path '${LIBINST_TARGET}' not found and can't be created!"
     fi
@@ -2504,7 +2542,7 @@ INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
 done
-DESCRIPTION="${LIB_PRESENTATION}\n\n\
+DESCRIPTION="${LIB_DESCRIPTION}\n\n\
 To use the library, just include its source file using: \`source path/to/piwi-bash-library.sh\` and call its methods.\n\
 Try option '--man' for the library full manpage.";
 OPTIONS_USAGE="\n\
@@ -2541,7 +2579,7 @@ SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*`library_info`*]"
 declare -x DOCUMENTATION_INTRO="\
 Package [${LIB_PACKAGE}] version [${LIB_VERSION}].\n\
-${LIB_COPYRIGHT_TYPE} - Some rights reserved. \n\
+${LIB_COPYRIGHT} - Some rights reserved. \n\
 ${LIB_LICENSE_TYPE}.\n\
 ${LIB_SOURCES_TYPE}.\n\
 Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\

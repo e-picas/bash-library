@@ -14,7 +14,7 @@ fi
 ######## !Inclusion of the lib
 
 NAME="Terminal colors rendering benchmark"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test your terminal colors rendering ..."
 SCRIPT_VCS='git'
 

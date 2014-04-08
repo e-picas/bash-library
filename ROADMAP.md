@@ -33,23 +33,18 @@ To generate the documentation to `DOCUMENTATION.md`:
 
 ## TODO
 
--   skip the 'libhelp' option (which have no real meaning) to prefer the manpage => OK
 -   the output of 'version' may follow GNU specs: => OK
 
-    GNU hello 2.3
-    Copyright (C) 2007 Free Software Foundation, Inc.
-    License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
-    This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
-
--   skip the 'libdoc' option ; it just can be invoked by calling the lib itself => OK
+		GNU hello 2.3
+		Copyright (C) 2007 Free Software Foundation, Inc.
+		License GPLv3+: GNU GPL version 3 or later <http://gnu.org/licenses/gpl.html>
+		This is free software: you are free to change and redistribute it. There is NO WARRANTY, to the extent permitted by law.
 
 -   arrange the "interface" according to new work on the dev-tools
--   format of the error and log infos (according to GNU) => OK
--   "usage" long option => OK
 
 sample output of 'man' error:
 
-    MacBook-Pro-de-Pierre:piwi-bash-library pierrecassat$ man src/piwi-bash-library.man -x
+    ¬$ man src/piwi-bash-library.man -x
     man, version 1.6c
 
     usage: man [-adfhktwW] [section] [-M path] [-P pager] [-S list]

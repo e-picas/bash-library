@@ -1,11 +1,11 @@
 # Piwi Bash Library documentation
 
-[*Piwi Bash library 1.0.1 master@fb34ed425a494bbe22f5e47f6a6a3d735c27e2ee*]
+[*Piwi Bash library 1.0.1 wip@d8fb8f33fc7b0a56f0d089a43ff30fa02c76d0c2*]
 
 Package [atelierspierrot/piwi-bash-library] version [1.0.1].
 Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
-License GPL-3.0: <http://www.gnu.org/licenses/gpl-3.0.html>.
-Sources & updates: <http://github.com/atelierspierrot/piwi-bash-library>.
+GPL-3.0.
+.
 Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.
 
@@ -21,57 +21,66 @@ This is free software: you are free to change and redistribute it ; there is NO 
 
 ## ENVIRONMENT (line 27)
 
--   @ SCRIPT_VARS = ( NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE )
--   @ MANPAGE_VARS = ( SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO )
--   @ VERSION_VARS = ( NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO )
--   @ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED )
--   @ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT )
--   @ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey )
--   @ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden )
+-   @ SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)
+-   @ USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)
+-   @ USAGE_SUFFIX = "_USAGE"
+-   @ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO ) (read-only)
+-   @ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
+-   @ MANPAGE_SUFFIX = "_MANPAGE"
+-   @ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED ) (read-only)
+-   @ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT ) (read-only)
+-   @ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)
+-   @ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden ) (read-only)
 -   @ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
 -   @ WORKINGDIR = pwd
--   @ USEROS="$(uname)"
+-   @ USEROS = "$(uname)" (read-only)
+-   @ LINUX_OS = ( Linux FreeBSD OpenBSD SunOS ) (read-only)
 
-## SETTINGS (line 65)
+## SETTINGS (line 72)
 
--   @ LIB_FILENAME_DEFAULT = "piwi-bash-library"
--   @ LIB_NAME_DEFAULT = "piwibashlib"
--   @ LIB_LOGFILE = "piwibashlib.log"
--   @ LIB_TEMPDIR = "tmp"
--   @ LIB_SYSHOMEDIR = "${HOME}/.piwi-bash-library/"
--   @ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/"
+-   @ LIB_FILENAME_DEFAULT = "piwi-bash-library" (read-only)
+-   @ LIB_NAME_DEFAULT = "piwibashlib" (read-only)
+-   @ LIB_LOGFILE = "piwibashlib.log" (read-only)
+-   @ LIB_TEMPDIR = "tmp" (read-only)
+-   @ LIB_SYSHOMEDIR = "${HOME}/.piwi-bash-library/" (read-only)
+-   @ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/" (read-only)
 
-## COMMON OPTIONS (line 109)
+## COMMON OPTIONS (line 116)
 
 -   @ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:"
 -   @ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
 -   @ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 -   @ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
--   @ ORIGINAL_SCRIPT_OPTS="$@"
+-   @ ORIGINAL_SCRIPT_OPTS="$@" (read-only)
 -   @ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
 -   @ OPTIONS_ALLOWED | LONG_OPTIONS_ALLOWED : to be defined by the script
--   @ OPTIONS_USAGE_INFOS : information string about command line options how-to
--   @ COMMON_OPTIONS_LIST : information string about common script options
--   @ COMMON_OPTIONS_FULLINFO : concatenation of COMMON_OPTIONS_LIST & OPTIONS_USAGE_INFOS
+-   @ COMMON_SYNOPSIS COMMON_SYNOPSIS_ACTION COMMON_SYNOPSIS_ERROR COMMON_SYNOPSIS_MANPAGE COMMON_SYNOPSIS_ACTION_MANPAGE COMMON_SYNOPSIS_ERROR_MANPAGE (read-only)
+-   @ OPTIONS_ADDITIONAL_INFOS_MANPAGE : information string about command line options how-to (read-only)
+-   @ COMMON_OPTIONS_MANPAGE : information string about common script options (read-only)
+-   @ COMMON_OPTIONS_USAGE: raw information string about common script options (read-only)
+-   @ COMMON_OPTIONS_FULLINFO_MANPAGE : concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
 
-## LOREM IPSUM (line 150)
+## LOREM IPSUM (line 181)
 
--   @ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE
+-   @ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE (read-only)
 
-## LIBRARY SETUP (line 159)
+## LIBRARY SETUP (line 190)
 
--   @ LIB_NAME LIB_VERSION LIB_DATE LIB_GITVERSION
+-   @ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION
 
-## SYSTEM (line 186)
+## SYSTEM (line 214)
 
 -   **get_system_info ()**
 -   **get_machine_name ()**
 -   **add_path ( path )**
+-   **get_path ()**
 -   **get_script_path ( script = $0 )**
 -   **set_working_directory ( path )**
 -   **set_log_filename ( path )**
+-   **get_date ( timestamp = NOW )**
+-   **get_ip ()**
 
-## FILES (line 237)
+## FILES (line 283)
 
 -   **get_extension ( path = $0 )**
 -   **get_filename ( path = $0 )**
@@ -81,7 +90,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **/ realpath ( string )**
 -   **resolve ( path )**
 
-## ARRAY (line 283)
+## ARRAY (line 329)
 
 -   **array_search ( item , $array[@] )**
     @return the index of an array item, 0 based
@@ -90,7 +99,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **array_filter ( $array[@] )**
     @return array with cleaned values
 
-## STRING (line 313)
+## STRING (line 359)
 
 -   **string_length ( string )**
     @return the number of characters in string
@@ -105,11 +114,11 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **implode ( array[@] , delim = ' ' )**
 -   **explode_letters ( str )**
 
-## BOOLEAN (line 395)
+## BOOLEAN (line 441)
 
 -   **onoff_bit ( bool )**
 
-## UTILS (line 401)
+## UTILS (line 447)
 
 -   **_echo ( string )**
 -   **_necho ( string )**
@@ -127,27 +136,31 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )**
 -   **error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )**
 -   @error default status is E_ERROR (90)
--   **nooption_error ()**
--   @error exits with status E_OPTS (81)
--   **command_error ( cmd )**
--   @error exits with status E_CMD (82)
--   **path_error ( path )**
--   @error exits with status E_PATH (83)
 -   **simple_usage ( synopsis = SYNOPSIS_ERROR )**
 -   **simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
 -   @error default status is E_ERROR (90)
--   **nooption_simple_error ()**
+-   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
+-   **no_option_error ()**
 -   @error exits with status E_OPTS (81)
+-   **no_option_simple_error ()**
+-   @error exits with status E_OPTS (81)
+-   **unknown_option_error ( option )**
+-   @error exits with status E_OPTS (81)
+-   **unknown_option_simple_error ( option )**
+-   @error exits with status E_OPTS (81)
+-   **command_error ( cmd )**
+-   @error exits with status E_CMD (82)
 -   **command_simple_error ( cmd )**
 -   @error exits with status E_CMD (82)
+-   **path_error ( path )**
+-   @error exits with status E_PATH (83)
 -   **path_simple_error ( path )**
 -   @error exits with status E_PATH (83)
--   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
 
-## VCS (line 676)
+## VCS (line 736)
 
 -   @ VCSVERSION : variable used as version marker like `branch@commit_sha`
--   @ SCRIPT_VCS = VCS type of the script
+-   @ SCRIPT_VCS : VCS type of the script (only 'git' for now)
 -   **get_version_string ( file_path = $0 , constant_name = VCSVERSION )**
 -   **get_version_sha ( get_version_string )**
 -   **get_version_branch ( get_version_string )**
@@ -159,18 +172,20 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **vcs_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )**
 -   **vcs_update_clone ( target_dir )**
 -   **vcs_change_branch ( target_dir , branch = 'master' )**
+-   @ CURRENT_GIT_CLONE_DIR : environment variable to store current GIT clone directory
 -   **git_is_clone ( path = pwd , remote_url = null )**
 -   **git_get_branch ( path = pwd )**
 -   **git_get_commit ( path = pwd )**
 -   **git_get_version ( path = pwd )**
 -   **git_get_remote_version ( path = pwd , branch = HEAD )**
 -   **git_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )**
+-   @env clone directory is loaded in CURRENT_GIT_CLONE_DIR
 -   **git_update_clone ( target_dir )**
--   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+-   @param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 -   **git_change_branch ( target_dir , branch = 'master' )**
--   @param target_dir: name of the clone in $LIB_SYSCACHEDIR or full path of concerned clone
+-   @param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 930)
+## COLORIZED CONTENTS (line 993)
 
 -   **get_text_format_tag ( code )**
     @param code must be one of the library colors or text-options codes
@@ -182,7 +197,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
     @param name must be in LIBTEXTOPTIONS
 -   **get_text_option_tag ( name )**
     @param name must be in LIBTEXTOPTIONS
--   **get_text_option_tagclose ( name )**
+-   **get_text_option_tag_close ( name )**
     @param name must be in LIBTEXTOPTIONS
 -   **colorize ( string , text_option , foreground , background )**
     @param text_option must be in LIBTEXTOPTIONS
@@ -191,11 +206,11 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **parse_color_tags ( "string with <bold>tags</bold>" )**
 -   **strip_colors ( string )**
 
-## TEMPORARY FILES (line 1096)
+## TEMPORARY FILES (line 1159)
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
--   **get_temp_filepath ( filename , dirname = "LIB_TEMPDIR" )**
+-   **get_tempfile_path ( filename , dirname = "LIB_TEMPDIR" )**
     @param filename The temporary filename to use
     @param dirname The name of the directory to create (default is `tmp/`)
 -   **create_tempdir ( dirname = "LIB_TEMPDIR" )**
@@ -205,13 +220,13 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 1183)
+## LOG FILES (line 1246)
 
 -   **get_log_filepath ()**
 -   **log ( message , type='' )**
 -   **read_log ()**
 
-## CONFIGURATION FILES (line 1221)
+## CONFIGURATION FILES (line 1284)
 
 -   **get_global_configfile ( file_name )**
 -   **get_user_configfile ( file_name )**
@@ -222,7 +237,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **get_configval ( file_path , key )**
 -   **build_configstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1371)
+## SCRIPT OPTIONS / ARGUMENTS (line 1437)
 
 -   **get_short_options_array ()**
 -   **get_short_options_string ( delimiter = '|' )**
@@ -230,24 +245,26 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **get_long_options_string ( delimiter = '|' )**
 -   **get_option_arg ( "$x" )**
 -   **get_long_option ( "$x" )**
--   **get_long_optionarg ( "$x" )**
+-   **get_long_option_arg ( "$x" )**
 -   **get_next_argument ()**
 -   **get_last_argument ()**
 -   **rearrange_script_options ( "$@" )**
 -   **parse_common_options_strict ( "$@" = SCRIPT_OPTS )**
 -   **parse_common_options ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1603)
+## SCRIPT INFOS (line 1669)
 
 -   **get_script_version_string ( quiet = false )**
 -   **script_title ( lib = false )**
+-   **script_short_title ()**
 -   **script_usage ()**
+-   **script_long_usage ( synopsis = SYNOPSIS_ERROR , options_string = COMMON_OPTIONS_USAGE )**
 -   **script_help ( lib_info = true )**
 -   **script_manpage ( cmd = $0 , section = 3 )**
 -   **script_short_version ( quiet = false )**
 -   **script_version ( quiet = false )**
 
-## DOCBUILDER (line 1737)
+## DOCBUILDER (line 1876)
 
 -   @ DOCBUILDER_MASKS = ()
 -   @ DOCBUILDER_MARKER = '##@!@##'
@@ -255,7 +272,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 1844)
+## LIBRARY INFOS (line 1984)
 
 -   **get_library_version_string ( path = $0 )**
 -   **library_info ()**
@@ -267,14 +284,14 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 
-## LIBRARY INTERNALS (line 1956)
+## LIBRARY INTERNALS (line 2103)
 
 -   @ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 -   **make_library_homedir ()**
 -   **make_library_cachedir ()**
 -   **clean_library_cachedir ()**
 
-## INSTALLATION WIZARD (line 1981)
+## INSTALLATION WIZARD (line 2128)
 
 -   @ SCRIPT_REPOSITORY_URL = url of your distant repository
 -   @ SCRIPT_FILES = array of installable files
@@ -289,9 +306,9 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **script_update ( path = $HOME/bin/ )**
 -   **script_uninstall ( path = $HOME/bin/ )**
 
-## COMPATIBILITY (line 2131)
+## COMPATIBILITY (line 2278)
 
 
 ----
 
-[*Doc generated at 06-4-2014 22:51:49 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 08-4-2014 15:56:40 from path 'src/piwi-bash-library.sh'*]

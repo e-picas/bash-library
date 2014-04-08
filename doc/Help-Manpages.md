@@ -11,53 +11,138 @@ For a full example, see the `bin/manpage-test.sh` script.
 Like for any other command (especially GNU ones) it is important to inform user about how
 a command using the library works: the available options and their meanings, the various
 actions featured by the script and other informations as a presentation, the concerned
-files etc. The library can help building these informations in three ways:
+files etc. The library can help building these informations in four ways:
 
 -   it can build a very simple "synopsis" in case of error
--   it can build a simple "usage" string (displayed after an error for instance)
--   it can build a less simple "manpage-like" information
-
-The **usage** string is considered as the script's "help" and is displayed using the `--help`
-option and the **manpage** one is displayed using the `--man` option.
+-   it can build a simple "usage" string ; it is displayed using the `--help` option
+	or after an error
+-   it can build a less simple "manpage-like" information, displayed using the `--man` option
+-	it can build a classic "version" string, displayed using the `--version`
 
 The library builds these strings using some variables defined in each script. As long as one
 of these variables is defined, it will be shown in the concerned string. You can create rich
 contents using [tagged strings](Colorized-contents.md) for all of these texts.
 
 
+## Global variables
+
+The very first thing to do when you use the library in your scripts is to define the variables
+contained in the `SCRIPT_VARS` table. They are used in many ways (for instance in the
+"fallback" system described below). Please refer to the [Documentation](../DOCUMENTATION.md)
+of your library's version for the last variables'list to use.
+
+	SCRIPT_VARS=(
+
+		# these are highly recommended:
+
+		NAME			# the name of your script
+		VERSION			# the version number : X.Y.Z(-alpha/beta/...)
+		DATE			# the date of this version
+		DESCRIPTION		# a short presentation of the script
+		LICENSE			# the license type protecting the script
+		HOMEPAGE		# an URL of the script sources or your command website
+		SYNOPSIS		# your script's general synopsis
+		OPTIONS			# your script's options description
+		
+		# these are optional:
+		
+		EXAMPLES		# examples infos
+		EXIT_STATUS		# exist statuses if so
+		FILES			# concerned files
+		ENVIRONMENT		# environment variables
+		COPYRIGHT		# copyright info
+		BUGS			# how to transmit bugs infos
+		AUTHOR			# author's infos
+		SEE_ALSO		# see alos infos
+		COPYRIGHT		# copyright info
+		LICENSE			# license info specific for "version"
+		SOURCES			# sources info (defaults to HOMEPAGE)
+		ADDITIONAL_INFO	# a random and free aditionnal information
+
+	)
+
+The `NAME`, `VERSION` and `DESCRIPTION` variables are important as they will be used in all the
+informational strings. The `DATE` variable MAY be defined, but is not required if you use the 
+[internal versioning system](Versioning-Licensing.md). For each of the informational strings
+described in this document, only the `NAME`, `VERSION` and `DATE` will NEVER be replaced by their
+suffixed equivalent.
+
+
+### Using library defaults
+
+The library defines some common entries for all the informational strings you can use as shortcuts:
+
+    COMMON_OPTIONS_MANPAGE and COMMON_OPTIONS_USAGE : simple lists of available common options
+    COMMON_OPTIONS_FULLINFO_MANPAGE : an "options" information presenting the common library options
+
+    COMMON_SYNOPSIS : the default bash script usage synopsis
+    COMMON_SYNOPSIS_ACTION : the default bash script usage synopsis for a script with "action" argument
+    COMMON_SYNOPSIS_ERROR : the default bash script usage synopsis shown for the error short string
+
+### Library dependency
+
+By default, the manpage of a script will include a `Dependencies` section presenting the
+library itself, its version, license and homepage. You can avoid this behavior defining:
+
+    MANPAGE_NODEPEDENCY=true
+
+### Fallback system
+
+For all the variables defined in this documentation, a simple fallback rule is designed to use
+the "global" variable if the specific one is not found.
+
+For instance, usage string uses the `SYNOPSIS_USAGE` variable but will finally use the simple
+`SYNOPSIS` variable if the first one was not found.
+
+In some cases (when the information seems important and relevant) the library will finally use
+its own internal equivalent strings if no other was found.
+
+
 ## Synopsis string
 
 The synopsis is a simple reminder of all available options and arguments, without description,
 the script can accept. It is built using the `SYNOPSIS_ERROR` variable, which defaults to
-the simple `SYNOPSIS`, which itself defaults to the library's `LIB_SYNOPSIS`.
+the simple `SYNOPSIS`, which itself defaults to the library's `COMMON_SYNOPSIS`.
+
+	SYNOPSIS_ERROR # long synopsis used in case of error
 
 
 ## Usage string
 
 The usage information string is constructed using the entries defined in the `USAGE_VARS`
-array:
+array and uses the `_USAGE` suffix:
 
-    NAME
-    VERSION
-    PRESENTATION
-    SYNOPSIS_USAGE
-    OPTIONS_USAGE
-
+	USAGE_VARS=(
+		NAME				# global var
+		VERSION				# global var
+		DATE				# global var
+		DESCRIPTION_USAGE	# presentation used only for the "usage" string
+		SYNOPSIS_USAGE		# synopsis used only for the "usage" string
+		OPTIONS_USAGE		# options description used only for the "usage" string
+	)
 
 
 ## Manpage string
 
 These variables are the entries of the `MANPAGE_VARS` array and tries to follow the common
-manpages structure:
+manpages structure ; they use the `_MANPAGE` suffix:
 
-    SYNOPSIS
-    DESCRIPTION
-    OPTIONS
-    FILES
-    ENVIRONMENT
-    BUGS
-    AUTHOR
-    SEE_ALSO
+	MANPAGE_VARS=(
+		NAME					# global var
+		VERSION					# global var
+		DATE					# global var
+		SYNOPSIS				# global var
+		DESCRIPTION_MANPAGE		# special long description used only for "man" string
+		OPTIONS_MANPAGE			# global var
+		EXAMPLES_MANPAGE		# examples infos
+		EXIT_STATUS_MANPAGE		# exist statuses if so
+		FILES_MANPAGE			# concerned files
+		ENVIRONMENT_MANPAGE		# environment variables
+		COPYRIGHT_MANPAGE		# copyright info
+		BUGS_MANPAGE			# how to transmit bugs infos
+		AUTHOR_MANPAGE			# author's infos
+		SEE_ALSO_MANPAGE		# see alos infos
+	)
 
 To define a script description, just write in your script:
 
@@ -72,19 +157,24 @@ manpage.
 NOTE - Please note that the result is NOT a true UNIX manpage but just a string written on
 terminal.
 
-### Using library defaults
 
-The library defines some common entries for manpages you can use as shortcuts:
+## GNU version string
 
-    $COMMON_OPTIONS_INFO : an "options" information presenting the common library options
-    $LIB_SYNOPSIS : the default bash script usage synopsis
+The library also handles the construction of a "classic" GNU version string, with the name and
+version of the script, its license and copyright informations and a random additional string.
 
-### Library dependency
+To define these strings in your script, you must define each item of the `VERSION_VARS` table:
 
-By default, the manpage of a script will include a `Dependencies` section presenting the
-library itself, its version, license and homepage. You can avoid this behavior defining:
-
-    MANPAGE_NODEPEDENCY=true
+	VERSION_VARS=(
+		NAME			# global var
+		VERSION			# global var
+		DATE			# global var
+		DESCRIPTION		# global var
+		COPYRIGHT		# copyright info
+		LICENSE			# license info specific for "version"
+		SOURCES			# sources info (defaults to HOMEPAGE)
+		ADDITIONAL_INFO	# a random and free aditionnal information
+	)
 
 
 ## Samples

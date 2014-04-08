@@ -16,20 +16,26 @@ fi
 #LOGFILE="bashlibtest.log"
 
 NAME="Bash-Lib script test for log messages"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test library log infos management ...";
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
+SYNOPSIS="$COMMON_SYNOPSIS_ACTION"
 
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_FULLINFO
 OPTIONS="\n\
-<underline>Available actions:</underline>\n\
+\t<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the current log file\n\
 \t<bold>write</bold>\t\twrite 10 tests log messages in log file\n\
 \t<bold>throw</bold>\t\tthrows an error to test log error message\n\
 \t<bold>delete</bold>\t\tdelete log file\n\n\
 \t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO}";
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+\tread\t\tread the current log file\n\
+\twrite\t\twrite 10 tests log messages in log file\n\
+\tthrow\t\tthrows an error to test log error message\n\
+\tdelete\t\tdelete log file\n\
+\t${COMMON_OPTIONS_USAGE}";
 SCRIPT_VCS='git'
 
 rearrange_script_options "$@"
