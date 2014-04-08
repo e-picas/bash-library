@@ -3,26 +3,27 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
 
 NAME="Lorem-Ipsum-Test"
-VERSION="0.0.1-dev"
+VERSION="0.1.0"
 DESCRIPTION="A test for 'program' long option usage. Run with no long option, then with '--less' for instance."
+SCRIPT_VCS='git'
 
-parsecommonoptions "$@"
+parse_common_options "$@"
 quietecho "_ go"
 
 _MAX=100
 _TESTSTR=""
-_TMPFILE=$(gettempfilepath loremipsum-test)
+_TMPFILE=$(get_tempfile_path loremipsum-test)
 
 for ((i=0; i<$_MAX; i++)); do
     _TESTSTR="${_TESTSTR}\n${LOREMIPSUM_MULTILINE}\n"

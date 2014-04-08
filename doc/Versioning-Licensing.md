@@ -30,8 +30,8 @@ Once it has been published, a release MUST NOT (never !!) change its version num
 The library uses the following constants to get name and version number of a script (here with
 the default values of the library):
 
-	NAME     ="PiwiBashLibrary"
-	VERSION  ="1.0.0"
+    NAME     ="PiwiBashLibrary"
+    VERSION  ="1.0.0"
 
 
 ## Licensing
@@ -44,16 +44,14 @@ This means that any script using it MUST be licensed under a [compatible license
 The library uses the following constants to build the `--version` option output (here
 with their default values in the library):
 
-	LICENSE            ="GPL-3.0"
-	LICENSE_URL        ="http://www.gnu.org/licenses/gpl-3.0.html"
-	COPYRIGHT_TYPE     ="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
-	LICENSE_TYPE       ="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
-	SOURCES_TYPE       ="Sources & updates: <${LIB_HOME}>"
-	ADDITIONAL_INFO    ="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
+    LICENSE             ="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
+    COPYRIGHT           ="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
+    SOURCES             ="Sources & updates: <${LIB_HOME}>"
+    ADDITIONAL_INFO     ="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
 
 To test the final rendering, you can run:
 
-	./path/to/library.sh version
+    ./path/to/library.sh version
 
 
 --------------

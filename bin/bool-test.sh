@@ -3,20 +3,22 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
 
 NAME="Bash boolean tests"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test boolean values manipulations and equalities in bash."
-parsecommonoptions "$@"
+OPTIONS=""
+SCRIPT_VCS='git'
+parse_common_options "$@"
 quietecho "_ go"
 
 export TRUEVAL=false
@@ -51,10 +53,10 @@ if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
 if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 echo
 
-# onoffbit
-echo "# test of the fct 'onoffbit'"
-echo "TRUEVAL is `onoffbit $TRUEVAL`"
-echo "FALSEVAL is `onoffbit $FALSEVAL`"
+# onoff_bit
+echo "# test of the fct 'onoff_bit'"
+echo "TRUEVAL is `onoff_bit $TRUEVAL`"
+echo "FALSEVAL is `onoff_bit $FALSEVAL`"
 
 quietecho "_ ok"
 if ! $QUIET; then libdebug "$*"; fi

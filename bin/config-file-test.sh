@@ -3,24 +3,31 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib script test for configuration files"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test library configuration files management ...";
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
+SCRIPT_VCS='git'
 
-# for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_FULLINFO
-OPTIONS="<underline>Available actions:</underline>\n\
+SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
+SYNOPSIS_MANPAGE="${COMMON_SYNOPSIS_ACTION_MANPAGE}"
+SYNOPSIS_ERROR="${COMMON_SYNOPSIS_ACTION}\n\
+\tread\n\
+\twrite\n\
+\tadd\n\
+\treplace\n\
+\tget\n\
+\tdelete";
+OPTIONS_MANPAGE="<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the configuration file (default action)\n\
 \t<bold>write</bold>\t\twrite the configuration file\n\
 \t<bold>add</bold>\t\tadd a configuration entry\n\
@@ -28,19 +35,28 @@ OPTIONS="<underline>Available actions:</underline>\n\
 \t<bold>get</bold>\t\tget values from the test config table\n\
 \t<bold>delete</bold>\t\tdelete any existing config file\n\n\
 \t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO}";
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+Available actions:\n\
+\tread\t\tread the configuration file (default action)\n\
+\twrite\t\twrite the configuration file\n\
+\tadd\t\tadd a configuration entry\n\
+\treplace\t\treplace a configuration entry\n\
+\tget\t\tget values from the test config table\n\
+\tdelete\t\tdelete any existing config file\n\n\
+Common options (to use first):${COMMON_OPTIONS_USAGE}";
 
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions
+parse_common_options
 quietecho "_ go"
 
 filename=testconfig
 keys=(one two three)
 values=('value one' 'value two' 'value three')
-filepath=$(getuserconfigfile $filename)
+filepath=$(get_user_configfile $filename)
 actiondone=false
 
 ACTION="${SCRIPT_ARGS[0]}"
@@ -55,7 +71,7 @@ then
             ;;
         read)
             verecho "Reading config file '$filepath':"
-            iexec "readconfigfile $filepath"
+            iexec "read_configfile $filepath"
             verecho "_ ok"
             echo
             verecho "Testing value of config var 'one':"
@@ -67,7 +83,7 @@ then
             ;;
         write)
             verecho "Writing config file '$filepath':"
-            iexec "writeconfigfile $filepath keys[@] values[@]"
+            iexec "write_configfile $filepath keys[@] values[@]"
             verecho "_ ok"
             echo
             actiondone=true
@@ -76,7 +92,7 @@ then
             ;;
         add)
             verecho "Adding new value 'four=value four' in config file '$filepath':"
-            iexec "setconfigval $filepath \"four\" \"value four\""
+            iexec "set_configval $filepath \"four\" \"value four\""
             verecho "_ ok"
             echo
             actiondone=true
@@ -85,7 +101,7 @@ then
             ;;
         replace)
             verecho "Replacing value 'four=new value four' in config file '$filepath':"
-            iexec "setconfigval $filepath \"four\" \"new value four\""
+            iexec "set_configval $filepath \"four\" \"new value four\""
             verecho "_ ok"
             echo
             actiondone=true
@@ -94,8 +110,8 @@ then
             ;;
         get)
             verecho "Getting config value 'three' and 'four' from config file '$filepath':"
-            iexec "getconfigval $filepath \"three\""
-            iexec "getconfigval $filepath \"four\""
+            iexec "get_configval $filepath \"three\""
+            iexec "get_configval $filepath \"four\""
             verecho "_ ok"
             echo
             actiondone=true

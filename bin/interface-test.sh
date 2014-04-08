@@ -6,12 +6,12 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -31,15 +31,21 @@ declare -x ACTION_DESCRIPTION=""
 declare -x SCRIPTMAN=false
 
 NAME="Test of a script interface"
-VERSION="0.0.1"
+VERSION="0.1.0"
 DESCRIPTION="A script to test a library usage for a central action script interface managing sub-scripts dependencies ..."
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
+SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
 OPTIONS="<bold>-z | --actions</bold>\t\tget the list of available actions\n\
 \t<bold>-s | --set=NAME</bold>\t\tpool set for action (default is '${_SET}')\n\
 \t<bold>-p | --project=NAME</bold>\tthe project name\n\
 \t<bold>-t | --target=PATH</bold>\ttarget directory used for some actions\n\n\
 \t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO}";
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+\t-z, --actions\t\tget the list of available actions\n\
+\t-s, --set=NAME\t\tpool set for action (default is '${_SET}')\n\
+\t-p, --project=NAME\tthe project name\n\
+\t-t, --target=PATH\ttarget directory used for some actions${COMMON_OPTIONS_USAGE}";
+SCRIPT_VCS='git'
 
 #### internal lib ##########################
 
@@ -57,7 +63,7 @@ list_actions () {
         fi
     done
     actions_str="${actions_str}\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
-    parsecolortags "${actions_str}\n"
+    parse_color_tags "${actions_str}\n"
 }
 
 #### root_required ()
@@ -106,11 +112,11 @@ fi
 
 OPTIONS_ALLOWED="zs:p:t:${COMMON_OPTIONS_ALLOWED}"
 
-rearrangescriptoptions "$@"
+rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parsecommonoptions
+parse_common_options
 
 OPTIND=1
 ACTION="${SCRIPT_ARGS[0]}"
@@ -118,13 +124,13 @@ while getopts "${OPTIONS_ALLOWED}" OPTION $options; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         d|f|h|i|l|q|v|V|x) rien=rien;;
-        z) title; list_actions; exit 0;;
+        z) script_title; list_actions; exit 0;;
         s) _SET=$OPTARG;;
         p) _PROJECT=$OPTARG;;
         t) _TARGET=$OPTARG;;
-        -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+        -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
             case $OPTARG in
-                actions) title; list_actions; exit 0;;
+                actions) script_title; list_actions; exit 0;;
                 set*) _SET=$LONGOPTARG;;
                 project*) _PROJECT=$LONGOPTARG;;
                 target*) _TARGET=$LONGOPTARG;;

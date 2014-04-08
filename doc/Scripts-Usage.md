@@ -119,12 +119,12 @@ define some special behaviors during this logic. The arguments are just some str
 The library can rearrange options and arguments to safely prepare and parse them. To do so, 
 you need to write something like:
 
-    rearrangescriptoptions "$@"
+    rearrange_script_options "$@"
     [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
     [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
     [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 
-The `rearrangescriptoptions` method will load script options in the `SCRIPT_OPTS` variable 
+The `rearrange_script_options` method will load script options in the `SCRIPT_OPTS` variable 
 and the arguments in the `SCRIPT_ARGS` variable. As it is not possible to reset the global
 command line positional parameters inside a function, you need to manually redefine them
 using the `set` program as shown above. Doing so, you can be safely sure after these lines
@@ -137,7 +137,7 @@ The library defines some methods to get and treat script arguments (global argum
 options' arguments). It defines and uses a new environment variable named `ARGIND` which
 indicates the current argument index, just like `OPTIND` works for options with `getopts`.
 
-To get and loop over arguments, you can use the `getnextarguments` method, which will load
+To get and loop over arguments, you can use the `get_next_arguments` method, which will load
 the "next" argument (the first one for a first usage) in the `ARGUMENT` variable and increments
 `ARGIND` by one:
 
@@ -148,30 +148,30 @@ the "next" argument (the first one for a first usage) in the `ARGUMENT` variable
     ''
 
     # first usage
-    getnextargument
+    get_next_argument
     echo $ARGIND
     1
     echo $ARGUMENT
     first-arg
 
     # then, while a next argument is available
-    getnextargument
+    get_next_argument
     echo $ARGIND
     n+1
     echo $ARGUMENT
     n-arg
 
-For facility, a `getlastargument` method is defined to get the last one directly. The `ARGIND`
+For facility, a `get_last_argument` method is defined to get the last one directly. The `ARGIND`
 indexer is not concerned.
 
 ### Usage of common options
 
-To use common options in a script, just call the `parsecommonoptions` method passing it
+To use common options in a script, just call the `parse_common_options` method passing it
 the script arguments:
 
     #!/bin/bash
     source path/to/piwi-bash-library.sh
-    parsecommonoptions "$@"
+    parse_common_options "$@"
 
 After that, if you want to define and use some custom options, you can write (here for the 
 custom options '-t' and '--test' with arguments):
@@ -194,13 +194,13 @@ custom options '-t' and '--test' with arguments):
 
 To get any long option argument, you can use:
 
-    LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+    LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
 
 
 ### Options parsing and error reporting
 
-A special `parsecommonoptions_strict` method is defined as an alias of the classic
-`parsecommonoptions` but throwing an error for undefined options. To use it, you MUST
+A special `parse_common_options_strict` method is defined as an alias of the classic
+`parse_common_options` but throwing an error for undefined options. To use it, you MUST
 define both `OPTIONS_ALLOWED` and `LONG_OPTIONS_ALLOWED` strings in your script as they
 are used to define known options names. You can use the library `COMMON_OPTIONS_ALLOWED`
 and `COMMON_LONG_OPTIONS_ALLOWED` and complete them with your own options, like:
@@ -208,7 +208,7 @@ and `COMMON_LONG_OPTIONS_ALLOWED` and complete them with your own options, like:
     OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
     LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
 
-This way, the `parsecommonoptions_strict` method will consider the '-t' option as allowed
+This way, the `parse_common_options_strict` method will consider the '-t' option as allowed
 but will throw an error with the '-z' option that seems not allowed. It works the same for
 long options.
 
@@ -222,12 +222,12 @@ test script).
     OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
     LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
 
-    rearrangescriptoptions "$@"
+    rearrange_script_options "$@"
     [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
     [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
     [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 
-    parsecommonoptions_strict
+    parse_common_options_strict
 
     # own options usage
     OPTIND=1
@@ -236,8 +236,8 @@ test script).
         case $OPTION in
             t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
             a) echo " - test option A";;
-            -)  # for long options with argument, use fct 'getlongoptionarg ( $arg )'
-                LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+            -)  # for long options with argument, use fct 'get_long_option_arg ( $arg )'
+                LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
                 case $OPTARG in
                     test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
                     ?) echo " - unknown long option '$OPTARG'";;
@@ -247,12 +247,12 @@ test script).
     done
 
     # arguments usage
-    lastarg=$(getlastargument)
+    lastarg=$(get_last_argument)
     echo " - last argument is '${lastarg}'"
 
-    getnextargument
+    get_next_argument
     echo " - first argument is '$ARGUMENT'"
-    getnextargument
+    get_next_argument
     echo " - next argument is '$ARGUMENT'"
 
     echo " - final 'ARGIND' is: $ARGIND"

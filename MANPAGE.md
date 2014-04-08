@@ -187,13 +187,13 @@ VERBOSE QUIET DEBUG INTERACTIVE FORCED
 USEROS
 :    the current user operating system
 
-NAME VERSION DATE PRESENTATION LICENSE HOMEPAGE
+NAME VERSION DATE DESCRIPTION_USAGE LICENSE_USAGE HOMEPAGE_USAGE SYNOPSIS_USAGE OPTIONS_USAGE
 :   these are used to build the help information of the scripts ; they may be defined for each script
 
-SYNOPSIS DESCRIPTION OPTIONS EXAMPLES EXIT_STATUS FILES ENVIRONMENT COPYRIGHT BUGS AUTHOR SEE_ALSO
+SYNOPSIS_MANPAGE DESCRIPTION_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE
 :    these are used to build man-pages and help informations ; they may be defined for each script
 
-NAME VERSION DATE PRESENTATION COPYRIGHT_TYPE LICENSE_TYPE SOURCES_TYPE ADDITIONAL_INFO
+NAME VERSION DATE PRESENTATION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO
 :   these are used to build the version string of the scripts ; they may be defined for each script
 
 SCRIPT_OPTS SCRIPT_ARGS SCRIPT_PROGRAMS OPTIONS_ALLOWED LONG_OPTIONS_ALLOWED ARGIND ARGUMENT
@@ -257,7 +257,7 @@ along with this program. If not, see <http://www.gnu.org/licenses/>.
 For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
 
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
-	
+
 ## BUGS
 
 To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
