@@ -19,18 +19,18 @@ For a model to use to build your own scripts, use a copy of `bin/dev.sh`.
 For more informations about library's usage in your scripts, please see the following
 documentations:
 
--	[Scripts Usage](Scripts-Usage.md) explains how to use the [Common options](Common-Options.md)
-	handled by the library ; the "common options" are defined according to the best practices
-	and usages in *NIX commands
--	[Help & Manpages](Help-Manpages.md) will show you how to create information strings and
-	manuals for your scripts ; a special [Versioning & Licensing](Versioning-Licensing.md) documentation
-	explains the usage of "in-script"'s variables to correctly name and versioned your scripts
--	[Colorized Contents](Colorized-Contents.md) explains how the library handles the construction of
-	colorized and styled terminal output
--	[Scripts Install](Scripts-Install.md) describes the library's installation wizard you can use for
-	your scripts
--	finally, the [Development](Development.md) explains the rules to follow to write well-coded and
-	well-documentated scripts
+-   [Scripts Usage](Scripts-Usage.md) explains how to use the [Common options](Common-Options.md)
+    handled by the library ; the "common options" are defined according to the best practices
+    and usages in *NIX commands
+-   [Help & Manpages](Help-Manpages.md) will show you how to create information strings and
+    manuals for your scripts ; a special [Versioning & Licensing](Versioning-Licensing.md) documentation
+    explains the usage of "in-script"'s variables to correctly name and versioned your scripts
+-   [Colorized Contents](Colorized-Contents.md) explains how the library handles the construction of
+    colorized and styled terminal output
+-   [Scripts Install](Scripts-Install.md) describes the library's installation wizard you can use for
+    your scripts
+-   finally, the [Development](Development.md) explains the rules to follow to write well-coded and
+    well-documentated scripts
 
 
 ## Installation
@@ -135,18 +135,18 @@ presenting each variable/method with a description and, if neede, its signature.
 
 The documentation output follows some simple rules:
 
--	any line begining with `@ TEXT` is a variable defined in the library ;
-	you can use it with `${TEXT}` or, in certain cases, redefine it
--	any line constructed like `string ( ... )` is a method ; you can call
-	it with `result=$(string ...)` where the dots may be replaced by the
-	method arguments if needed ; as for any other language, a signature like
-	`path = $0` means that a `path` argument can be passed calling the method
-	and defaults to `$0` otherwise
--	any line constructed like `/ string ( ... )` describes an alias
--	some tags are defined to describe a specific feature:
-	-	the `@return` mark describes the return type of the method (type or status)
-	-	the `@param` mark describes a method's parameter
-	-	the `@error` mark describes the condition of a thrown error
+-   any line begining with `@ TEXT` is a variable defined in the library ;
+    you can use it with `${TEXT}` or, in certain cases, redefine it
+-   any line constructed like `string ( ... )` is a method ; you can call
+    it with `result=$(string ...)` where the dots may be replaced by the
+    method arguments if needed ; as for any other language, a signature like
+    `path = $0` means that a `path` argument can be passed calling the method
+    and defaults to `$0` otherwise
+-   any line constructed like `/ string ( ... )` describes an alias
+-   some tags are defined to describe a specific feature:
+    -    the `@return` mark describes the return type of the method (type or status)
+    -    the `@param` mark describes a method's parameter
+    -    the `@error` mark describes the condition of a thrown error
 
 
 ### Script Methods & Variables

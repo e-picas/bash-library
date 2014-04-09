@@ -1,6 +1,6 @@
 # Piwi Bash Library documentation
 
-[*Piwi Bash library 1.0.1 master@949b873f8e5db68a3bae8d240cdec3a12e8797bb*]
+[*Piwi Bash library 1.0.1 master@9217d543802c3af640c45989a136b52e4a969ee4*]
 
 Package [atelierspierrot/piwi-bash-library] version [1.0.1].
 Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
@@ -66,7 +66,8 @@ This is free software: you are free to change and redistribute it ; there is NO 
 
 ## LIBRARY SETUP (line 190)
 
--   @ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION
+-   @ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION
+-   @ LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL
 
 ## SYSTEM (line 214)
 
@@ -111,14 +112,18 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **upper_case_first ( string )**
 -   **/ ucfirst ( string )**
 -   **explode ( str , delim = ' ' )**
+-   @ MAX_LINE_LENGTH = 80 : default max line length for word wrap (integer)
+-   @ LINE_ENDING = 
+ : default line ending character for word wrap
+-   **word_wrap ( text )**
 -   **implode ( array[@] , delim = ' ' )**
 -   **explode_letters ( str )**
 
-## BOOLEAN (line 441)
+## BOOLEAN (line 454)
 
 -   **onoff_bit ( bool )**
 
-## UTILS (line 447)
+## UTILS (line 460)
 
 -   **_echo ( string )**
 -   **_necho ( string )**
@@ -157,7 +162,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **path_simple_error ( path )**
 -   @error exits with status E_PATH (83)
 
-## VCS (line 736)
+## VCS (line 749)
 
 -   @ VCSVERSION : variable used as version marker like `branch@commit_sha`
 -   @ SCRIPT_VCS : VCS type of the script (only 'git' for now)
@@ -185,7 +190,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **git_change_branch ( target_dir , branch = 'master' )**
 -   @param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 993)
+## COLORIZED CONTENTS (line 1006)
 
 -   **get_text_format_tag ( code )**
     @param code must be one of the library colors or text-options codes
@@ -206,7 +211,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **parse_color_tags ( "string with <bold>tags</bold>" )**
 -   **strip_colors ( string )**
 
-## TEMPORARY FILES (line 1159)
+## TEMPORARY FILES (line 1172)
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
@@ -220,13 +225,13 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 1246)
+## LOG FILES (line 1259)
 
 -   **get_log_filepath ()**
 -   **log ( message , type='' )**
 -   **read_log ()**
 
-## CONFIGURATION FILES (line 1284)
+## CONFIGURATION FILES (line 1297)
 
 -   **get_global_configfile ( file_name )**
 -   **get_user_configfile ( file_name )**
@@ -237,7 +242,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **get_configval ( file_path , key )**
 -   **build_configstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1437)
+## SCRIPT OPTIONS / ARGUMENTS (line 1450)
 
 -   **get_short_options_array ()**
 -   **get_short_options_string ( delimiter = '|' )**
@@ -252,7 +257,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **parse_common_options_strict ( "$@" = SCRIPT_OPTS )**
 -   **parse_common_options ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1669)
+## SCRIPT INFOS (line 1682)
 
 -   **get_script_version_string ( quiet = false )**
 -   **script_title ( lib = false )**
@@ -264,7 +269,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **script_short_version ( quiet = false )**
 -   **script_version ( quiet = false )**
 
-## DOCBUILDER (line 1881)
+## DOCBUILDER (line 1894)
 
 -   @ DOCBUILDER_MASKS = ()
 -   @ DOCBUILDER_MARKER = '##@!@##'
@@ -272,7 +277,7 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 1989)
+## LIBRARY INFOS (line 2002)
 
 -   **get_library_version_string ( path = $0 )**
 -   **library_info ()**
@@ -284,15 +289,16 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 
-## LIBRARY INTERNALS (line 2108)
+## LIBRARY INTERNALS (line 2121)
 
 -   @ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 -   **make_library_homedir ()**
 -   **make_library_cachedir ()**
 -   **clean_library_cachedir ()**
 
-## INSTALLATION WIZARD (line 2133)
+## INSTALLATION WIZARD (line 2146)
 
+-   @ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
 -   @ SCRIPT_REPOSITORY_URL = url of your distant repository
 -   @ SCRIPT_FILES = array of installable files
 -   @ SCRIPT_FILES_BIN = array of installable binary files
@@ -306,9 +312,9 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **script_update ( path = $HOME/bin/ )**
 -   **script_uninstall ( path = $HOME/bin/ )**
 
-## COMPATIBILITY (line 2283)
+## COMPATIBILITY (line 2298)
 
 
 ----
 
-[*Doc generated at 08-4-2014 22:13:19 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 09-4-2014 15:30:29 from path 'src/piwi-bash-library.sh'*]
