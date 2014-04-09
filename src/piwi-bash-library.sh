@@ -134,7 +134,7 @@ declare -rx LIB_SYSHOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}"
 ##@ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/" (read-only)
 declare -rx LIB_SYSCACHEDIR="${LIB_SYSHOMEDIR}/cache"
 
-declare -rx VCSVERSION_MASK="@vcsversion@"
+declare -rx VCS_VERSION_MASK="@vcsversion@"
 declare -x TEST_VAR="test"
 
 
@@ -878,13 +878,20 @@ declare -x SCRIPT_VCS=""
 get_version_string () {
     local fpath="${1:-$0}"
     local cstname="${2:-VCSVERSION}"
-    if [ ! -f "${fpath}" ]; then error "file '${fpath}' not found!"; fi
-    local _infile=$(head -n200 "${fpath}" | grep -o -e "${cstname}=\".*\"" | sed "s|^${cstname}=\"\(.*\)\"$|\1|g")
-    if [ ! -z ${_infile} ]
-    then echo ${_infile}
-    elif [ "${SCRIPT_VCS}" == 'git' ]; then
-        if git_is_clone; then
-            git_get_version
+    if [ ! -z ${!cstname} ]
+    then
+        echo "${!cstname}"
+    else
+        local _infile
+        if [ -f "${fpath}" ]; then
+            _infile=$(head -n200 "${fpath}" | grep -o -e "${cstname}=\".*\"" | sed "s|^${cstname}=\"\(.*\)\"$|\1|g")
+        fi
+        if [ ! -z ${_infile} ]
+        then echo ${_infile}
+        elif [ "${SCRIPT_VCS}" == 'git' ]; then
+            if git_is_clone; then
+                git_get_version
+            fi
         fi
     fi
     return 0
@@ -2281,14 +2288,17 @@ library_short_version () {
 #### library_version ( quiet = false )
 ## this function must echo an FULL information about library name & version (GNU like)
 library_version () {
+    local OLD_VCSVERSION="${VCSVERSION}"
+    export VCSVERSION="${LIB_VCSVERSION}"
     for section in "${VERSION_VARS[@]}"; do
-        eval "export OLD_$section=\$$section"
+        eval "local OLD_$section=\$$section"
         eval "export $section=\$LIB_$section"
     done
     script_version ${1:-false}
     for section in "${VERSION_VARS[@]}"; do
         eval "export $section=\$OLD_$section"
     done
+    export VCSVERSION="${OLD_VCSVERSION}"
     return 0
 }
 
