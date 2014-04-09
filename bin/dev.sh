@@ -33,8 +33,6 @@ rearrange_script_options "$@"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
 parse_common_options "$@"
 
-
-
 #simple_error "this is the classic usage error"
 
 

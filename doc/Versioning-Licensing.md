@@ -46,7 +46,7 @@ with their default values in the library):
 
     LICENSE             ="License ${LIB_LICENSE}: <${LIB_LICENSE_URL}>"
     COPYRIGHT           ="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
-    SOURCES             ="Sources & updates: <${LIB_HOME}>"
+    SOURCES             ="Sources & updates: <${LIB_SOURCES_URL}>"
     ADDITIONAL_INFO     ="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
 
 To test the final rendering, you can run:

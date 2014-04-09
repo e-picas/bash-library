@@ -152,12 +152,12 @@ declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|
 ##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)
 ##@ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
 ##@ OPTIONS_ALLOWED | LONG_OPTIONS_ALLOWED : to be defined by the script
+declare -rx ORIGINAL_SCRIPT_OPTS="$@"
 declare -xa SCRIPT_OPTS=()
 declare -xa SCRIPT_ARGS=()
 declare -xa SCRIPT_PROGRAMS=()
 declare -x OPTIONS_ALLOWED="${COMMON_OPTIONS_ALLOWED}"
 declare -x LONG_OPTIONS_ALLOWED="${COMMON_LONG_OPTIONS_ALLOWED}"
-declare -rx ORIGINAL_SCRIPT_OPTS="$@"
 declare -xi ARGIND=0
 declare -x ARGUMENT=""
 
@@ -226,7 +226,8 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 
 #### LIBRARY SETUP #######################################################################
 
-##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION
+##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION
+##@ LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL
 declare -rx LIB_NAME="Piwi Bash library"
 declare -rx LIB_VERSION="1.0.1"
 declare -rx LIB_DATE="2014-04-04"
@@ -237,21 +238,19 @@ declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
 declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
 declare -rx LIB_SCRIPT_VCS='git'
-declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
+declare -rx LIB_SOURCES_URL="https://github.com/atelierspierrot/piwi-bash-library"
 
 declare -rx LIB_LICENSE="License ${LIB_LICENSE_TYPE}: <${LIB_LICENSE_URL}>"
-declare -rx LIB_SOURCES="Sources & updates: <${LIB_HOME}>"
+declare -rx LIB_SOURCES="Sources & updates: <${LIB_SOURCES_URL}>"
 declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
 
-declare -rx LIB_COPYRIGHT_MANPAGE="${LIB_COPYRIGHT} - Some rights reserved. \n\
+declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_DESCRIPTION}\". \n\
+\t${LIB_COPYRIGHT} - Some rights reserved. \n\
 \tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>].\n\
 \t${LIB_LICENSE}.\n\
 \t${LIB_SOURCES}.\n\
 \tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
 \t${LIB_ADDITIONAL_INFO}";
-
-declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_DESCRIPTION}\". \n\
-\t${LIB_COPYRIGHT_MANPAGE}";
 
 
 #### SYSTEM #############################################################################
@@ -483,8 +482,23 @@ explode () {
     return 1
 }
 
+##@ MAX_LINE_LENGTH = 80 : default max line length for word wrap (integer)
+declare -xi MAX_LINE_LENGTH=80
+##@ LINE_ENDING = \n : default line ending character for word wrap
+declare -x LINE_ENDING="\n"
+
+#### word_wrap ( text )
+# wrap a text in MAX_LINE_LENGTH max lengthes lines
+word_wrap () {
+    if [ $# -gt 0 ]; then
+        echo "$*" | sed -e "s/.\{${MAX_LINE_LENGTH}\} /&${LINE_ENDING}/g"
+        return 0
+    fi
+    return 1
+}
+
 #### implode ( array[@] , delim = ' ' )
-# imple an array in a string using a delimiter
+# implode an array in a string using a delimiter
 implode () {
     if [ -n "$1" ]; then
         declare -a _array=("${!1}")
@@ -1873,7 +1887,7 @@ script_title () {
         _echo "[${DATE}]"
     fi
     if [ ! -z "$1" ]; then
-        _echo "[using `library_version` - ${LIB_HOME}]"
+        _echo "[using `library_version` - ${LIB_SOURCES_URL}]"
     fi
     return 0
 }
@@ -2238,9 +2252,9 @@ library_short_version () {
         return 0
     fi
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
-    local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
+    local LIB_MODULE="`dirname ${LIBRARY_REALPATH}`/.."
     local _done=false
-    if $(git_is_clone "$LIB_MODULE" "$LIB_HOME"); then
+    if $(git_is_clone "${LIB_MODULE}" "${LIB_SOURCES_URL}"); then
         add=$(git_get_version)
         if [ -n "${add}" ]; then
             _done=true
@@ -2344,6 +2358,9 @@ clean_library_cachedir () {
 #### INSTALLATION WIZARD #################################################################
 #! All internal installation methods are prefixed with 'instwiz_'
 #! All internal installation constants are prefixed with 'LIBINST_'
+
+##@ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
+declare -rxa INSTALLATION_VARS=(SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF)
 
 ##@ SCRIPT_REPOSITORY_URL = url of your distant repository
 declare -x SCRIPT_REPOSITORY_URL=""
@@ -2535,19 +2552,18 @@ declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
-SCRIPT_VCS="${LIB_SCRIPT_VCS}"
-VCSVERSION="${LIB_VCSVERSION}"
-SCRIPT_REPOSITORY_URL="${LIB_HOME}"
-for section in "${MANPAGE_VARS[@]}"; do eval "$section=\$LIB_$section"; done
-for section in "${SCRIPT_VARS[@]}"; do eval "$section=\$LIB_$section"; done
-for section in "${VERSION_VARS[@]}"; do eval "$section=\$LIB_$section"; done
+for section in "${MANPAGE_VARS[@]}";        do eval "${section}=\$LIB_${section}"; done
+for section in "${SCRIPT_VARS[@]}";         do eval "${section}=\$LIB_${section}"; done
+for section in "${VERSION_VARS[@]}";        do eval "${section}=\$LIB_${section}"; done
+for section in "${USAGE_VARS[@]}";          do eval "${section}=\$LIB_${section}"; done
+for section in "${INSTALLATION_VARS[@]}";   do eval "${section}=\$LIB_${section}"; done
+SCRIPT_REPOSITORY_URL="${LIB_SOURCES_URL}"
 OPTIONS_ALLOWED="b:t:p:${COMMON_OPTIONS_ALLOWED}"
 LONG_OPTIONS_ALLOWED="branch:,target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
 done
-DESCRIPTION="${LIB_DESCRIPTION}"
 DESCRIPTION_USAGE="${LIB_DESCRIPTION}\n\n\
 To use the library, just include its source file using: \`source path/to/piwi-bash-library.sh\` and call its methods.\n\
 Try option '--man' for the library full manpage.";
@@ -2595,14 +2611,14 @@ ${LIB_ADDITIONAL_INFO}";
 
 # -> check preset validity
 intlib_preset_valid () {
-    in_array "$INTLIB_PRESET" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '$INTLIB_PRESET'!";
+    in_array "${INTLIB_PRESET}" "${INTLIB_PRESET_ALLOWED[@]}" || simple_error "unknown preset '${INTLIB_PRESET}'!";
     SCRIPT_FILES=( ${INTLIB_BIN_FILENAME} ${INTLIB_MAN_FILENAME} )
     SCRIPT_FILES_BIN=( ${INTLIB_BIN_FILENAME} )
     SCRIPT_FILES_MAN=( ${INTLIB_MAN_FILENAME} )
-    if [ "$INTLIB_PRESET" = 'dev' -o "$INTLIB_PRESET" = 'full' ]; then
+    if [ "${INTLIB_PRESET}" = 'dev' -o "${INTLIB_PRESET}" = 'full' ]; then
         SCRIPT_FILES=( "${SCRIPT_FILES[@]}" ${INTLIB_DEVDOC_FILENAME} )
     fi
-    if [ "$INTLIB_PRESET" = 'user' -o "$INTLIB_PRESET" = 'full' ]; then
+    if [ "${INTLIB_PRESET}" = 'user' -o "${INTLIB_PRESET}" = 'full' ]; then
         SCRIPT_FILES=( "${SCRIPT_FILES[@]}" ${INTLIB_README_FILENAME} )
     fi
     export SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN
@@ -2680,7 +2696,7 @@ intlibaction_uninstall () {
     export QUIET=true
     local result=$(script_uninstall)
     export QUIET=${oldquiet}
-    if $result
+    if ${result}
     then quietecho ">> ok, library deleted from '${LIBINST_TARGET}'"
     else quietecho "nothing to un-install"
     fi
@@ -2688,7 +2704,7 @@ intlibaction_uninstall () {
 }
 intlibaction_version () {
     script_installation_target ${INTLIB_TARGET}
-    library_version $QUIET
+    library_version ${QUIET}
     return 0
 }
 intlibaction_help () {
@@ -2711,13 +2727,13 @@ intlib_check_uptodate () {
     if [ ${checkdiff} -gt ${ts_limit} ]; then
         export INTLIB_TARGET="`dirname $0`"
         if ! `intlibaction_check 1> /dev/null`; then
-            info "This library version is more than ${INTLIB_OUTDATED_CHECK} days old and a newer version is available ... You should run '$0 selfupdate' to update it.";
+            info "This library version is more than ${INTLIB_OUTDATED_CHECK} days old and a newer version is available ... You should run '$0 update' to update it.";
         fi
     fi
     # forced check
     local ts_limit_forced=$((${INTLIB_OUTDATED_FORCE}*24*60*60))
     if [ ${checkdiff} -gt ${ts_limit_forced} ]; then
-        info "This library version is more than ${INTLIB_OUTDATED_FORCE} days old ... You should run '$0 selfupdate' to get last version.";
+        info "This library version is more than ${INTLIB_OUTDATED_FORCE} days old ... You should run '$0 update' to get last version.";
     fi
     return 0
 }
@@ -2750,7 +2766,7 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     esac
 done
 get_next_argument
-ACTION="$ARGUMENT"
+ACTION="${ARGUMENT}"
 
 # checking env
 # -> action is required

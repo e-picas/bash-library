@@ -18,10 +18,13 @@ VERSION="0.1.0"
 DESCRIPTION="A script to test library automatic manpages"
 SCRIPT_VCS='git'
 
+LINE_ENDING="\n\t\t"
+TMP_MANPAGE_VARS=$(word_wrap "${MANPAGE_VARS[@]}")
 DESCRIPTION_MANPAGE="A script to test library automatic manpages ...\n\
 \tTo test it, run:\n\
 \t\t~\$ path/to/manpage-test.sh\n\
-\tResult is the default script manpage using in-script variables ${MANPAGE_VARS[@]}.\n\
+\tResult is the default script manpage using in-script variables\n\
+\t\t${TMP_MANPAGE_VARS}\n\
 \tThen run:\n\
 \t\t~\$ path/to/manpage-test.sh --testusage\n\
 \tResult is a simple custom manpage using in-script variable USAGE.\n\
@@ -30,8 +33,8 @@ DESCRIPTION_MANPAGE="A script to test library automatic manpages ...\n\
 \tResult is the default library manpage.\n\n\
 \tYou can use option '-v' to add the DEPENDENCIES section of the default manpage.\n\
 \tYou can use special program name long option like '--less' or '--more'.";
-SYNOPSIS="$COMMON_SYNOPSIS"
-SYNOPSIS_ERROR="$COMMON_SYNOPSIS\n\
+SYNOPSIS="${COMMON_SYNOPSIS}"
+SYNOPSIS_ERROR="${COMMON_SYNOPSIS}\n\
 \t--testusage\n\
 \t--default\n\
 \t--library";
@@ -40,7 +43,8 @@ SYNOPSIS_ERROR="$COMMON_SYNOPSIS\n\
 # you can use the common library options string with $COMMON_OPTIONS_INFO
 OPTIONS_MANPAGE="<bold>--testusage</bold>\tget a sample USAGE manpage\n\
 \t<bold>--default</bold>\tthe default script manpage (this is the default action)\n\
-\t<bold>--library</bold>\tthe library manpage${COMMON_OPTIONS_MANPAGE}";
+\t<bold>--library</bold>\tthe library manpage\n\
+\t${COMMON_OPTIONS_MANPAGE}";
 OPTIONS_USAGE="\n\
 \t--testusage\n\
 \t--default\n\

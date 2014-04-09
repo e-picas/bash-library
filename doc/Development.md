@@ -16,8 +16,8 @@ must return an integer status; the classic method's return is `return 0`.
 
 Methods declaration must not begin by the `function` keyword:
 
-	mymethod () { ... }           // => YES
-	function mymethod () { ... }  // => NO
+    mymethod () { ... }           // => YES
+    function mymethod () { ... }  // => NO
 
 ### Variables, Constants
 
