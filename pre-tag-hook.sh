@@ -19,7 +19,7 @@ _GITVERSION=$(git_get_version)
 _LIBFILE="src/piwi-bash-library.sh"
 _MANFILE="MANPAGE.md"
 _MANMANFILE="src/piwi-bash-library.man"
-_MDEBIN="vendor/bin/markdown-extended"
+_MDEBIN="vendor/atelierspierrot/markdown-extended/bin/markdown-extended"
 _DOCFILE="DOCUMENTATION.md"
 
 if [ ! -f "${_MDEBIN}" ]; then
