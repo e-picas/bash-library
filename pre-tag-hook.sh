@@ -36,7 +36,10 @@ if [ -f ${_LIBFILE} ]; then
         else sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${_GITVERSION}\"|" ${_LIBFILE};
     fi
     debecho "> building doc"
+    oldVERBOSE=$VERBOSE
+    export VERBOSE=true
     build_documentation markdown ${_DOCFILE} ${_LIBFILE};
+    export VERBOSE=$oldVERBOSE
     debecho "> adding ${_LIBFILE} ${_DOCFILE}"
     git add ${_LIBFILE};
     git add ${_DOCFILE};
