@@ -54,7 +54,10 @@ if [ -f ${_MANFILE} ]; then
     git add ${_MANFILE};
     if [ -f ${_MDEBIN} ]; then
         debecho "> generating ${_MANMANFILE} from ${_MANFILE}"
-        ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
+        if `in_array ${USEROS} ${LINUX_OS[@]}`
+            then ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
+            else sh ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
+        fi
         git add ${_MANMANFILE};
     else
         verecho "!! > Binary '${_MDEBIN}' not found! (can't re-generate '${_MANMANFILE}' - try to run 'composer' with '--dev' option)"
