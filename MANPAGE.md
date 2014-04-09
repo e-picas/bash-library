@@ -2,7 +2,7 @@ Man:        piwi-bash-library.sh Manual
 Name:       Piwi Bash Library
 Author:     Les Ateliers Pierrot
 Date: 2014-04-09
-Version: 2.0.0-beta
+Version: 2.0.0
 
 
 ## NAME

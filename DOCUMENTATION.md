@@ -1,16 +1,4 @@
-# Piwi Bash Library documentation
-
-[*Piwi Bash library 2.0.0-beta master@2d1237810d0e245934fea506908199185d754900*]
-
-	Package [atelierspierrot/piwi-bash-library] version [2.0.0-beta].
-	Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
-	License GPL-3.0: <http://www.gnu.org/licenses/gpl-3.0.html>.
-	Sources & updates: <https://github.com/atelierspierrot/piwi-bash-library>.
-	Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.
-	This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.
-
-----
-
+# Documentation of 'src/piwi-bash-library.sh'
 
 ## REFERENCES (line 22)
 
@@ -318,4 +306,4 @@
 
 ----
 
-[*Doc generated at 09-4-2014 23:27:25 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 09-4-2014 23:48:33 from path 'src/piwi-bash-library.sh'*]
