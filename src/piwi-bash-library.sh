@@ -629,6 +629,16 @@ interactive_exec () {
 ## alias of 'interactive_exec'
 iexec () { interactive_exec "$*"; }
 
+#### debug_echo ( string )
+## echoes the string if "debug" is "on"
+debug_echo () {
+    if ${DEBUG}; then _echo "$*"; fi; return 0;
+}
+
+#### / debecho ( string )
+## alias of 'debug_echo'
+debecho () { debug_echo "$*"; }
+
 #### debug_exec ( command )
 ## execute the command if "dryrun" is "off", just write it on screen otherwise
 debug_exec () {
