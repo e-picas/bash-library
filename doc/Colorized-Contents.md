@@ -82,6 +82,11 @@ doubel quotes like:
 
     parse_color_tags "$MYSTRING"
 
+If your string is contained in a bash variable, you HAVE to surround the variable name between
+doubel quotes like:
+
+    parsecolortags "$MYSTRING"
+
 
 --------------
 

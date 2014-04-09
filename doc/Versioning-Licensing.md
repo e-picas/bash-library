@@ -30,8 +30,8 @@ Once it has been published, a release MUST NOT (never !!) change its version num
 The library uses the following constants to get name and version number of a script (here with
 the default values of the library):
 
-	NAME     ="PiwiBashLibrary"
-	VERSION  ="1.0.0"
+    NAME     ="PiwiBashLibrary"
+    VERSION  ="1.0.0"
 
 
 ## Licensing
@@ -51,7 +51,7 @@ with their default values in the library):
 
 To test the final rendering, you can run:
 
-	./path/to/library.sh version
+    ./path/to/library.sh version
 
 
 --------------

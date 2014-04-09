@@ -59,11 +59,11 @@ for col in ${LIBTEXTOPTIONS[@]}; do
     txtopt=$(get_text_option_code $col)
     txtoptcode=$(get_text_format_tag $txtopt)
     cell="using code=${txtopt}: ${txtoptcode}%-.*s${normalcode}";
-    printf -v cuttedcell "$cell" $(($col2lg-`string_length "$cell"`+`string_length "$normalcode"`+`string_length "$normalcode"`)) "$LOREMIPSUM"
+    printf -v cuttedcell "$cell" $(($col2lg-`strlen "$cell"`+`strlen "$normalcode"`+`strlen "$normalcode"`)) "$LOREMIPSUM"
     printf -v line \
         "|%-*s|%-*s|\n" \
         $col1lg " text option ${col} " \
-        $(($col2lg+`string_length "$cell"`-40)) " $cuttedcell ";
+        $(($col2lg+`strlen "$cell"`-40)) " $cuttedcell ";
     txtoptstr="${txtoptstr}${line}"
 done
 printf -v line "+%*.*s+%*.*s+\n" 0 $col1lg "$padder" 0 $col2lg "$padder";
