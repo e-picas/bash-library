@@ -1,13 +1,13 @@
 # Piwi Bash Library documentation
 
-[*Piwi Bash library 2.0.0-beta wip@b453cd87008f3da377e551a822889bcdbfa5f809*]
+[*Piwi Bash library 2.0.0-beta wip@8b7569145336c7622817f2768734bf9ca908f2eb*]
 
-Package [atelierspierrot/piwi-bash-library] version [2.0.0-beta].
-Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
-GPL-3.0.
-.
-Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.
-This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.
+	Package [atelierspierrot/piwi-bash-library] version [2.0.0-beta].
+	Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
+	License GPL-3.0: <http://www.gnu.org/licenses/gpl-3.0.html>.
+	Sources & updates: <https://github.com/atelierspierrot/piwi-bash-library>.
+	Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.
+	This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.
 
 ----
 
@@ -114,7 +114,6 @@ This is free software: you are free to change and redistribute it ; there is NO 
 -   **explode ( str , delim = ' ' )**
 -   @ MAX_LINE_LENGTH = 80 : default max line length for word wrap (integer)
 -   @ LINE_ENDING = 
- : default line ending character for word wrap
 -   **word_wrap ( text )**
 -   **implode ( array[@] , delim = ' ' )**
 -   **explode_letters ( str )**
@@ -319,4 +318,4 @@ This is free software: you are free to change and redistribute it ; there is NO 
 
 ----
 
-[*Doc generated at 09-4-2014 17:33:51 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 09-4-2014 23:23:49 from path 'src/piwi-bash-library.sh'*]

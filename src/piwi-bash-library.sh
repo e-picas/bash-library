@@ -2610,12 +2610,12 @@ SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[--] <action>";
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*`library_info`*]"
 declare -x DOCUMENTATION_INTRO="\
-Package [${LIB_PACKAGE}] version [${LIB_VERSION}].\n\
-${LIB_COPYRIGHT} - Some rights reserved. \n\
-${LIB_LICENSE_TYPE}.\n\
-${LIB_SOURCES_TYPE}.\n\
-Bug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
-${LIB_ADDITIONAL_INFO}";
+\tPackage [${LIB_PACKAGE}] version [${LIB_VERSION}].\n\
+\t${LIB_COPYRIGHT} - Some rights reserved. \n\
+\t${LIB_LICENSE}.\n\
+\t${LIB_SOURCES}.\n\
+\tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
+\t${LIB_ADDITIONAL_INFO}";
 
 # internal API methods
 
@@ -2667,7 +2667,7 @@ intlibaction_documentation_tomd () {
     return 0
 }
 intlibaction_clean () {
-    clean_cachedir
+    clean_library_cachedir
     quietecho ">> cache cleaned"
     return 0
 }
