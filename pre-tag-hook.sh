@@ -22,27 +22,33 @@ _MANMANFILE="src/piwi-bash-library.man"
 _MDEBIN="vendor/bin/markdown-extended"
 _DOCFILE="DOCUMENTATION.md"
 
-if [ ! -f "$_MDEBIN" ]; then
+if [ ! -f "${_MDEBIN}" ]; then
     echo "The binary '$_MDEBIN' can't be found ; the library manpage will not be updated for this tag."
     echo "If you want to install the markdown tool, run 'composer update --dev' ..."
     prompt 'Do you want to continue' 'Y/n' 'y'
-    if [ "$USERRESPONSE" != 'y' ]; then exit 0; fi
+    if [ "${USERRESPONSE}" != 'y' ]; then exit 0; fi
 fi
 
-if [ -f "$_LIBFILE" ]; then
-    sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${_GITVERSION}\"|" "$_LIBFILE";
+if [ -f "${_LIBFILE}" ]; then
+    if `in_array ${USEROS} ${LINUX_OS[@]}`
+        then sed -i -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${_GITVERSION}\"|" ${_LIBFILE};
+        else sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${_GITVERSION}\"|" ${_LIBFILE};
+    fi
     build_documentation 'markdown' "${_DOCFILE}" "${_LIBFILE}"
-    git add "$_LIBFILE" "$_DOCFILE"
+    git add "${_LIBFILE}" "${_DOCFILE}"
 else
     verecho "!! > Library file '${_LIBFILE}' not found! (can't update version number and date)"
 fi
 
-if [ -f "$_MANFILE" ]; then
-    sed -i '' -e "s|^Version: .*$|Version: ${_VERSION}|;s|^Date: .*$|Date: ${_DATE}|" "$_MANFILE";
-    git add "$_MANFILE"
-    if [ -f "$_MDEBIN" ]; then
-        "$_MDEBIN" -f man -o "$_MANMANFILE" "$_MANFILE"
-        git add "$_MANMANFILE"
+if [ -f "${_MANFILE}" ]; then
+    if `in_array ${USEROS} ${LINUX_OS[@]}`
+        then sed -i -e "s|^Version: .*$|Version: ${_VERSION}|;s|^Date: .*$|Date: ${_DATE}|" ${_MANFILE};
+        else sed -i '' -e "s|^Version: .*$|Version: ${_VERSION}|;s|^Date: .*$|Date: ${_DATE}|" ${_MANFILE};
+    fi
+    git add "${_MANFILE}"
+    if [ -f "${_MDEBIN}" ]; then
+        ${_MDEBIN} -f man -o "${_MANMANFILE}" ${_MANFILE}
+        git add "${_MANMANFILE}"
     else
         verecho "!! > Binary '${_MDEBIN}' not found! (can't re-generate '${_MANMANFILE}' - try to run 'composer' with '--dev' option)"
     fi
@@ -52,7 +58,7 @@ fi
 
 git commit -m "Automatic version number and date insertion" && \
     LASTSHA=`git log -1 --format="%H"` && \
-    git checkout wip && git cherry-pick $LASTSHA && \
+    git checkout wip && git cherry-pick ${LASTSHA} && \
     git checkout master && git push origin master wip;
 
 # Endfile
