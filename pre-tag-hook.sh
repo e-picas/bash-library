@@ -56,7 +56,7 @@ if [ -f ${_MANFILE} ]; then
         debecho "> generating ${_MANMANFILE} from ${_MANFILE}"
         if `in_array ${USEROS} ${LINUX_OS[@]}`
             then ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
-            else sh ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
+            else php ${_MDEBIN} -f man -o ${_MANMANFILE} ${_MANFILE};
         fi
         git add ${_MANMANFILE};
     else
