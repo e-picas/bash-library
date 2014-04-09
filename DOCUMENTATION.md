@@ -11,7 +11,6 @@
 
 ----
 
-
 ## REFERENCES (line 22)
 
 -   @ Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>
@@ -318,4 +317,4 @@
 
 ----
 
-[*Doc generated at 09-4-2014 23:23:49 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 09-4-2014 23:48:33 from path 'src/piwi-bash-library.sh'*]
