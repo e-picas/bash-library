@@ -1,3 +1,0 @@
-CHANGELOG - Piwi-Bash-Library
-=============================
-
