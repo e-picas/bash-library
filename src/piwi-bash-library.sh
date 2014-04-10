@@ -868,6 +868,8 @@ path_simple_error () {
 
 #### VCS #############################################################################
 
+declare -rxa VCS_VARS=(VCSVERSION SCRIPT_VCS)
+
 ##@ VCSVERSION : variable used as version marker like `branch@commit_sha`
 
 ##@ SCRIPT_VCS : VCS type of the script (only 'git' for now)
