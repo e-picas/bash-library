@@ -102,6 +102,7 @@
 -   **explode ( str , delim = ' ' )**
 -   @ MAX_LINE_LENGTH = 80 : default max line length for word wrap (integer)
 -   @ LINE_ENDING = 
+ : default line ending character for word wrap
 -   **word_wrap ( text )**
 -   **implode ( array[@] , delim = ' ' )**
 -   **explode_letters ( str )**
@@ -179,7 +180,7 @@
 -   **git_change_branch ( target_dir , branch = 'master' )**
 -   @param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 1014)
+## COLORIZED CONTENTS (line 1022)
 
 -   **get_text_format_tag ( code )**
     @param code must be one of the library colors or text-options codes
@@ -200,7 +201,7 @@
 -   **parse_color_tags ( "string with <bold>tags</bold>" )**
 -   **strip_colors ( string )**
 
-## TEMPORARY FILES (line 1180)
+## TEMPORARY FILES (line 1188)
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
@@ -214,13 +215,13 @@
 -   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 1267)
+## LOG FILES (line 1275)
 
 -   **get_log_filepath ()**
 -   **log ( message , type='' )**
 -   **read_log ()**
 
-## CONFIGURATION FILES (line 1305)
+## CONFIGURATION FILES (line 1313)
 
 -   **get_global_configfile ( file_name )**
 -   **get_user_configfile ( file_name )**
@@ -231,7 +232,7 @@
 -   **get_configval ( file_path , key )**
 -   **build_configstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1458)
+## SCRIPT OPTIONS / ARGUMENTS (line 1466)
 
 -   **get_short_options_array ()**
 -   **get_short_options_string ( delimiter = '|' )**
@@ -246,7 +247,7 @@
 -   **parse_common_options_strict ( "$@" = SCRIPT_OPTS )**
 -   **parse_common_options ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1690)
+## SCRIPT INFOS (line 1698)
 
 -   **get_script_version_string ( quiet = false )**
 -   **script_title ( lib = false )**
@@ -258,7 +259,7 @@
 -   **script_short_version ( quiet = false )**
 -   **script_version ( quiet = false )**
 
-## DOCBUILDER (line 1902)
+## DOCBUILDER (line 1910)
 
 -   @ DOCBUILDER_MASKS = ()
 -   @ DOCBUILDER_MARKER = '##@!@##'
@@ -266,7 +267,7 @@
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 2010)
+## LIBRARY INFOS (line 2018)
 
 -   **get_library_version_string ( path = $0 )**
 -   **library_info ()**
@@ -278,14 +279,14 @@
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 
-## LIBRARY INTERNALS (line 2129)
+## LIBRARY INTERNALS (line 2140)
 
 -   @ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 -   **make_library_homedir ()**
 -   **make_library_cachedir ()**
 -   **clean_library_cachedir ()**
 
-## INSTALLATION WIZARD (line 2154)
+## INSTALLATION WIZARD (line 2165)
 
 -   @ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
 -   @ SCRIPT_REPOSITORY_URL = url of your distant repository
@@ -301,9 +302,9 @@
 -   **script_update ( path = $HOME/bin/ )**
 -   **script_uninstall ( path = $HOME/bin/ )**
 
-## COMPATIBILITY (line 2306)
+## COMPATIBILITY (line 2317)
 
 
 ----
 
-[*Doc generated at 09-4-2014 23:48:33 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 16-4-2014 11:27:34 from path 'src/piwi-bash-library.sh'*]
