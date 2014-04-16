@@ -2,7 +2,9 @@
 
 ## 2.0.2 (current master)
 
+- No more '-l' neither '-d' default short options
 - new 'release' option for the installation to choose a specific release
+- new 'local' option for the installer to install in current directory
 - corrections in the installation/update process
 
 ## 2.0.1

@@ -161,7 +161,10 @@ Calling the library script itself to use its interface, you can use the followin
 
 **-t**, **--target** =path
 :    defines the target directory of a copy installation ; if it does not exist, `path` will
-be created ; it defaults to current path (`pwd`)
+be created ; it defaults to current path (`$HOME/bin`)
+
+**--local**
+:    defines the current directory as target directory (alias of `-t=pwd`)
 
 **-p**, **--preset** =type
 :    defines the preset type to use for an installation ; can be "**default**" (default value),
