@@ -146,7 +146,7 @@ declare -x TEST_VAR="test"
 ##@ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
 declare -x COMMON_OPTIONS_ALLOWED="d:fhiqvVx-:"
 declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,force,help,interactive,log:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
-declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
+declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V"
 declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|log|quiet|verbose|version|debug|dry-run|libvers|man|usage"
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)
@@ -2583,7 +2583,7 @@ for section in "${USAGE_VARS[@]}";          do eval "${section}=\$LIB_${section}
 for section in "${INSTALLATION_VARS[@]}";   do eval "${section}=\$LIB_${section}"; done
 SCRIPT_REPOSITORY_URL="${LIB_SOURCES_URL}"
 OPTIONS_ALLOWED="b:t:p:r:${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="branch:,target:,preset:,release:,${COMMON_LONG_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="branch:,target:,preset:,release:,local,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
@@ -2604,10 +2604,11 @@ OPTIONS_USAGE="\n\
 \t-t, --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
 \t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\
-\t-r, --release=VERSION\tdefine the GIT release tag to use from the library remote repository (default is empty)\
+\t-r, --release=VERSION\tdefine the GIT release tag to use from the library remote repository (default is empty)\n\
+\t--local\t\t\tlocal installation in current directory (alias of '-t \$(pwd)')\
 ${COMMON_OPTIONS_USAGE}";
 SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
-\t[-t | --target=path]  ...\n\
+\t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
 \thelp | usage\n\
@@ -2619,7 +2620,7 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \tdocumentation\n\
 \tclean\n";
 SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
-\t[-t | --target=path]  ...\n\
+\t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
 \t[--] <action>";
@@ -2731,6 +2732,13 @@ intlibaction_install () {
     return 0
 }
 intlibaction_update () {
+
+# @TODO: test version to make a warning if upgrade
+
+    local installed="${INTLIB_TARGET}/${INTLIB_BIN_FILENAME}"
+    if [ ! -f ${installed} ]; then
+        simple_error "no installed library found to update in '${INTLIB_TARGET}'!"
+    fi
     script_installation_target ${INTLIB_TARGET}
     intlib_preset_valid
     intlib_prepare_install
@@ -2811,6 +2819,7 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
             case ${OPTARG} in
                 target*) export INTLIB_TARGET="${LONGOPTARG}";;
+                local) export INTLIB_TARGET=$(pwd);;
                 preset*) export INTLIB_PRESET="${LONGOPTARG}";;
                 branch*) export LIBINST_BRANCH="${LONGOPTARG}";;
                 release*) export INTLIB_RELEASE="${LONGOPTARG}";;
