@@ -19,7 +19,7 @@ _GITVERSION=$(git_get_version)
 _LIBFILE="src/piwi-bash-library.sh"
 _MANFILE="MANPAGE.md"
 _MANMANFILE="src/piwi-bash-library.man"
-_MDEBIN="vendor/atelierspierrot/markdown-extended/bin/markdown-extended"
+_MDEBIN="vendor/bin/markdown-extended"
 _DOCFILE="DOCUMENTATION.md"
 
 if [ ! -f ${_MDEBIN} ]; then
@@ -29,6 +29,10 @@ if [ ! -f ${_MDEBIN} ]; then
     if [ "${USERRESPONSE}" != 'y' ]; then exit 0; fi
 fi
 
+if [ ! -x ${_MDEBIN} ]; then
+    chmod a+x ${_MDEBIN}
+fi
+
 if [ -f ${_LIBFILE} ]; then
     debecho "> inserting version and date in ${_LIBFILE}"
     if `in_array ${USEROS} ${LINUX_OS[@]}`
@@ -36,10 +40,10 @@ if [ -f ${_LIBFILE} ]; then
         else sed -i '' -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${_VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${_DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${_GITVERSION}\"|" ${_LIBFILE};
     fi
     debecho "> building doc"
-    oldVERBOSE=$VERBOSE
+    oldVERBOSE=${VERBOSE}
     export VERBOSE=true
     build_documentation markdown ${_DOCFILE} ${_LIBFILE};
-    export VERBOSE=$oldVERBOSE
+    export VERBOSE=${oldVERBOSE}
     debecho "> adding ${_LIBFILE} ${_DOCFILE}"
     git add ${_LIBFILE};
     git add ${_DOCFILE};
@@ -70,9 +74,9 @@ else
 fi
 
 debecho "> commiting new files ..."
-git commit -m "Automatic version number and date insertion" && \
-    LASTSHA=`git log -1 --format="%H"` && \
-    git checkout wip && git cherry-pick ${LASTSHA} && \
-    git checkout master && git push origin master wip;
+git commit -m "Version ${_VERSION} : automatic version number and date insertion"
+LASTSHA=`git log -1 --format="%H"`
+git checkout wip && git cherry-pick ${LASTSHA}
+git checkout master && git push origin master wip;
 
 # Endfile
