@@ -1,0 +1,31 @@
+# ChangeLog
+
+## 2.0.1 (current master)
+
+- correction in the library version construction
+
+## 2.0
+
+- all methods are renamed with underscores
+- new method 'debug_echo'
+- constants are renamed with "meaningful" names
+- the whole USAGE and MANAPAGE constructions are reviewed
+
+!! NOTE - see the `scripts/upgrade-1-2.sh` script to upgrade a project
+
+## 1.0.1 (current 1.0 branch)
+
+- adding missing "piwi-" prefixes
+- correcting Linux date format (missing quotes)
+
+## 1.0.0
+
+- corrections in the README file
+- clean of the pre-tag-hook script
+
+## 1.0-beta
+
+- review of the options management
+- new options 'man', 'help' and 'usage'
+- creation of the internal API (direct run of the library)
+- organization of the MANPAGE script's infos
