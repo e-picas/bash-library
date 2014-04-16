@@ -2566,6 +2566,9 @@ declare -x INTLIB_MAN_FILENAME="${LIB_FILENAME_DEFAULT}.man"
 declare -x INTLIB_PRESET='default'
 declare -x INTLIB_BRANCH='master'
 declare -x INTLIB_TARGET
+declare -x INTLIB_RELEASE
+declare -rx INTLIB_RELEASE_MASK="%s.tar.gz"
+declare -rx INTLIB_RELEASE_MASK_URL="${LIB_SOURCES_URL}/archive/%s"
 # days to make automatic version check
 declare -x INTLIB_OUTDATED_CHECK=30
 # days to force user update (message is always shown)
@@ -2581,8 +2584,8 @@ for section in "${VERSION_VARS[@]}";        do eval "${section}=\$LIB_${section}
 for section in "${USAGE_VARS[@]}";          do eval "${section}=\$LIB_${section}"; done
 for section in "${INSTALLATION_VARS[@]}";   do eval "${section}=\$LIB_${section}"; done
 SCRIPT_REPOSITORY_URL="${LIB_SOURCES_URL}"
-OPTIONS_ALLOWED="b:t:p:${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="branch:,target:,preset:,${COMMON_LONG_OPTIONS_ALLOWED}"
+OPTIONS_ALLOWED="b:t:p:r:${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="branch:,target:,preset:,release:,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=""
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
@@ -2602,11 +2605,12 @@ OPTIONS_USAGE="\n\
 `parse_color_tags \"<bold>available options:</bold>\"`\n\
 \t-t, --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
 \t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
-\t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\
+\t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\
+\t-r, --release=VERSION\tdefine the GIT release tag to use from the library remote repository (default is empty)\
 ${COMMON_OPTIONS_USAGE}";
 SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  ...\n\
-\t[-b | --branch=branch]  ...\n\
+\t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
 \thelp | usage\n\
 \tversion\n\
@@ -2618,7 +2622,7 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \tclean\n";
 SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  ...\n\
-\t[-b | --branch=branch]  ...\n\
+\t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
 \t[--] <action>";
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*`library_info`*]"
@@ -2650,10 +2654,37 @@ intlib_preset_valid () {
 
 # -> prepare a clone of the library repo
 intlib_prepare_libclone () {
-    git_make_clone ${LIB_SOURCES_URL}
-    export LIBINST_CLONE=${CURRENT_GIT_CLONE_DIR}
-    git_change_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
-    git_update_clone ${LIBINST_CLONE}
+    if [ "${INTLIB_RELEASE}" != '' ]
+    then
+        make_library_cachedir
+        local oldpwd=$(pwd)
+        if [ "${INTLIB_RELEASE:0:1}" != 'v' ]; then export INTLIB_RELEASE="v${INTLIB_RELEASE}"; fi
+        local _tag=$(printf "${INTLIB_RELEASE_MASK}" "${INTLIB_RELEASE}")
+        local _tag_url=$(printf "${INTLIB_RELEASE_MASK_URL}" "${_tag}")
+        local _target="${LIB_SYSCACHEDIR}/${INTLIB_RELEASE}"
+        if [ ! -d ${_target} ]; then
+            local wgetcmd=$(which wget)
+            if [ -z ${wgetcmd} ]; then command_error 'wget'; fi
+            cd ${LIB_SYSCACHEDIR}
+            ${wgetcmd} "${_tag_url}"
+            local _tar_dirname=$(tar -tzf "${_tag}" | sed -n 1p)
+            _tar_dirname="${_tar_dirname%/}"
+            if [ -d "${_tar_dirname}" ]; then rm -rf ${_tar_dirname}; fi
+            if ${VERBOSE}
+            then tar xvf ${_tag}
+            else tar xf ${_tag}
+            fi
+            mv ${_tar_dirname} ${INTLIB_RELEASE}
+        fi
+        export LIBINST_CLONE="${_target}"
+        cd ${oldpwd}
+    else
+        local target="${LIB_SYSCACHEDIR}/`basename ${LIB_SOURCES_URL}`-${LIBINST_BRANCH}"
+        git_make_clone ${LIB_SOURCES_URL} ${target}
+        export LIBINST_CLONE=${CURRENT_GIT_CLONE_DIR}
+        git_change_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
+        git_update_clone ${LIBINST_CLONE}
+    fi
     return 0
 }
 
@@ -2778,11 +2809,13 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
         t) export INTLIB_TARGET="${OPTARG}";;
         p) export INTLIB_PRESET="${OPTARG}";;
         b) export LIBINST_BRANCH="${OPTARG}";;
+        r) export INTLIB_RELEASE="${OPTARG}";;
         -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
             case ${OPTARG} in
                 target*) export INTLIB_TARGET="${LONGOPTARG}";;
                 preset*) export INTLIB_PRESET="${LONGOPTARG}";;
                 branch*) export LIBINST_BRANCH="${LONGOPTARG}";;
+                release*) export INTLIB_RELEASE="${LONGOPTARG}";;
                 ?) ;;
             esac ;;
         ?) ;;

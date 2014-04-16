@@ -173,6 +173,10 @@ files to install ; see the "Files" section below for more informations
 :    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
 repository ; it defaults to "**master**"
 
+**-r**, **--release** =version
+:    defines the GIT version tag to use from the remote repository ; the release MUST exist in the
+repository ; default behavior follows the "--branch" option
+
 
 ## ENVIRONMENT
 
