@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Piwi Bash Library" "3" "2014-04-09" "Version 2.0.0" "piwi-bash-library.sh Manual"
+.TH  "Piwi Bash Library" "3" "2014-04-16" "Version 2.0.1" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -73,7 +73,7 @@ commands or to always prompt for confirmation
 
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-<GNU coding standards> to keep user in
+GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
 a known environment ...
 
 .SS INTERFACE
