@@ -381,8 +381,9 @@ realpath () { get_absolute_path "$*"; }
 resolve () {
     if [ $# -eq 0 ]; then return 0; fi
     local _path="$1"
-    _path="${_path/\~/${HOME}}"
-    _path="${_path/./`pwd`}"
+    if [ "${_path:0:1}" == '~' ]; then _path="${_path/\~/${HOME}}"; fi
+    if [ "${_path:0:2}" == '..' ]; then _path="${_path/..\//`pwd`/../}"; fi
+    if [ "${_path:0:1}" == '.' ]; then _path="${_path/.\//`pwd`/}"; fi
     echo ${_path}
 }
 
@@ -2649,7 +2650,7 @@ intlib_preset_valid () {
 
 # -> prepare a clone of the library repo
 intlib_prepare_libclone () {
-    git_make_clone ${SCRIPT_REPOSITORY_URL}
+    git_make_clone ${LIB_SOURCES_URL}
     export LIBINST_CLONE=${CURRENT_GIT_CLONE_DIR}
     git_change_branch ${LIBINST_CLONE} ${LIBINST_BRANCH}
     git_update_clone ${LIBINST_CLONE}
