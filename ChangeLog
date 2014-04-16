@@ -1,6 +1,11 @@
 # ChangeLog
 
-## 2.0.1 (current master)
+## 2.0.2 (current master)
+
+- new 'release' option for the installation to choose a specific release
+- corrections in the installation/update process
+
+## 2.0.1
 
 - correction in the library version construction
 
