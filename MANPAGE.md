@@ -15,7 +15,6 @@ piwi-bash-library - An open source day-to-day bash library.
 
 **piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
     [**--help**|**--usage**|**--man**]
-    [**-d** *path*]  [**-l** *filename*]
     [**--force**|**--help**|**--interactive**|**--quiet**|**--verbose**|**--debug**|**--dry-run**]
     [**--version**|**--libvers**]
     [**--logfile** *=filename*] [**working-dir** *=path*]
@@ -126,11 +125,11 @@ variable `FORCED` on `true`
 **-V**, **--version**
 :    see the script version when available ; use option `quiet` to only have the version number
 
-**-d**, **--working-dir** =path
+**--working-dir** =path
 :    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
 the environment variable `WORKINGDIR`
 
-**-l**, **--log** =filename
+**--log** =filename
 :    define the log filename to use (default is `pwibashlib.log`) ; this will update
 the environment variable `LOGFILE`
 

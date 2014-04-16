@@ -144,7 +144,7 @@ declare -x TEST_VAR="test"
 ##@ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
 ##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 ##@ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
-declare -x COMMON_OPTIONS_ALLOWED="d:fhil:qvVx-:"
+declare -x COMMON_OPTIONS_ALLOWED="d:fhiqvVx-:"
 declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,force,help,interactive,log:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V|d|l"
 declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|log|quiet|verbose|version|debug|dry-run|libvers|man|usage"
@@ -183,8 +183,8 @@ declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this info
 \t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
 \t<bold>-x | --debug</bold>\t\t\tenable debug mode \n\
 \t<bold>-V | --version</bold>\t\t\tsee the script version when available ; use option '-q' to get the version number only\n\
-\t<bold>-d | --working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t<bold>-l | --log=FILENAME</bold>\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
+\t<bold>--working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t<bold>--log=FILENAME</bold>\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t<bold>--usage</bold>\t\t\t\tshow quick usage information \n\
 \t<bold>--man</bold>\t\t\t\tsee the current script manpage if available \n\
 \t<bold>--dry-run</bold>\t\t\tsee commands to run but not run them actually \n\
@@ -197,8 +197,8 @@ declare -rx COMMON_OPTIONS_USAGE="\n\
 \t-f, --force\t\tforce some commands to not prompt confirmation \n\
 \t-i, --interactive\task for confirmation before any action \n\
 \t-x, --debug\t\tenable debug mode \n\
-\t-d, --working-dir=PATH\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t-l, --log=FILENAME\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
+\t--working-dir=PATH\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
+\t--log=FILENAME\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t--dry-run\t\tsee commands to run but not run them actually \n\n\
 \t-V, --version\t\tsee the script version when available\n\
 \t\t\t\tuse option '-q' to get the version number only\n\
@@ -1834,8 +1834,6 @@ parse_common_options () {
             f) export FORCED=true;;
             x) export DEBUG=true;;
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-            d) set_working_directory $OPTARG;;
-            l) set_log_filename $OPTARG;;
             V) if [ -z ${actiontodo} ]; then actiontodo='version'; fi;;
             -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
                 case ${OPTARG} in
