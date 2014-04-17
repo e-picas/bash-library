@@ -140,11 +140,11 @@ declare -x TEST_VAR="test"
 
 #### COMMON OPTIONS #############################################################################
 
-##@ COMMON_OPTIONS_ALLOWED = "d:fhil:qvVx-:"
+##@ COMMON_OPTIONS_ALLOWED = "fhiqvVx-:"
 ##@ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
 ##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 ##@ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
-declare -x COMMON_OPTIONS_ALLOWED="d:fhiqvVx-:"
+declare -x COMMON_OPTIONS_ALLOWED="fhiqvVx-:"
 declare -x COMMON_LONG_OPTIONS_ALLOWED="working-dir:,force,help,interactive,log:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
 declare -x COMMON_OPTIONS_ALLOWED_MASK="h|f|i|q|v|x|V"
 declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK="working-dir|force|help|interactive|log|quiet|verbose|version|debug|dry-run|libvers|man|usage"
