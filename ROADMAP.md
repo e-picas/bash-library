@@ -34,18 +34,18 @@ To generate the documentation to `DOCUMENTATION.md`:
 ## TODO
 
 -   arrange the "interface" according to new work on the dev-tools
--   skip the '-l' option keeping only the '--log'
--   add the '-l' option to make a local install of the lib (in current directory)
 -   write a Tutorial
--   write a CHANGELOG following the GNU standards
 -   add a new 'taillog' action
+-   add a '--plain' option for a script-usable output rendering (lists of options for instance)
+
+-   move the "bin/" to "demo/" (which is more what they are)
 
 -   new feature: execute a list of commands (from an array) with the possibility to split
-    them one by one and choose which part to execute or not (in the base of the `idexec` method)
+    them one by one and choose which part to execute or not (in the base of the `iexec` method)
     inspired by the GIT stuff
 
 
 ## BUGS
 
 -   managing SCRIPT_ARGS when no option
--   "strip_colors" method ?
+-   "strip_colors" method on MacOSX ?
