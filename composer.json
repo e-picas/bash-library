@@ -12,7 +12,7 @@
     },{
         "name": "Pierre Cassat (piwi)",
         "email": "piwi@ateliers-pierrot.fr",
-        "homepage": "http://github.com/pierowbmstr"
+        "homepage": "http://github.com/piwi"
     }],
     "require-dev": {
         "atelierspierrot/markdown-extended": "dev-master"

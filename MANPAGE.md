@@ -70,28 +70,28 @@ See the "Options" section below for specific options usage.
 
 ### The following actions are available
 
+**check**
+:   check if your library is up-to-date
+
+**documentation**
+:   see the library documentation ; use option `verbose` to increase verbosity ; you can
+add an `md` prefix to get the documentation in Markdown format ('mddocumentation')
+
 **help** and **usage**
 :   get an 'help' and 'usage' information about the library
 
 **install**
 :   install a copy of the library locally or in your system
 
-**check**
-:   check if your library is up-to-date
+**uninstall**
+:   uninstall a copy from a system path
 
 **update**
 :   update the library with a newer version if so ; this will update the MINOR version
 
-**uninstall**
-:   uninstall a copy from a system path
-
 **version**
 :   get the version informations about the library ; use option `quiet` to get only
 the version number
-
-**documentation**
-:   see the library documentation ; use option `verbose` to increase verbosity ; you can
-add an `md` prefix to get the documentation in Markdown format ('mddocumentation')
 
 ## OPTIONS
 
@@ -100,27 +100,38 @@ manpage or help string for more infos.
 
 *The following common options are supported (MAY be used first):*
 
-**-h**, **--help**
-:    show an information message 
-
-**-v**, **--verbose**
-:    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
-and `QUIET` on `false`
-
-**-q**, **--quiet**
-:    decrease script verbosity, nothing will be written unless errors ; this will define
-the environment variables `VERBOSE` and `INTERACTIVE` on `false` and `QUIET` on `true`
+**--dry-run**
+:    see commands to run but not run them actually ; this will define the environment variable
+`DRYRUN` on `true`
 
 **-f**, **--force**
 :    force some commands to not prompt confirmation ; this will define the environment
 variable `FORCED` on `true`
 
+**-h**, **--help**
+:    show an information message 
+
 **-i**, **--interactive**
 :    ask for confirmation before any action ; this will define the environment variable
 `INTERACTIVE` on `true` and `QUIET` on `false`
 
-**-x**, **--debug**
-:    enable debug mode ; this will define the environment variable `DEBUG` on `true`
+**--libvers**
+:    see the library version ; use option `quiet` to only have the version number
+
+**--log** =filename
+:    define the log filename to use (default is `pwibashlib.log`) ; this will update
+the environment variable `LOGFILE`
+
+**--man**
+:    try to open a manpage for current script if available, or show the help string otherwise
+
+**-q**, **--quiet**
+:    decrease script verbosity, nothing will be written unless errors ; this will define
+the environment variables `VERBOSE` and `INTERACTIVE` on `false` and `QUIET` on `true`
+
+**-v**, **--verbose**
+:    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
+and `QUIET` on `false`
 
 **-V**, **--version**
 :    see the script version when available ; use option `quiet` to only have the version number
@@ -129,22 +140,11 @@ variable `FORCED` on `true`
 :    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
 the environment variable `WORKINGDIR`
 
-**--log** =filename
-:    define the log filename to use (default is `pwibashlib.log`) ; this will update
-the environment variable `LOGFILE`
+**-x**, **--debug**
+:    enable debug mode ; this will define the environment variable `DEBUG` on `true`
 
 **--usage**
 :    show a quick usage information
-
-**--man**
-:    try to open a manpage for current script if available, or show the help string otherwise
-
-**--dry-run**
-:    see commands to run but not run them actually ; this will define the environment variable
-`DRYRUN` on `true`
-
-**--libvers**
-:    see the library version ; use option `quiet` to only have the version number
 
 You can group short options like `-xc`, set an option argument like `-d(=)value` or
 `--long=value` and use `--` to explicitly specify the end of the script options.
@@ -159,9 +159,9 @@ option rendering. For instance, a long "help" output can be loaded via `less` ru
 
 Calling the library script itself to use its interface, you can use the following options:
 
-**-t**, **--target** =path
-:    defines the target directory of a copy installation ; if it does not exist, `path` will
-be created ; it defaults to current path (`$HOME/bin`)
+**-b**, **--branch** =name
+:    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
+repository ; it defaults to "**master**"
 
 **--local**
 :    defines the current directory as target directory (alias of `-t=pwd`)
@@ -171,13 +171,13 @@ be created ; it defaults to current path (`$HOME/bin`)
 "**user**", "**dev**" or "**full**" ; the value of this option will be used to define the
 files to install ; see the "Files" section below for more informations
 
-**-b**, **--branch** =name
-:    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
-repository ; it defaults to "**master**"
-
 **-r**, **--release** =version
 :    defines the GIT version tag to use from the remote repository ; the release MUST exist in the
 repository ; default behavior follows the "--branch" option
+
+**-t**, **--target** =path
+:    defines the target directory of a copy installation ; if it does not exist, `path` will
+be created ; it defaults to current path (`$HOME/bin`)
 
 
 ## ENVIRONMENT
@@ -270,7 +270,7 @@ To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issue
 
 ## AUTHOR
 
-Created and maintained by **Pierre Cassat** (*piwi* - <http://github.com/pierowbmstr>)
+Created and maintained by **Pierre Cassat** (*piwi* - <http://github.com/piwi>)
 & contributors.
 
 ## SEE ALSO
