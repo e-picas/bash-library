@@ -15,7 +15,6 @@ piwi-bash-library - An open source day-to-day bash library.
 .PP
 \fBpiwi-bash-library-script\fP  [\fB-h\fP|\fB-V\fP]  [\fB-x\fP|\fB-v\fP|\fB-i\fP|\fB-q\fP|\fB-f\fP]
     [\fB--help\fP|\fB--usage\fP|\fB--man\fP]
-    [\fB-d\fP \fIpath\fP]  [\fB-l\fP \fIfilename\fP]
     [\fB--force\fP|\fB--help\fP|\fB--interactive\fP|\fB--quiet\fP|\fB--verbose\fP|\fB--debug\fP|\fB--dry-run\fP]
     [\fB--version\fP|\fB--libvers\fP]
     [\fB--logfile\fP \fI=filename\fP] [\fBworking-dir\fP \fI=path\fP]
@@ -73,7 +72,7 @@ commands or to always prompt for confirmation
 
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
+<GNU coding standards> to keep user in
 a known environment ...
 
 .SS INTERFACE
@@ -103,28 +102,28 @@ See the "Options" section below for specific options usage.
 
 .SS The following actions are available
 .TP
+\fBcheck\fP
+check if your library is up-to-date
+.TP
+\fBdocumentation\fP
+see the library documentation ; use option `\fSverbose\fP` to increase verbosity ; you can
+add an `\fSmd\fP` prefix to get the documentation in Markdown format ('mddocumentation')
+.TP
 \fBhelp\fP and \fBusage\fP
 get an 'help' and 'usage' information about the library
 .TP
 \fBinstall\fP
 install a copy of the library locally or in your system
 .TP
-\fBcheck\fP
-check if your library is up-to-date
+\fBuninstall\fP
+uninstall a copy from a system path
 .TP
 \fBupdate\fP
 update the library with a newer version if so ; this will update the MINOR version
 .TP
-\fBuninstall\fP
-uninstall a copy from a system path
-.TP
 \fBversion\fP
 get the version informations about the library ; use option `\fSquiet\fP` to get only
 the version number
-.TP
-\fBdocumentation\fP
-see the library documentation ; use option `\fSverbose\fP` to increase verbosity ; you can
-add an `\fSmd\fP` prefix to get the documentation in Markdown format ('mddocumentation')
 .SH OPTIONS
 
 .PP
@@ -134,51 +133,51 @@ manpage or help string for more infos.
 .PP
 \fIThe following common options are supported (MAY be used first):\fP
 .TP
-\fB-h\fP, \fB--help\fP
-show an information message 
-.TP
-\fB-v\fP, \fB--verbose\fP
-increase script verbosity ; this will define the environment variables `\fSVERBOSE\fP` on `\fStrue\fP`
-and `\fSQUIET\fP` on `\fSfalse\fP`
-.TP
-\fB-q\fP, \fB--quiet\fP
-decrease script verbosity, nothing will be written unless errors ; this will define
-the environment variables `\fSVERBOSE\fP` and `\fSINTERACTIVE\fP` on `\fSfalse\fP` and `\fSQUIET\fP` on `\fStrue\fP`
+\fB--dry-run\fP
+see commands to run but not run them actually ; this will define the environment variable
+`\fSDRYRUN\fP` on `\fStrue\fP`
 .TP
 \fB-f\fP, \fB--force\fP
 force some commands to not prompt confirmation ; this will define the environment
 variable `\fSFORCED\fP` on `\fStrue\fP`
 .TP
+\fB-h\fP, \fB--help\fP
+show an information message 
+.TP
 \fB-i\fP, \fB--interactive\fP
 ask for confirmation before any action ; this will define the environment variable
 `\fSINTERACTIVE\fP` on `\fStrue\fP` and `\fSQUIET\fP` on `\fSfalse\fP`
 .TP
-\fB-x\fP, \fB--debug\fP
-enable debug mode ; this will define the environment variable `\fSDEBUG\fP` on `\fStrue\fP`
+\fB--libvers\fP
+see the library version ; use option `\fSquiet\fP` to only have the version number
 .TP
-\fB-V\fP, \fB--version\fP
-see the script version when available ; use option `\fSquiet\fP` to only have the version number
-.TP
-\fB-d\fP, \fB--working-dir\fP =path
-redefine the working directory (default is `\fSpwd\fP` - `\fSpath\fP` must exist) ; this will update
-the environment variable `\fSWORKINGDIR\fP`
-.TP
-\fB-l\fP, \fB--log\fP =filename
+\fB--log\fP =filename
 define the log filename to use (default is `\fSpwibashlib.log\fP`) ; this will update
 the environment variable `\fSLOGFILE\fP`
-.TP
-\fB--usage\fP
-show a quick usage information
 .TP
 \fB--man\fP
 try to open a manpage for current script if available, or show the help string otherwise
 .TP
-\fB--dry-run\fP
-see commands to run but not run them actually ; this will define the environment variable
-`\fSDRYRUN\fP` on `\fStrue\fP`
+\fB-q\fP, \fB--quiet\fP
+decrease script verbosity, nothing will be written unless errors ; this will define
+the environment variables `\fSVERBOSE\fP` and `\fSINTERACTIVE\fP` on `\fSfalse\fP` and `\fSQUIET\fP` on `\fStrue\fP`
 .TP
-\fB--libvers\fP
-see the library version ; use option `\fSquiet\fP` to only have the version number
+\fB-v\fP, \fB--verbose\fP
+increase script verbosity ; this will define the environment variables `\fSVERBOSE\fP` on `\fStrue\fP`
+and `\fSQUIET\fP` on `\fSfalse\fP`
+.TP
+\fB-V\fP, \fB--version\fP
+see the script version when available ; use option `\fSquiet\fP` to only have the version number
+.TP
+\fB--working-dir\fP =path
+redefine the working directory (default is `\fSpwd\fP` - `\fSpath\fP` must exist) ; this will update
+the environment variable `\fSWORKINGDIR\fP`
+.TP
+\fB-x\fP, \fB--debug\fP
+enable debug mode ; this will define the environment variable `\fSDEBUG\fP` on `\fStrue\fP`
+.TP
+\fB--usage\fP
+show a quick usage information
 .PP
 You can group short options like `\fS-xc\fP`, set an option argument like `\fS-d(=)value\fP` or
 `\fS--long=value\fP` and use `\fS--\fP` to explicitly specify the end of the script options.
@@ -199,18 +198,25 @@ piwi-bash-library-script -h --less
 .PP
 Calling the library script itself to use its interface, you can use the following options:
 .TP
-\fB-t\fP, \fB--target\fP =path
-defines the target directory of a copy installation ; if it does not exist, `\fSpath\fP` will
-be created ; it defaults to current path (`\fSpwd\fP`)
+\fB-b\fP, \fB--branch\fP =name
+defines the GIT branch to use from the remote repository ; the branch MUST exist in the
+repository ; it defaults to "\fBmaster\fP"
+.TP
+\fB--local\fP
+defines the current directory as target directory (alias of `\fS-t=pwd\fP`)
 .TP
 \fB-p\fP, \fB--preset\fP =type
 defines the preset type to use for an installation ; can be "\fBdefault\fP" (default value),
 "\fBuser\fP", "\fBdev\fP" or "\fBfull\fP" ; the value of this option will be used to define the
 files to install ; see the "Files" section below for more informations
 .TP
-\fB-b\fP, \fB--branch\fP =name
-defines the GIT branch to use from the remote repository ; the branch MUST exist in the
-repository ; it defaults to "\fBmaster\fP"
+\fB-r\fP, \fB--release\fP =version
+defines the GIT version tag to use from the remote repository ; the release MUST exist in the
+repository ; default behavior follows the "--branch" option
+.TP
+\fB-t\fP, \fB--target\fP =path
+defines the target directory of a copy installation ; if it does not exist, `\fSpath\fP` will
+be created ; it defaults to current path (`\fS$HOME/bin\fP`)
 .SH ENVIRONMENT
 
 .PP
@@ -306,7 +312,7 @@ To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issue
 .SH AUTHOR
 
 .PP
-Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://github.com/pierowbmstr>)
+Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://github.com/piwi>)
 & contributors.
 
 .SH SEE ALSO

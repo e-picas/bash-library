@@ -6,6 +6,7 @@
 - new 'release' option for the installation to choose a specific release
 - new 'local' option for the installer to install in current directory
 - corrections in the installation/update process
+- manpage options are now in alphabetical order
 
 ## 2.0.1
 
