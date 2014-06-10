@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "Piwi Bash Library" "3" "2014-04-16" "Version 2.0.1" "piwi-bash-library.sh Manual"
+.TH  "Piwi Bash Library" "3" "2014-06-11" "Version 2.0.2" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
