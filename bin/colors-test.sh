@@ -3,34 +3,35 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
 
 NAME="Bash-Lib colors test"
-VERSION="0.0.1-dev"
-DESCRIPTION="A script to test colorized functions of the Bash-Library"
+VERSION="0.1.0"
+DESCRIPTION="A script to test colorized functions of the Piwi-Bash-Library"
+SCRIPT_VCS='git'
 
-parsecommonoptions "$@"
+parse_common_options "$@"
 quietecho "_ go"
 
 # color codes
 echo 
-echo "## tests of fct 'getcolorcode':"
-echo "color code for 'black': `getcolorcode black`"
-echo "color code for 'black' background: `getcolorcode black true`"
-echo "color code for 'abcd': `getcolorcode abcd`"
+echo "## tests of fct 'get_color_code':"
+echo "color code for 'black': `get_color_code black`"
+echo "color code for 'black' background: `get_color_code black true`"
+echo "color code for 'abcd': `get_color_code abcd`"
 echo 
-echo "# tests of fct 'gettextoptioncode':"
-echo "text option code for 'bold': `gettextoptioncode bold`"
-echo "text option code for 'normal': `gettextoptioncode normal`"
-echo "text options code for 'abcd': `gettextoptioncode abcd`"
+echo "# tests of fct 'get_text_option_code':"
+echo "text option code for 'bold': `get_text_option_code bold`"
+echo "text option code for 'normal': `get_text_option_code normal`"
+echo "text options code for 'abcd': `get_text_option_code abcd`"
 echo 
 
 # colorize
@@ -55,52 +56,52 @@ TESTSTR7="
 my <green>test text</green> with <bold>tags</bold> and <bgred>sample text</bgred>
 with multi-line to test <bgred>some</bgred> <bold>tags</bold>
 "
-echo "## tests of fct 'parsecolortags':"
+echo "## tests of fct 'parse_color_tags':"
 echo $TESTSTR1
-parsecolortags "$TESTSTR1"
+parse_color_tags "$TESTSTR1"
 echo
 echo $TESTSTR2
-parsecolortags "$TESTSTR2"
+parse_color_tags "$TESTSTR2"
 echo
 echo $TESTSTR3
-parsecolortags "$TESTSTR3"
+parse_color_tags "$TESTSTR3"
 echo
 echo $TESTSTR4
-parsecolortags "$TESTSTR4"
+parse_color_tags "$TESTSTR4"
 echo
 echo $TESTSTR5
-parsecolortags "$TESTSTR5"
+parse_color_tags "$TESTSTR5"
 echo
 echo $TESTSTR6
-parsecolortags "$TESTSTR6"
+parse_color_tags "$TESTSTR6"
 echo
 echo "$TESTSTR7"
-parsecolortags "$TESTSTR7"
+parse_color_tags "$TESTSTR7"
 
 echo
 echo "## tests of 'COLOR_*' variables:"
 TESTSTR_VAR="<%s>my test text for constant %s</%s>"
-for col in "${LIB_COLORS[@]}"; do
+for col in "${COLOR_VARS[@]}"; do
     eval "colcode=\$$col"
-    parsecolortags "`printf \"$TESTSTR_VAR\" \"${colcode}\" \"${col}\" \"${colcode}\"`"
+    parse_color_tags "`printf \"$TESTSTR_VAR\" \"${colcode}\" \"${col}\" \"${colcode}\"`"
 done
 
 TESTSTR8="<bold>some bold text</bold>"
 TESTSTR9="<bold>some bold text</bold>\n\
 and <green>multiline</green>";
 echo
-echo "## test of the 'stripcolors' method"
+echo "## test of the 'strip_colors' method"
 echo 
-PARSEDTESTSTR8=$(parsecolortags "$TESTSTR8")
+PARSEDTESTSTR8=$(parse_color_tags "$TESTSTR8")
 _echo "colorized: ${PARSEDTESTSTR8}"
-stripcolors "stripped: ${PARSEDTESTSTR8}"
+strip_colors "stripped: ${PARSEDTESTSTR8}"
 echo 
-PARSEDTESTSTR9=$(parsecolortags "$TESTSTR9")
+PARSEDTESTSTR9=$(parse_color_tags "$TESTSTR9")
 _echo "colorized: ${PARSEDTESTSTR9}"
-stripcolors "stripped: ${PARSEDTESTSTR9}"
+strip_colors "stripped: ${PARSEDTESTSTR9}"
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile

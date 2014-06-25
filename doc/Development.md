@@ -14,6 +14,11 @@ By convention, all methods names are written in **lower case**, with underscores
 words if necessary. When a method may construct a string, this string is `echo`es. All methods
 must return an integer status; the classic method's return is `return 0`.
 
+Methods declaration must not begin by the `function` keyword:
+
+    mymethod () { ... }           // => YES
+    function mymethod () { ... }  // => NO
+
 ### Variables, Constants
 
 All globals, variables or constants, are declared as:
@@ -59,9 +64,15 @@ must follow some simple rules of construction:
 . Sections titles are constructed like `#### TITLE (#+)`: four sharps followed by the title
 itself surrounded by spaces then one or more sharps.
 
-. A function or variable name's comment is constructed like `#### name ( arg1 , arg2=default )`:
+. A variable name's comment is constructed like `##@ NAME ...`: two sharps followed by a space
+followed by the at sign and the variable name surrounded by spaces.
+
+. A function name's comment is constructed like `#### name ( arg1 , arg2=default )`:
 four sharps followed by a space, the method name followed by a space, the list of possible
 arguments with their default values if so, between brackets, separated by comas.
+
+. An alias of method name's comment is constructed like `#### / name ( arg1 , arg2=default )`:
+just add a leading slash from the global rule above.
 
 . Parameters, errors and return status can be specified using a tag like `##@param|return|error`
 followed by your comment.
@@ -74,3 +85,7 @@ followed by your comment.
 --------------
 
 Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).
+
+**(c) 2013-2014 [Les Ateliers Pierrot](http://www.ateliers-pierrot.fr/)** - Paris, France - Some rights reserved.
+
+This documentation is licensed under the [Creative Commons - Attribution - Share Alike - Unported - version 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.

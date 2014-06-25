@@ -1,50 +1,39 @@
 Piwi-Bash-Library
 =================
 
-The Bash library package of Les Ateliers Pierrot
+An open source day-to-day bash library.
 
 
-## What is *bash* ?
+## What is this ?
 
-**Bash**, the "Bourne-Again-SHell", is a Unix shell written for the GNU Project as a free
-software replacement for the original Bourne shell (sh). The present library is a tool for
-Bash scripts facilities. Bash is the language mostly used by Linux/Unix devices terminal or
-console.
+### What is *bash* ?
+
+**Bash**, the "Bourne-Again-SHell", is the default language for command line and scripts
+for UNIX systems. Bash is a Unix shell written for the GNU Project as a free software
+replacement for the original "Bourne" shell `sh`.
+
+### What is *piwi bash library* ?
+
+It is a library of variables, constants and methods to use in bash scripts. It defines a
+large set of commonly used methods to facilitate bash scripts writing, such as an handler
+for errors, the construction of an output with text and color effects, some facilities 
+to work with booleans, strings, arrays etc. It also offers a standardization for scripts
+arguments and help and usage strings. 
 
 
-## Usage of the library
+## How does it work ?
 
 ### Installation
 
-#### Classic install
+Installing the *Piwi Bash Library* is as simple as making a copy of two files in your target
+directory: the **library source itself** and **its Unix's manual page**.
 
-Once you have downloaded or cloned the package sources, just copy the `src/piwi-bash-library.sh`
-file to your project directory and begin to use it ...
-
-For a global usage on your machine, you can copy the library in your `bin/` directory.
-
-As for any script file, it must have execution rights for all users.
-
-A direct and complete installation, including downloading sources, could be:
+You can install the package in many ways explained in the [Global documentation](doc/Global-doc.md) ;
+the best practice is to use **the internal interface** as it presents facilities to update the library.
 
     ~$ wget --no-check-certificate https://github.com/atelierspierrot/piwi-bash-library/archive/master.tar.gz
     ~$ tar -xvf master.tar.gz
-    ~$ cp piwi-bash-library-master/src/piwi-bash-library.sh path/to/your/project/bin/
-    ~$ chmod +x path/to/your/project/bin/piwi-bash-library.sh
-
-#### Composer install
-
-If you are a [Composer](http://getcomposer.org/) user, you can add to your package requirements:
-
-    "atelierspierrot/piwi-bash-library": "1.*"
-
-The library will automatically be added in your package's `bin` directory.
-
-#### Install in a package file system
-
-It is sometimes useful to include the library file to your project and manage it manually
-under version control. To embed the library in a project, you can use the `src/piwi-bash-library-installer.sh`
-script which will handle the installation and update of the library files.
+    ~$ ./piwi-bash-library-master/src/piwi-bash-library.sh help
 
 ### Usage
 
@@ -53,25 +42,7 @@ call of its methods or variables:
 
     #!/bin/bash
     source path/to/piwi-bash-library.sh
-
-For a complete loading writing an error if the library is not found, use the following:
-
-    LIBFILE="path/to/piwi-bash-library.sh"
-    if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
-        PADDER=$(printf '%0.1s' "#"{1..1000})
-        printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-            "Unable to find required library file '$LIBFILE'!" \
-            "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-            0 $(tput cols) "$PADDER";
-        exit 1
-    fi
-
-This way, if the library was not found, your script will end with an error and write:
-
-    ### ERROR! ###########################################################
-        Unable to find required library file 'path/to/piwi-bash-library.sh'!
-        Sent in 'current-file.sh' line '0' by 'username' - pwd is '...'
-    ######################################################################
+    ...
 
 ### Developer documentation
 
@@ -80,8 +51,7 @@ Documentation files are included in the [`doc/` directory](doc) of the package.
 A quick overview of the whole library methods or variables can be written on screen running
 (the `-v` option renders a complete doc with comments for each method):
 
-    ~$ ./path/to/my-script.sh (-v) --libdoc
-
+    ~$ ./path/to/piwi-bash-library.sh (-v) documentation
 
 ### Demonstration files
 
@@ -104,18 +74,26 @@ You can use the `-h` option to get help or info:
 
 ## Author & License
 
->    Piwi Bash Library - The open source bash library of Les Ateliers Pierrot
+The "Piwi Bash library" is open source, licensed under the
+[GNU GPL v.3 license](http://www.gnu.org/licenses/gpl-3.0.html).
 
->    http://github.com/atelierspierrot/piwi-bash-library
+    Piwi Bash Library - An open source day-to-day bash library
+    Copyright (C) 2013-2014 Les Ateliers Pierrot
+    <http://www.ateliers-pierrot.fr/> - Some rights reserved.
+    Created & maintained by Pierre Cassat & contributors
 
->    Copyleft 2013, Pierre Cassat and contributors
+    This program is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
 
->    Licensed under the GPL Version 3 license.
+    This program is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+    GNU General Public License for more details.
 
->    http://opensource.org/licenses/GPL-3.0
+    You should have received a copy of the GNU General Public License
+    along with this program. If not, see <http://www.gnu.org/licenses/>.
 
->    ----
-
->    Les Ateliers Pierrot - Paris, France
-
->    <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
+    For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
+    To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.

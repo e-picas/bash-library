@@ -37,14 +37,14 @@ options. These codes can be used to build the final terminal colorization tag:
 
 Some helping methods are defined to get these full fromated tags:
 
--    `gettextformattag ( code )` to get a formated tag for this code,
--    `getcolorcode ( name , background=FALSE )` to get a color code by color name (`foreground`
+-    `get_text_format_tag ( code )` to get a formated tag for this code,
+-    `get_color_code ( name , background=FALSE )` to get a color code by color name (`foreground`
      by default, set the second argument on `true` to get background code),
--    `getcolortag ( name , background=FALSE )` to get a color formated tag by color name (`foreground`
+-    `get_color_tag ( name , background=FALSE )` to get a color formated tag by color name (`foreground`
      by default, set the second argument on `true` to get background code),
--    `gettextoptioncode ( name )` to get a text option code by text option name,
--    `gettextoptiontag ( name )` to get a text option formated tag by text option name,
--    `gettextoptiontagclose ( name )` to get a closing text option formated tag by text option name,
+-    `get_text_option_code ( name )` to get a text option code by text option name,
+-    `get_text_option_tag ( name )` to get a text option formated tag by text option name,
+-    `get_text_option_tag_close ( name )` to get a closing text option formated tag by text option name,
 
 You can also build a complete string colorized (fully) calling method:
 
@@ -66,18 +66,32 @@ For example:
     tags ...
 
 As you can see, the rule is quite simple to build a colorized string, you just need to surround
-your text between opening and closing special tags constructed as the XML tags idea: `<...>text</...>`
+your text between opening and closing special tags constructed as XML tags `<...>text</...>`
 and fill each tag with the name of the text option to use, the color name for foreground and
 the color name prefixed by `bg` for a background color.
 
 You can also use imbricated tags (note here that the rendering is not guaranteed depending
-on the user system).
+on user's system).
 
 To build the final colorized string, just run:
 
-    parsecolortags "the string"
+    parse_color_tags "the string"
+
+If your string is contained in a bash variable, you HAVE to surround the variable name between
+doubel quotes like:
+
+    parse_color_tags "$MYSTRING"
+
+If your string is contained in a bash variable, you HAVE to surround the variable name between
+doubel quotes like:
+
+    parsecolortags "$MYSTRING"
 
 
 --------------
 
 Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).
+
+**(c) 2013-2014 [Les Ateliers Pierrot](http://www.ateliers-pierrot.fr/)** - Paris, France - Some rights reserved.
+
+This documentation is licensed under the [Creative Commons - Attribution - Share Alike - Unported - version 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.

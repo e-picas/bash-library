@@ -1,0 +1,43 @@
+
+# see: <http://www.debian-administration.org/article/317/An_introduction_to_bash_completion_part_2>
+
+_piwibashlib () {
+    local cur prev opts
+    COMPREPLY=()
+    cur="${COMP_WORDS[COMP_CWORD]}"
+    prev="${COMP_WORDS[COMP_CWORD-1]}"
+
+    #  The basic options we'll complete.
+    shortopts="-d -f -h -i -q -v -V -x -b -t -p -r"
+    longopts="--working-dir=XX --force --help --interactive --log=XX --quiet --verbose --version --debug --dry-run --libvers --man --usage --branch=XX --target=XX --preset=XX --release=XX --local"
+    arguments="help usage install update check version uninstall documentation clean"
+
+    #  Complete the arguments to some of the basic commands.
+#    case "${prev}" in
+#        console)
+#            local running=$(for x in `xm list --long | grep \(name | grep -v Domain-0 | awk '{ print $2 }' | tr -d \)`; do echo ${x} ; done )
+#            COMPREPLY=( $(compgen -W "${running}" -- ${cur}) )
+#            return 0
+#            ;;
+#        create)
+#            local names=$(for x in `ls -1 /etc/xen/*.cfg`; do echo ${x/\/etc\/xen\//} ; done )
+#            COMPREPLY=( $(compgen -W "${names}" -- ${cur}) )
+#            return 0
+#            ;;
+#        *)
+#        ;;
+#    esac
+#
+    # Current is a dash
+    if [[ ${cur} == --* ]] ; then
+        COMPREPLY=( $(compgen -W "${longopts}" -- ${cur}) )
+    elif [[ ${cur} == -* ]] ; then
+        COMPREPLY=( $(compgen -W "${shortopts} ${longopts}" -- ${cur}) )
+    else
+        COMPREPLY=( $(compgen -W "${arguments}" -- ${cur}) )
+    fi
+    return 0
+}
+
+complete -F _piwibashlib piwi-bash-library
+complete -F _piwibashlib piwi-bash-library.sh

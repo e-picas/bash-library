@@ -3,12 +3,12 @@
 
 ######## Inclusion of the lib
 LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
+if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
-    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
-        "Unable to find required library file '$LIBFILE'!" \
+    printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
+        "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "$PADDER";
+        0 $(tput cols) "${PADDER}";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -16,31 +16,44 @@ fi
 #LOGFILE="bashlibtest.log"
 
 NAME="Bash-Lib script test for log messages"
-VERSION="0.0.1-test"
+VERSION="0.1.0"
 DESCRIPTION="A script to test library log infos management ...";
-SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 
-# for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_INFO
+SYNOPSIS="${COMMON_SYNOPSIS_ACTION}"
+SYNOPSIS_ERROR="${COMMON_SYNOPSIS_ACTION}\n\
+\tread\n\
+\twrite\n\
+\tthrow\n\
+\tdelete"
 OPTIONS="\n\
-<underline>Available actions:</underline>
+\t<underline>Available actions:</underline>\n\
 \t<bold>read</bold>\t\tread the current log file\n\
-\t<bold>write</bold>\t\twrite 10 tests log messages file\n\
+\t<bold>write</bold>\t\twrite 10 tests log messages in log file\n\
 \t<bold>throw</bold>\t\tthrows an error to test log error message\n\
-\t${COMMON_OPTIONS_INFO}";
+\t<bold>delete</bold>\t\tdelete log file\n\n\
+\t<underline>Common options</underline> (to use first):\n\
+\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+OPTIONS_USAGE="\n\
+\tread\t\tread the current log file\n\
+\twrite\t\twrite 10 tests log messages in log file\n\
+\tthrow\t\tthrows an error to test log error message\n\
+\tdelete\t\tdelete log file\n\
+\t${COMMON_OPTIONS_USAGE}";
 
-parsecommonoptions "$@"
+rearrange_script_options "$@"
+[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
+[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
+[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+parse_common_options
 quietecho "_ go"
 
 OPTIND=1
-options=$(getscriptoptions "$@")
-getlastargument
-ACTION=$ACTION_ARG
+ACTION="${SCRIPT_ARGS[0]}"
 if [ ! -z "$ACTION" ]
 then
     case $ACTION in
         write)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Writing 10 test messages in log file '$LOGFILEPATH':"
             for i in {1..10}; do
                 log "my test message (item $i)"
@@ -50,24 +63,29 @@ then
             verecho "_ ok"
             echo
             verecho "New log file content is:"
-            readlog
+            read_log
             ;;
         read)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Reading log file '$LOGFILEPATH':"
-            readlog
+            read_log
             ;;
         throw)
-            if [ ! -n "$LOGFILEPATH" ]; then getlogfilepath; fi
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             error "test throwing error"
+            ;;
+        delete)
+            if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
+            verecho "Deleting log file '$LOGFILEPATH':"
+            iexec "rm -f $LOGFILEPATH"
             ;;
     esac
 else
-    usage
+    simple_error 'please choose an action to do'
 fi
 
 quietecho "_ ok"
-libdebug "$*"
+if ! $QUIET; then libdebug "$*"; fi
 exit 0
 
 # Endfile
