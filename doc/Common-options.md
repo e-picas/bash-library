@@ -1,5 +1,5 @@
-Common options - Bash-Library
-=============================
+Common options - Piwi-Bash-Library
+==================================
 
 The library handles, if you say so, a set of commonly used arguments that enables/disables
 a set of flags or actions commonly used.
@@ -38,7 +38,7 @@ To use common options in a script, just call the `parsecommonoptions` method pas
 the script arguments:
 
     #!/bin/bash
-    source path/to/bash-library.sh
+    source path/to/piwi-bash-library.sh
     parsecommonoptions "$@"
 
 After that, if you want to define and use some custom options, you can write (here for the 
@@ -100,4 +100,4 @@ See the specific [Man-pages](Man-pages.md) and [Versioning](Versioning.md) docum
 
 --------------
 
-Documentation page for the [Bash Library of Les Ateliers Pierrot](http://github.com/atelierspierrot/bash-library).
+Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).

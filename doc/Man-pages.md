@@ -1,5 +1,5 @@
-Man pages - Bash-Library
-========================
+Man pages - Piwi-Bash-Library
+=============================
 
 The library can construct a kind of **manpage** for each script, as the manual string
 of the library itself.
@@ -96,11 +96,11 @@ learn how it is constructed.
 
     DEPENDENCIES
         This script is based on the Bash shell library, "The open source bash library of Les Ateliers Pierrot". 
-        Package [atelierspierrot/bash-library] version [0.0.1]. 
+        Package [atelierspierrot/piwi-bash-library] version [0.0.1].
         Licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
-        For sources & updates, see <http://github.com/atelierspierrot/bash-library>.
-        For bug reports, see <http://github.com/atelierspierrot/bash-library/issues>.
+        For sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
+        For bug reports, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 
 --------------
 
-Documentation page for the [Bash Library of Les Ateliers Pierrot](http://github.com/atelierspierrot/bash-library).
+Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).

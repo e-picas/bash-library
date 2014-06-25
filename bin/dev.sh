@@ -2,7 +2,7 @@
 # dev
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/bash-library.sh"
+LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
@@ -20,12 +20,11 @@ OPTIONS="$COMMON_OPTIONS_INFO"
 SYNOPSIS="$LIB_SYNOPSIS"
 
 parsecommonoptions "$@"
-quietecho "_ go"
+verecho "_ go"
 
-clear
-library_usage
+simple_error "this is the classic usage error"
 
-quietecho "_ ok"
+verecho "_ ok"
 libdebug "$*"
 exit 0
 

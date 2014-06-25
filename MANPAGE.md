@@ -1,5 +1,5 @@
-Man:        bash-library.sh Manual
-Name:       Bash Shell Library
+Man:        piwi-bash-library.sh Manual
+Name:       Piwi Bash Library
 Author:     Les Ateliers Pierrot
 Date: 2013-10-24
 Version: 1.0.4
@@ -7,13 +7,13 @@ Version: 1.0.4
 
 ## NAME
 
-bash-library - The open source bash library of Les Ateliers Pierrot
+piwi-bash-library - The open source bash library of Les Ateliers Pierrot
 
 ## SYNOPSIS
 
-**bash-library-script [common options] [script options [=value]] [arguments] --**
+**piwi-bash-library-script [common options] [script options [=value]] [arguments] --**
 
-**bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
+**piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
     [**-d** *path*]  [**-l** *filename*]
     [script options ...] [arguments ...] --
 
@@ -22,7 +22,7 @@ bash-library - The open source bash library of Les Ateliers Pierrot
 **Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
 free software replacement for the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
-`source path/to/bash-library.sh` and call its methods.
+`source path/to/piwi-bash-library.sh` and call its methods.
 
 The library is NOT a script doing some work itself ; it is just a library. So running it
 directly may not do anything. This manual explains the library itself, its options and
@@ -52,35 +52,42 @@ manpage or help string for more infos.
 
 *The following common options are supported (MUST be used first):*
 
-**-h | --help**
+**-h**, **--help**
 :    show this information message 
 
-**-v | --verbose**
-:    increase script verbosity 
+**-v**, **--verbose**
+:    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
+     and `QUIET` on `false`
 
-**-q | --quiet**
-:    decrease script verbosity, nothing will be written unless errors 
+**-q**, **--quiet**
+:    decrease script verbosity, nothing will be written unless errors ; this will define
+     the environment variables `VERBOSE` and `INTERACTIVE on `false` and `QUIET` on `true`
 
-**-f | --force**
-:    force some commands to not prompt confirmation 
+**-f**, **--force**
+:    force some commands to not prompt confirmation ; this will define the environment
+     variable `FORCED` on `true`
 
-**-i | --interactive**
-:    ask for confirmation before any action 
+**-i**, **--interactive**
+:    ask for confirmation before any action ; this will define the environment variable
+     `INTERACTIVE` on `true` and `QUIET` on `false`
 
-**-x | --debug**
-:    see commands to run but not run them actually 
+**-x**, **--debug**
+:    see commands to run but not run them actually ; this will define the environment variable
+     `DEBUG` on `true`
 
-**-V | --version**
-:    see the script version when available
+**-V**, **--version**
+:    see the script version when available ; use option `-q` to only have the version number
 
-**-d | --working-dir** =path
-:    redefine the working directory (default is `pwd` - `PATH` must exist)
+**-d**, **--working-dir** =path
+:    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
+     the environment variable `WORKINGDIR`
 
-**-l | --log** =filename
-:    define the log filename to use (default is `bashlib.log`)
+**-l**, **--log** =filename
+:    define the log filename to use (default is `pwibashlib.log`) ; this will update
+     the environment variable `LOGFILE`
 
 **--libvers**
-:    see the library version 
+:    see the library version ; use options `-q` to only have the version number
 
 **--libhelp**
 :    see the library manpage
@@ -125,26 +132,26 @@ E_PATH=**83**
 
 ## FILES
 
-**bash-library.sh**
+**piwi-bash-library.sh**
 :    the standalone library source file 
 
-**bashlib.log**
+**pwibashlib.log**
 :    the default library log file
 
 ## LICENSE
 
 The library is licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot
 <http://www.ateliers-pierrot.fr/> - Some rights reserved. For documentation,
-sources & updates, see <http://github.com/atelierspierrot/bash-library>. 
+sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 ## BUGS
 
-To transmit bugs, see <http://github.com/atelierspierrot/bash-library/issues>.
+To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 
 ## AUTHOR
 
-**Les Ateliers Pierrot** <http://www.ateliers-pierrot.fr/>.
+**Piwi** <piero.wbmstr@gmail.com> for Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>.
 
 ## SEE ALSO
 

@@ -40,3 +40,7 @@ vendor/*
 # specific to the "wip" branch
 build/*
 dev/*
+
+# specific for the piwi-bash-lib
+piwibashlib.log
+.testconfig.conf
