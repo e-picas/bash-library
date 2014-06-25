@@ -2,7 +2,7 @@
 # config files
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/bash-library.sh"
+LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
@@ -21,12 +21,12 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 # for custom options, write an info string about usage
 # you can use the common library options string with $COMMON_OPTIONS_INFO
 OPTIONS="\n\
-<underline>Available actions:</underline>
-\t<bold>check</bold>\t\tread the test config table (default action)\n\
-\t<bold>read</bold>\t\tread the configuration file\n\
+<underline>Available actions:</underline>\n\
+\t<bold>read</bold>\t\tread the configuration file (default action)\n\
 \t<bold>write</bold>\t\twrite the configuration file\n\
 \t<bold>add</bold>\t\tadd a configuration entry\n\
 \t<bold>replace</bold>\t\treplace a configuration entry\n\
+\t<bold>get</bold>\t\tget values from the test config table\n\
 \t${COMMON_OPTIONS_INFO}";
 
 parsecommonoptions "$@"
@@ -40,7 +40,9 @@ actiondone=false
 
 OPTIND=1
 options=$(getscriptoptions "$@")
-ACTION=$(getlastargument $options)
+getlastargument
+ACTION=$ACTION_ARG
+if [ -z "$ACTION" ]; then ACTION="read"; fi
 if [ ! -z "$ACTION" ]
 then
     case $ACTION in
@@ -94,13 +96,6 @@ then
             cat $filepath
             ;;
     esac
-else
-    usage
-fi
-
-if ! $actiondone; then
-    verecho "Config table is:"
-    _echo "$(buildconfigstring keys[@] values[@])"
 fi
 
 quietecho "_ ok"

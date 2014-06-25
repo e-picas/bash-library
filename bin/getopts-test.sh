@@ -5,7 +5,7 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/bash-library.sh"
+LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
@@ -20,7 +20,7 @@ NAME="Bash-Lib script options & arguments test"
 VERSION="0.0.1-test"
 DESCRIPTION="A script to test custom script options & arguments usage ...\n\
 \tTo test it, run:\n\
-\t\t~\$ path/to/getopts-test.sh -vi -t \"two words\" -a -q --test=\"three wor ds\" -- -x\n\
+\t\t~\$ path/to/getopts-test.sh -vi myaction1 -t \"two words\" -a -q --test=\"three wor ds\" myaction2 -- -x\n\
 \tResult is:\n\
 \t\t- the first common options 'v' and 'i' are parsed and considered by the library,\n\
 \t\t- the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,\n\
@@ -34,6 +34,9 @@ SYNOPSIS="$LIB_SYNOPSIS_ACTION"
 OPTIONS="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
 \t<bold>-a</bold>\t\ta single short option to test options order\n$COMMON_OPTIONS_INFO"
 
+first_action=$(getfirstargument "$@")
+shift
+last_action=$(getlastargument "$@")
 parsecommonoptions "$@"
 quietecho "_ go"
 
@@ -42,11 +45,18 @@ echo "common options arguments: '${COMMON_OPTIONS_ARGS}'";
 echo "received arguments: '$@'";
 echo
 
+#echo $SCRIPT_OPTS
+#echo "${SCRIPT_OPTS[@]}"
+
+#for i in "${SCRIPT_OPTS[@]}"; do
+#    echo "$i"
+#done
+
 echo "# first loop for the 't' or 'test' option"
 echo "# to test it, run:"
 echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
 OPTIND=1
-while getopts "at:${COMMON_OPTIONS_ARGS}" OPTION; do
+while getopts ":at:${COMMON_OPTIONS_ARGS}" OPTION; do
     OPTARG="${OPTARG#=}"
     case $OPTION in
         t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
@@ -65,7 +75,7 @@ echo "# second loop for the 'a' option"
 echo "# to test it, run:"
 echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
 OPTIND=1
-while getopts "at:${COMMON_OPTIONS_ARGS}" OPTION; do
+while getopts ":at:${COMMON_OPTIONS_ARGS}" OPTION; do
     case $OPTION in
         a) echo " - test option A";;
         ?) echo " - unknown option '$OPTION'";;
@@ -76,7 +86,13 @@ echo
 echo "# test for the last 'action' argument";
 echo "# to test it, run:"
 echo "#      ~\$ $0 ... action -- -x"
-echo " - LASTARG is '$LASTARG'"
+echo " - last action is '$last_action'"
+echo
+
+echo "# test for the first 'action' argument";
+echo "# to test it, run:"
+echo "#      ~\$ $0 action ... -- -x"
+echo " - first action is '$first_action'"
 echo
 
 quietecho "_ ok"

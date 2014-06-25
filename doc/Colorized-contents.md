@@ -1,5 +1,5 @@
-Colorized contents - Bash-Library
-=================================
+Colorized contents - Piwi-Bash-Library
+======================================
 
 The library embeds a set of methods to construct some colorized text contents in terminal.
 
@@ -80,4 +80,4 @@ To build the final colorized string, just run:
 
 --------------
 
-Documentation page for the [Bash Library of Les Ateliers Pierrot](http://github.com/atelierspierrot/bash-library).
+Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).

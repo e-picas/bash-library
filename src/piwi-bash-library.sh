@@ -1,13 +1,13 @@
 #!/bin/bash
 #
-# Bash Library - The open source bash library of Les Ateliers Pierrot
+# Piwi Bash Library - The open source bash library of Les Ateliers Pierrot
 # Copyleft (c) 2013 Pierre Cassat and contributors
 # <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
 # License GPL-3.0 <http://www.opensource.org/licenses/gpl-3.0.html>
-# Sources <http://github.com/atelierspierrot/bash-library>
+# Sources <http://github.com/atelierspierrot/piwi-bash-library>
 # 
-# bin/bash-library.sh
-# 
+# bin/piwi-bash-library.sh
+#
 ##@!@##
 
 #### SETTINGS #####################################################################
@@ -73,14 +73,13 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = false
 ##@ WORKINGDIR = pwd
-##@ LOGFILE = bashlib.log
+##@ LOGFILE = pwibashlib.log
 ##@ TEMPDIR = tmp
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
 declare -x FORCED=false
 declare -x DEBUG=false
-declare -x LASTARG=""
 declare -x WORKINGDIR=$(pwd)
 declare -x LOGFILE=""
 declare -x LOGFILEPATH=""
@@ -89,6 +88,10 @@ declare -x TEMPDIR=""
 ##@ COMMON_OPTIONS_ARGS = "d:fhil:qvVx-:" | COMMON_OPTIONS_ARGS_MASK = REGEX mask that matches all common options
 declare -x COMMON_OPTIONS_ARGS="d:fhil:qvVx-:"
 declare -x COMMON_OPTIONS_ARGS_MASK="h|f|i|q|v|x|V|d|l"
+
+##@ SCRIPT_OPTS=() | ACTION_ARG = ''
+declare -xa SCRIPT_OPTS=()
+declare -x ACTION_ARG=""
 
 declare -rx USEROS="$(uname)"
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
@@ -108,18 +111,18 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 
 # LIBRARY INFOS #####################################################################
 
-declare -rx LIB_NAME="Bash shell library"
-declare -rx LIB_VERSION="1.0.4"
-declare -rx LIB_DATE="2013-10-24"
+declare -rx LIB_NAME="Piwi Bash library"
+declare -rx LIB_VERSION="1.0.0"
+declare -rx LIB_DATE="2013-10-27"
 declare -rx LIB_PRESENTATION="The open source bash library of Les Ateliers Pierrot"
 declare -rx LIB_AUTHOR="Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
 declare -rx LIB_LICENSE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
-declare -rx LIB_PACKAGE="atelierspierrot/bash-library"
-declare -rx LIB_HOME="https://github.com/atelierspierrot/bash-library"
-declare -rx LIB_BUGS="http://github.com/atelierspierrot/bash-library/issues"
+declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
+declare -rx LIB_HOME="https://github.com/atelierspierrot/piwi-bash-library"
+declare -rx LIB_BUGS="http://github.com/atelierspierrot/piwi-bash-library/issues"
 
-declare -rx LIB_NAME_DEFAULT="bashlib"
+declare -rx LIB_NAME_DEFAULT="piwibashlib"
 declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
 declare -rx LIB_TEMPDIR="tmp"
 
@@ -146,9 +149,9 @@ declare -rx COMMON_OPTIONS_INFO="\n\
 <underline>Common options</underline> (to use first):\n\
 \t${LIB_OPTIONS}";
 
-declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ARGUMENTS</underline>]  --";
-declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>COMMON OPTIONS</underline>]  -[<underline>SCRIPT OPTIONS</underline> [=<underline>VALUE</underline>]]  [<underline>ACTION</underline>]  --";
-declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ARGS}]  [-SCRIPT OPTIONS [=VALUE]]  <action>  --";
+declare -rx LIB_SYNOPSIS="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>arguments</underline>]  --";
+declare -rx LIB_SYNOPSIS_ACTION="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [<underline>argument</underline>]  --";
+declare -rx LIB_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ARGS_MASK}]  [--script-options [=value]]  <arguments>  --";
 
 declare -rx LIB_SEE_ALSO="<bold>bash</bold>";
 
@@ -161,12 +164,12 @@ declare -rx LIB_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${
 
 declare -rx LIB_DESCRIPTION="<bold>Bash</bold>, the \"<${COLOR_NOTICE}>Bourne-Again-SHell</${COLOR_NOTICE}>\", is a <underline>Unix shell</underline> written for the GNU Project as a free software replacement for the original Bourne shell (sh). \n\
 \tThe present library is a tool for Bash scripts facilities.\n\
-\tTo use the library, just include its source file using: \`<bold>source path/to/bash-library.sh</bold>\` and call its methods.\n\n\
+\tTo use the library, just include its source file using: \`<bold>source path/to/piwi-bash-library.sh</bold>\` and call its methods.\n\n\
 \tThe library is licensed under ${LIB_LICENSE} - Copyleft (c) ${LIB_AUTHOR} - Some rights reserved. \n\
 \tFor documentation, sources & updates, see <${LIB_HOME}>. \n\
 \tTo read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.";
 
-declare -rx LIB_FILES="<underline>bash-library.sh</underline>\tthe standalone library source file \n\
+declare -rx LIB_FILES="<underline>${BASH_SOURCE}</underline>\tthe standalone library source file \n\
 \t<underline>${LIB_LOGFILE}</underline>\tthe default library log file";
 
 declare -rx LIB_ENVIRONMENT="<${COLOR_NOTICE}>${LIB_COLORS[@]}</${COLOR_NOTICE}>\ta set of predefined colors\n\
@@ -356,7 +359,8 @@ parsecolortags () {
     while read -r line; do
         doneopts=()
         transformedline="$line"
-        for opt in $(echo "$line" | grep -Po '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
+#        for opt in $(echo "$line" | grep -Po '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
+        for opt in $(echo "$line" | grep -o '<.[^/>]*>' | sed "s|^.*<\(.[^>]*\)>.*\$|\1|g"); do
             opt="${opt/\//}"
             if `in_array "$opt" ${doneopts[@]}`; then continue; fi
             doneopts+=($opt)
@@ -671,7 +675,7 @@ error () {
         0 $LINELENGTH "$PADDER" \
         $(($LINELENGTH-`strlen $FIRSTLINE`)) "$FIRSTLINE" \
         $(($LINELENGTH-`strlen $SECONDLINE`)) "$SECONDLINE<${COLOR_ERROR}>";
-    parsecolortags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n"
+    parsecolortags "\n<${COLOR_ERROR}>$TMPSTR</${COLOR_ERROR}>\n" >&2
     exit ${ERRSTATUS}
 }
 
@@ -724,7 +728,7 @@ simple_error () {
         ERRSTR="${ERRSTR}\n\tat ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}"
     fi
     printf "`parsecolortags \"<bold>error:</bold> %s \n<bold>usage:</bold> %s \nRun option '-h' for help.\"`" \
-        "$ERRSTRING" "$ERRSYNOPSIS";
+        "$ERRSTRING" "$ERRSYNOPSIS" >&2;
     echo
     exit ${ERRSTATUS}
 }
@@ -1023,11 +1027,22 @@ buildconfigstring () {
 getscriptoptions () {
     local options=()
     local eoo=false
+    local first=true
     while [[ $1 ]]; do
         if ! $eoo; then
             case "$1" in
                 --) eoo=true; shift;;
-                *) if [ -n "$1" ]; then options+=($1); fi; shift;;
+                *) if [ -n "$1" ]; then
+                    if $first; then
+                        local first_char="${1:0:1}"
+                        if [ ".$first_char" == '.-' ]; then
+                            options+=($1)
+                        fi
+                        first=false
+                    else
+                        options+=($1)
+                    fi
+                fi; shift;;
             esac
         else shift;
         fi
@@ -1042,30 +1057,67 @@ getlongoptionarg () {
     echo "${1#*=}"; return 0;
 }
 
-#### getlastargument ( "$x" )
+#### getlastargument ( "$@" = SCRIPT_OPTS )
 ## echoes the last argument that is not an option
 ## for instance 'script.sh --options action' will echo "action"
+## load it in $ACTION_ARG
 getlastargument () {
-    local lastarg="${@: -1}"
+    local options=()
+    if [ $# -gt 0 ]
+        then options=$(getscriptoptions "$@")
+        else options=$SCRIPT_OPTS
+    fi
+#    local lastarg="${options: -1}"
+    local lastarg="${options[${#options[@]}-1]}"
     local first_char="${lastarg:0:1}"
     if [ ".$first_char" != '.-' ]; then
-        echo "$lastarg"; return 0;
+        ACTION_ARG="${lastarg}"
+        echo "$lastarg"
+        export ACTION_ARG
+        return 0
     fi
     return 1
 }
 
-#### parsecommonoptions ( "$@" )
+#### getfirstargument ( "$@" = SCRIPT_OPTS )
+## echoes the first argument that is not an option
+## for instance 'script.sh -a -b=val action --options' will echo "action"
+## load it in $ACTION_ARG
+getfirstargument () {
+    local -a options=()
+    if [ $# -gt 0 ]
+        then options=$(getscriptoptions "$@")
+        else options=$SCRIPT_OPTS
+    fi
+    local tmp_arg=''
+    local firstarg=''
+    for i in "${!options[@]}"; do
+        tmp_arg="${options[${i}]}"
+        if [ "${tmp_arg:0:1}" != '-' ]; then
+            firstarg=$tmp_arg
+            break
+        fi
+    done
+    if [ ! -z $firstarg ]; then
+        ACTION_ARG="${firstarg}"
+        export ACTION_ARG
+        echo "$firstarg"
+        return 0
+    fi
+    return 1
+}
+
+#### parsecommonoptions ( "$@" = SCRIPT_OPTS )
 ## parse common script options as described in $LIB_OPTIONS
 ## this will stop options treatment at '--'
 parsecommonoptions () {
     local oldoptind=$OPTIND
-    local options=$(getscriptoptions "$@")
-#    export LASTARG=$(getscriptoptions "${options[@]}")
-#    export LASTARG=$(getlastargument "${options[@]}")
-    export LASTARG=$(getlastargument $options)
+    local options=()
+    if [ $# -gt 0 ]
+        then options=$(getscriptoptions "$@")
+        else options=$SCRIPT_OPTS
+    fi
     while getopts ":${COMMON_OPTIONS_ARGS}" OPTION $options; do
-#    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "${options[@]}"; do
-#    while getopts ":${COMMON_OPTIONS_ARGS}" OPTION "$@"; do
         OPTARG="${OPTARG#=}"
         case $OPTION in
         # common options
@@ -1077,21 +1129,22 @@ parsecommonoptions () {
             q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
             d) setworkingdir $OPTARG;;
             l) setlogfilename $OPTARG;;
-            V) script_version; exit 0;;
-            -) case $OPTARG in
+            V) script_version $QUIET; exit 0;;
+            -) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"
+                case $OPTARG in
         # common options
                     help|man|usage) clear; usage; exit 0;;
-                    vers*) script_version; exit 0;;
+                    vers*) script_version $QUIET; exit 0;;
                     interactive) export INTERACTIVE=true; export QUIET=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
                     force) export FORCED=true;;
                     debug) export DEBUG=true; verecho "- debug option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
                     quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
-                    working-dir*) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"; setworkingdir $LONGOPTARG;;
-                    log*) LONGOPTARG="`getlongoptionarg \"${OPTARG}\"`"; setlogfilename $LONGOPTARG;;
+                    working-dir*) setworkingdir $LONGOPTARG;;
+                    log*) setlogfilename $LONGOPTARG;;
         # library options
                     libhelp) clear; library_usage; exit 0;;
-                    libvers*) library_version; exit 0;;
+                    libvers*) library_version $QUIET; exit 0;;
                     libdoc*) libdoc; exit 0;;
         # no error for others
                     *) rien=rien;;
@@ -1099,14 +1152,16 @@ parsecommonoptions () {
             \?) rien=rien;;
         esac
     done
-    export OPTIND=$oldoptind
+    SCRIPT_OPTS=$options
+    OPTIND=$oldoptind
+    export SCRIPT_OPTS OPTIND
     return 0
 }
 
 
 #### SCRIPT INFOS #####################################################################
 
-#### version ()
+#### version ( quiet = false )
 version () {
     if isgitclone; then
         local gitcmd=$(which git)
@@ -1174,6 +1229,11 @@ usage () {
 
 #### script_version ()
 script_version () {
+    local bequiet="${1:-false}"
+    if $bequiet; then
+        echo "${VERSION}"
+        return 0
+    fi
     local TMP_VERS="${VERSION}"
     if [ -n "$VERSION" ]; then
         local TMP_STR="${0} ${TMP_VERS}"
@@ -1211,9 +1271,14 @@ library_usage () {
     done
 }
 
-#### library_version ()
+#### library_version ( quiet = false )
 ## this function must echo an information about library name & version (with option "--libvers")
 library_version () {
+    local bequiet="${1:-false}"
+    if $bequiet; then
+        echo "${LIB_VERSION}"
+        return 0
+    fi
     local VERSFILE="${BASH_SOURCE/.sh/-gitversion}"
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="`dirname $LIBRARY_REALPATH`/.."
@@ -1256,7 +1321,6 @@ libdebug () {
 - %s mode is %s (option '%s')\n\
 - %s mode is %s (option '%s')\n\
 - %s mode is %s (option '%s')\n\
-- %s is set on %s\n\
 ------------------------------------------------------------------------\n\
  status: %s - pid: %s - user: %s\n\
  %s\n\
@@ -1269,7 +1333,6 @@ libdebug () {
         $(colorize 'FORCED' bold) $(colorize "$(onoffbit $FORCED)" bold $COLOR_INFO) "-f" \
         $(colorize 'DEBUG' bold) $(colorize "$(onoffbit $DEBUG)" bold $COLOR_INFO) "-x" \
         $(colorize 'QUIET' bold) $(colorize "$(onoffbit $QUIET)" bold $COLOR_INFO) "-q" \
-        $(colorize 'LASTARG' bold) $(colorize "${LASTARG:--}" bold $COLOR_INFO) \
         "$?" "$$" "`whoami`" "`getsysteminfo`";
     _echo "$TMP_DEBUG"
     parsecolortags "<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
@@ -1298,17 +1361,21 @@ libdoc () {
             continue;
         fi
         line_str=""
-        fct_line=$(echo "$line" | grep -Po "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
+#        fct_line=$(echo "$line" | grep -Po "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
+        fct_line=$(echo "$line" | grep -o "^####.[^#]*$" | sed "s|^#### \(.* (.*)\)$|\\\t\1|g")
         if [ $indoc -a -n "$fct_line" ]; then
             line_str="$fct_line"
             intag=true
         elif $indoc; then
-            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
+#            title_line=$(echo "$line" | grep -Po "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
+            title_line=$(echo "$line" | grep -o "^####.[^#]*#*$" | sed "s|^#### \(.*\) #*$|\\\n# \1 (line ${i}) #|g")
             if [ -n "$title_line" ]; then
                 line_str="$title_line"
             elif $intag; then
-                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
-                comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
+#                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
+#                comm_line=$(echo "$line" | grep -Po "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
+                arg_line=$(echo "$line" | grep -o "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g")
+                comm_line=$(echo "$line" | grep -o "^##([^!]*)$" | sed "s|^##* \(.*\)$|\\\t\\\t\1|g")
                 if $VERBOSE; then
                     if [ -n "$arg_line" ]; then
                         line_str="$arg_line"
@@ -1326,7 +1393,8 @@ libdoc () {
                 fi
             else
                 intag=false;
-                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
+#                arg_line=$(echo "$line" | grep -Po "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
+                arg_line=$(echo "$line" | grep -o "^##@[^ ]* .*$" | sed "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g")
                 if [ -n "$arg_line" ]; then
                     line_str="$arg_line"
                 fi

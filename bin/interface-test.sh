@@ -5,7 +5,7 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/bash-library.sh"
+LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
@@ -107,7 +107,8 @@ parsecommonoptions "$@"
 
 OPTIND=1
 options=$(getscriptoptions "$@")
-ACTION=$(getlastargument $options)
+getlastargument
+ACTION=$ACTION_ARG
 while getopts "zs:p:t:${COMMON_OPTIONS_ARGS}" OPTION $options; do
     OPTARG="${OPTARG#=}"
     case $OPTION in

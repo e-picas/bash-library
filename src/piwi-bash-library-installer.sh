@@ -4,12 +4,12 @@
 # Copyleft (c) 2013 Pierre Cassat and contributors
 # <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
 # License GPL-3.0 <http://www.opensource.org/licenses/gpl-3.0.html>
-# Sources <http://github.com/atelierspierrot/bash-library>
+# Sources <http://github.com/atelierspierrot/piwi-bash-library>
 # 
-# bash-library-installer.sh
+# piwi-bash-library-installer.sh
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/bash-library.sh"
+LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! $PADDER" \
@@ -26,9 +26,9 @@ declare -x _BASEDIR="`dirname $_REALPATH_DIR`"
 declare -x _BIN_DIR="bin"
 declare -x _TARGET
 declare -x _SOURCE="${_BASEDIR}"
-declare -x _DOC_FILENAME='bash-library-DOC.md'
-declare -x _README_FILENAME='bash-library-README.md'
-declare -x _GITVERS_FILENAME='bash-library-gitversion'
+declare -x _DOC_FILENAME='piwi-bash-library-DOC.md'
+declare -x _README_FILENAME='piwi-bash-library-README.md'
+declare -x _GITVERS_FILENAME='piwi-bash-library-gitversion'
 declare -x _META
 declare -x _TOC=true
 # the target up-to-date flag (bool)
@@ -143,7 +143,7 @@ sourcedir_required () {
         export _ERRSTR="Unknown sources directory '${_SOURCE}' !"
         export _ERRSTATUS="${E_PATH}"
     fi
-    if [ ! -f "${_SOURCE}/src/bash-library.sh" ]; then
+    if [ ! -f "${_SOURCE}/src/piwi-bash-library.sh" ]; then
         export _ERRSTR="Directory '${_SOURCE}' doesn't seem to be a valid library sources remote!"
         export _ERRSTATUS="${E_PATH}"
     fi
@@ -176,14 +176,14 @@ makeInstall () {
     if [ ! -d "${_TARGET}/${_BIN_DIR}" ]; then
         iexec "mkdir -p ${_TARGET}/${_BIN_DIR}"
     fi
-    iexec "cp -f ${_SOURCE}/src/bash-library.sh ${_TARGET}/${_BIN_DIR}/"
+    iexec "cp -f ${_SOURCE}/src/piwi-bash-library.sh ${_TARGET}/${_BIN_DIR}/"
     iexec "cp -f ${_SOURCE}/README.md ${_TARGET}/${_BIN_DIR}/${_README_FILENAME}"
     if [ -f "${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}" ]; then
         iexec "rm -f ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
     fi
     iexec "cd ${_SOURCE} && echo \"\`git rev-parse --abbrev-ref HEAD\` \`git rev-parse HEAD\`\" > ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
-    if [ -f "${_SOURCE}/src/bash-library.man" ]; then
-        iexec "cp -f ${_SOURCE}/src/bash-library.man ${_TARGET}/${_BIN_DIR}/"
+    if [ -f "${_SOURCE}/src/piwi-bash-library.man" ]; then
+        iexec "cp -f ${_SOURCE}/src/piwi-bash-library.man ${_TARGET}/${_BIN_DIR}/"
     fi
     return 0
 }
@@ -192,7 +192,7 @@ makeInstall () {
 makeUninstall () {
     if [ ! -z "$1" ]; then export _TARGET="$1"; fi
     targetdir_required
-    iexec "rm -f ${_TARGET}/${_BIN_DIR}/bash-library.sh"
+    iexec "rm -f ${_TARGET}/${_BIN_DIR}/piwi-bash-library.sh"
     iexec "rm -f ${_TARGET}/${_BIN_DIR}/${_README_FILENAME}"
     iexec "rm -f ${_TARGET}/${_BIN_DIR}/${_GITVERS_FILENAME}"
     if [ -f "${_TARGET}/${_BIN_DIR}/${_DOC_FILENAME}" ]; then
@@ -209,7 +209,7 @@ makeUpdate () {
     sourcedir_required
     getTargetInfos
     gettempdirpath
-    clonedir="${TEMPDIR}/bash-library"
+    clonedir="${TEMPDIR}/piwi-bash-library"
     if [ ! -d "$clonedir" ]
     then
         iexec "mkdir $clonedir && cd $clonedir"
@@ -245,7 +245,7 @@ To read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.\n\n----\n";
     IFS=$'\n'
     indoc=false
     intag=false
-    for line in $(cat "${_TARGET}/${_BIN_DIR}/bash-library.sh"); do
+    for line in $(cat "${_TARGET}/${_BIN_DIR}/piwi-bash-library.sh"); do
         if [ "$line" == '##@!@##' ]; then
             if $indoc; then indoc=false; else indoc=true; fi
             continue;
@@ -280,9 +280,9 @@ To read ${LIB_LICENSE} license conditions, see <${LIB_LICENSE_URL}>.\n\n----\n";
         i=$(($i+1))
     done
     IFS=$old_IFS
-    pathdir="`getscriptpath ${_BASEDIR}/${_TARGET}/${_BIN_DIR}/bash-library.sh`"
+    pathdir="`getscriptpath ${_BASEDIR}/${_TARGET}/${_BIN_DIR}/piwi-bash-library.sh`"
     now=`date '+%d-%-m-%Y %X'`
-    docstr="${docstr}\n\n----\n\n[*Doc generated at ${now} from path '${pathdir}/bash-library.sh'*]"
+    docstr="${docstr}\n\n----\n\n[*Doc generated at ${now} from path '${pathdir}/piwi-bash-library.sh'*]"
     _echo "$docstr" > "${_TARGET}/${_BIN_DIR}/${_DOC_FILENAME}"
     return 0
 }

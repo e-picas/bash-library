@@ -1,5 +1,5 @@
-Development - Bash-Library
-=================================
+Development - Piwi-Bash-Library
+===============================
 
 This document describes various rules to be followed by the library developers. If you made
 a fork of the repository to modify a thing or add a feature, please read the rules below
@@ -73,4 +73,4 @@ followed by your comment.
 
 --------------
 
-Documentation page for the [Bash Library of Les Ateliers Pierrot](http://github.com/atelierspierrot/bash-library).
+Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).

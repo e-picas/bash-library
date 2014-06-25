@@ -1,5 +1,5 @@
-Global documentation - Bash-Library
-===================================
+Global documentation - Piwi-Bash-Library
+========================================
 
 The library defines a set of methods and constants. Some specific features are described
 in a standalone documentation in this directory, and the default usage is described here.
@@ -32,7 +32,7 @@ To enable one of these constants by default in your script, just redefine it aft
 library inclusion. For example:
 
     #!/bin/bash
-    source path/to/bash-library.sh
+    source path/to/piwi-bash-library.sh
     VERBOSE=true
 
 ### Verbosity
@@ -99,4 +99,4 @@ itself using common option `--libdoc`.
 
 --------------
 
-Documentation page for the [Bash Library of Les Ateliers Pierrot](http://github.com/atelierspierrot/bash-library).
+Documentation page for the [Piwi Bash Library](http://github.com/atelierspierrot/piwi-bash-library).

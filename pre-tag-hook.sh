@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 #
 # An example hook script called before version tag creation.
 # This will receive three arguments:
@@ -15,9 +15,9 @@ BRANCH_NAME="$3"
 
 _VERSION="${TAG_NAME/v/}"
 _DATE=$(git log -1 --format="%ci" --date=short | cut -s -f 1 -d ' ')
-_LIBFILE="src/bash-library.sh"
+_LIBFILE="src/piwi-bash-library.sh"
 _MANFILE="MANPAGE.md"
-_MANMANFILE="src/bash-library.man"
+_MANMANFILE="src/piwi-bash-library.man"
 _MDEBIN="vendor/bin/markdown-extended"
 
 if [ ! -f "$_MDEBIN" ]; then
