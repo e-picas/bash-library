@@ -97,7 +97,7 @@ learn how it is constructed.
     DEPENDENCIES
         This script is based on the Bash shell library, "The open source bash library of Les Ateliers Pierrot". 
         Package [atelierspierrot/piwi-bash-library] version [0.0.1].
-        Licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved. 
+        Licensed under GPL-3.0 - Copyleft (c) Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/> - Some rights reserved.
         For sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
         For bug reports, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
 
