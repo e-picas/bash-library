@@ -15,7 +15,7 @@
         "homepage": "http://github.com/piwi"
     }],
     "require-dev": {
-        "atelierspierrot/markdown-extended": "dev-master"
+        "piwi/markdown-extended": "dev-master"
     },
     "support": { "issues": "http://github.com/atelierspierrot/piwi-bash-library/issues" },
     "bin": [ "src/piwi-bash-library.sh", "src/piwi-bash-library.man" ],
