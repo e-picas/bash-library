@@ -22,8 +22,8 @@ To install/update dependencies:
 
 To generate the manpage from `MANPAGE.md`:
 
-    chmod a+x vendor/atelierspierrot/markdown-extended/bin/markdown-extended
-    php vendor/atelierspierrot/markdown-extended/bin/markdown-extended -f man -o src/piwi-bash-library.man MANPAGE.md
+    chmod a+x vendor/piwi/markdown-extended/bin/markdown-extended
+    php vendor/piwi/markdown-extended/bin/markdown-extended -f man -o src/piwi-bash-library.man MANPAGE.md
     man src/piwi-bash-library.man
 
 To generate the documentation to `DOCUMENTATION.md`:
