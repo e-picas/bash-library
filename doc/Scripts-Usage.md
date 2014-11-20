@@ -4,7 +4,7 @@ Scripts Usage - Piwi-Bash-Library
 This document explains the global and common usage of command line scripts as hanlded and
 expected by the library.
 
-For a full example and an help for this tutorial, see the `bin/getopts-test.sh` script.
+For a full example and an help for this tutorial, see the `demo/getopts-test.sh` script.
 
 
 ## Classic script usage
@@ -216,7 +216,7 @@ long options.
 ## Full example
 
 Below is a complete example of a script which first re-arrange the command line call and then
-parse the common options throwing an error for unknown options (taken from the `bin/getopts-test.sh`
+parse the common options throwing an error for unknown options (taken from the `demo/getopts-test.sh`
 test script).
 
     OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"

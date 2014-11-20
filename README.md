@@ -55,21 +55,21 @@ A quick overview of the whole library methods or variables can be written on scr
 
 ### Demonstration files
 
-A set of test and demonstration files is included in the `bin/` directory of the package.
+A set of test and demonstration files is included in the `demo/` directory of the package.
 These files are not required for a normal usage of the library.
 
 To run one of these tests, just run, depending on your system:
 
     ~$ cd path/to/downloaded/package/piwi-bash-library
-    ~$ ./bin/file-test.sh
+    ~$ ./demo/file-test.sh
     OR
-    ~$ sh bin/file-test.sh
+    ~$ sh demo/file-test.sh
     OR
-    ~$ bash bin/file-test.sh
+    ~$ bash demo/file-test.sh
 
 You can use the `-h` option to get help or info:
 
-    ~$ ./bin/file-test.sh -h
+    ~$ ./demo/file-test.sh -h
 
 
 ## Author & License

@@ -38,8 +38,6 @@ To generate the documentation to `DOCUMENTATION.md`:
 -   add a new 'taillog' action
 -   add a '--plain' option for a script-usable output rendering (lists of options for instance)
 
--   move the "bin/" to "demo/" (which is more what they are)
-
 -   new feature: execute a list of commands (from an array) with the possibility to split
     them one by one and choose which part to execute or not (in the base of the `iexec` method)
     inspired by the GIT stuff
