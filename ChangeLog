@@ -1,6 +1,11 @@
 # ChangeLog
 
-## 2.0.2 (current master)
+## 2.0.3 (current master)
+
+- renaming old 'atelierspierrot/markdown-extended' to 'piwi/markdown-extended'
+- fix bug #1: internal interface process (global install by default vs. local one)
+
+## 2.0.2
 
 - No more '-l' neither '-d' default short options
 - new 'release' option for the installation to choose a specific release
