@@ -1,5 +1,9 @@
 # ChangeLog
 
+## 2.0.4 (current dev)
+
+- moving test scripts from 'bin/' to 'demo/'
+
 ## 2.0.3 (current master)
 
 - renaming old 'atelierspierrot/markdown-extended' to 'piwi/markdown-extended'
