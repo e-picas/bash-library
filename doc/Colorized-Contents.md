@@ -3,9 +3,9 @@ Colorized contents - Piwi-Bash-Library
 
 The library embeds a set of methods to construct some colorized text contents in terminal.
 
-For a full example with custom options, see the `bin/colors-test.sh` script.
+For a full example with custom options, see the `demo/colors-test.sh` script.
 
-You can test colors rendering in your terminal using the `bin/colors-rendering-benchmark.sh` script.
+You can test colors rendering in your terminal using the `demo/colors-rendering-benchmark.sh` script.
 
 
 ## Foreground, background and text options

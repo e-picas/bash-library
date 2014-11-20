@@ -4,7 +4,7 @@ Help & Manpages - Piwi-Bash-Library
 The library can construct a **usage** string to quickly inform user about a script "how-to"
 and a kind of **manpage** for each script, as the manual string of the library itself.
 
-For a full example, see the `bin/manpage-test.sh` script.
+For a full example, see the `demo/manpage-test.sh` script.
 
 ## Presentation
 
@@ -184,7 +184,7 @@ To define these strings in your script, you must define each item of the `VERSIO
 
 ## Samples
 
-Below is the sample of the `bin/getopts-test.sh` manpage ; have a look in the script to
+Below is the sample of the `demo/getopts-test.sh` manpage ; have a look in the script to
 learn how it is constructed.
 
 -   the `--version` option:
@@ -198,7 +198,7 @@ learn how it is constructed.
 
 -   the `--usage` option:
 
-        usage: bin/getopts-test.sh  [-h|f|i|q|v|x|V|d|l]
+        usage: demo/getopts-test.sh  [-h|f|i|q|v|x|V|d|l]
             [-a]  [-t [=value]]  [--test [=value]]  --  <arguments>
         Run option '-h' for help.
 
@@ -210,7 +210,7 @@ learn how it is constructed.
 
             ~$ path/to/getopts-test.sh myaction1 -vi -t "two words" -a -f --test="three wor ds" myaction2 -- myaction3 -x
 
-        usage: bin/getopts-test.sh -[common options] -[script options [=value]] [--] [arguments]
+        usage: demo/getopts-test.sh -[common options] -[script options [=value]] [--] [arguments]
 
             -t, --test=ARG            test a short and long option with argument
             -a                        a single short option to test options order
@@ -237,7 +237,7 @@ learn how it is constructed.
             Bash-Lib script options & arguments test - v. [0.0.1-test]
 
         SYNOPSIS
-            ~$ bin/getopts-test.sh -[COMMON OPTIONS] -[SCRIPT OPTIONS [=VALUE]] [ARGUMENTS] --
+            ~$ demo/getopts-test.sh -[COMMON OPTIONS] -[SCRIPT OPTIONS [=VALUE]] [ARGUMENTS] --
 
         DESCRIPTION
             A script to test custom script options & arguments usage ...

@@ -10,11 +10,11 @@ in [RFC 2119](http://tools.ietf.org/html/rfc2119).
 
 The library defines a set of methods and variables. Some specific features are described
 in a specific documentation file in this directory, and the default usage is described here.
-Some test scripts (not required to use the library) are defined in the [`bin/` directory](../bin).
+Some test scripts (not required to use the library) are defined in the [`demo/` directory](../demo).
 
-For a full example, run the `bin/test.sh` script.
+For a full example, run the `demo/test.sh` script.
 
-For a model to use to build your own scripts, use a copy of `bin/dev.sh`.
+For a model to use to build your own scripts, use a copy of `demo/dev.sh`.
 
 For more informations about library's usage in your scripts, please see the following
 documentations:

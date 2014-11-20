@@ -5,7 +5,7 @@ The library handles, if you say so, a set of commonly used arguments that enable
 a set of flags or actions commonly used. See the [Scripts Usage](Scripts-Usage.md) document
 for a coding usage review.
 
-For a full example with custom options, see the `bin/getopts-test.sh` script.
+For a full example with custom options, see the `demo/getopts-test.sh` script.
 
 
 ## Verbosity, Interactivity, Forcing & Debug
