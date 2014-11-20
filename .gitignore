@@ -1,6 +1,3 @@
-### Hack to allow keeping an empty directory
-!.gitkeep
-
 ### OS & software files
 .DS_Store
 .AppleDouble
@@ -44,3 +41,6 @@ dev/*
 # specific for the piwi-bash-lib
 piwibashlib.log
 .testconfig.conf
+
+### Hack to allow keeping an empty directory
+!.gitkeep
