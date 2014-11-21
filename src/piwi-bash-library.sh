@@ -596,6 +596,82 @@ quiet_echo () {
 ## alias of 'quiet_echo'
 quietecho () { quiet_echo "$*"; }
 
+#### evaluate ( command )
+## evaluates the command catching events:
+## - stdout is loaded in global `$CMD_OUT`
+## - stderr is loaded in global `$CMD_ERR`
+## - final status is loaded in global `$CMD_STATUS`
+evaluate () {
+    unset CMD_OUT CMD_ERR CMD_STATUS
+    local f_out=`mktemp`;
+    local f_err=`mktemp`;
+    eval "($@) 1>$f_out 2>$f_err;";
+    CMD_STATUS="$?";
+    CMD_OUT=$(cat $f_out) && rm -f $f_out;
+    CMD_ERR=$(cat $f_err) && rm -f $f_err;
+    echo "$CMD_OUT" >&1;
+    echo "$CMD_ERR" >&2;
+    export CMD_OUT CMD_ERR CMD_STATUS
+    return $CMD_STATUS
+}
+
+#### interactive_evaluate ( command )
+## evaluates the command after user confirmation if "interactive" is "on"
+interactive_evaluate () {
+    if [ $# -eq 0 ]; then return 0; fi
+    if ${INTERACTIVE}; then
+        prompt "Run command: \"$1\"" "y" "Y/n"
+        while true; do
+            case ${USERRESPONSE} in
+                [yY]* ) break;;
+                * ) _echo "_ no"; return 0; break;;
+            esac
+        done
+    fi
+    cmd_fct=${FUNCNAME[2]}
+    cmd_line=${BASH_LINENO[1]}
+    debug_evaluate "$*"
+    if [[ $CMD_STATUS -ne 0 ]]; then
+        error "error on execution: $CMD_ERR" $CMD_STATUS ${cmd_fct} ${cmd_line}
+    fi
+    return ${CMD_STATUS:-0}
+}
+
+#### / ievaluate ( command )
+## alias of 'interactive_evaluate'
+ievaluate () { interactive_evaluate "$*"; }
+
+#### / ieval ( command )
+## alias of 'interactive_evaluate'
+ieval () { interactive_evaluate "$*"; }
+
+#### debug_evaluate ( command )
+## evaluates the command if "dryrun" is "off", just write it on screen otherwise
+debug_evaluate () {
+    if [ $# -eq 0 ]; then return 0; fi
+    unset CMD_OUT CMD_ERR CMD_STATUS
+    if ${DRYRUN}
+    then
+        _echo "$(colorize 'dry-run >>' bold) \"$@\""
+        local status=0
+    else
+        unset CMD_OUT CMD_ERR CMD_STATUS
+        evaluate "$@" 2>&1 1>/dev/null
+        [ ! -z "$CMD_OUT" ] && echo "$CMD_OUT" >&1
+        [ ! -z "$CMD_ERR" ] && echo "$CMD_ERR" >&2
+        local status=$CMD_STATUS
+    fi
+    return $status
+}
+
+#### / debevaluate ( command )
+## alias of 'debug_evaluate'
+debevaluate () { debug_evaluate "$*"; }
+
+#### / debeval ( command )
+## alias of 'debug_evaluate'
+debeval () { debug_evaluate "$*"; }
+
 #### interactive_exec ( command , debug_exec = true )
 ## executes the command after user confirmation if "interactive" is "on"
 interactive_exec () {
