@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # bool tests
 
 ######## Inclusion of the lib

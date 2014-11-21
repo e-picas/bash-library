@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #
 # Piwi Bash Library - An open source day-to-day bash library
 # Copyright (C) 2013-2014 Les Ateliers Pierrot

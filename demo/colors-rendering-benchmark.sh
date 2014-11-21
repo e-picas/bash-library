@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # colors rendering benchmark
 
 ######## Inclusion of the lib

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # dev - use this script as a model for yours
 
 ######## Inclusion of the lib

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # getopts
 #
 # getopts-test.sh -vi -t "two words" -a -q --test="three wor ds" -- -x
