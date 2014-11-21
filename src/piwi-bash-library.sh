@@ -2851,12 +2851,8 @@ intlibaction_usage () {
 }
 intlib_check_uptodate () {
     if ${QUIET}; then return 0; fi
-    local now=$(date "+%s")
-    local fmdate
-    if `in_array ${USEROS} ${LINUX_OS[@]}`
-        then fmdate=$(stat -c "%Y" "$0")
-        else fmdate=$(stat -f "%m" "$0")
-    fi
+    local now=$(date '+%s')
+    local fmdate=$(stat -c "%Y" "$0")
     local checkdiff=$((${now}-${fmdate}))
     # simple check
     local ts_limit=$((${INTLIB_OUTDATED_CHECK}*24*60*60))
