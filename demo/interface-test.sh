@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # interface-test
 #
 # interface-test.sh -vi --project=PROJECT action

@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # manpage
 
 ######## Inclusion of the lib
