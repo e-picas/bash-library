@@ -1,6 +1,6 @@
 .\" author: Les Ateliers Pierrot
 
-.TH  "NAME" "3" "2014-06-29" "Version 2.0.3" "piwi-bash-library.sh Manual"
+.TH  "NAME" "3" "2014-11-21" "Version 2.0.4" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -312,7 +312,7 @@ To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issue
 .SH AUTHOR
 
 .PP
-Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://github.com/piwi>)
+Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://e-piwi.fr/>)
 & contributors.
 
 .SH SEE ALSO

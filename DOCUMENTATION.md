@@ -118,6 +118,13 @@
 -   **/ verecho ( string )**
 -   **quiet_echo ( string )**
 -   **/ quietecho ( string )**
+-   **evaluate ( command )**
+-   **interactive_evaluate ( command )**
+-   **/ ievaluate ( command )**
+-   **/ ieval ( command )**
+-   **debug_evaluate ( command )**
+-   **/ debevaluate ( command )**
+-   **/ debeval ( command )**
 -   **interactive_exec ( command , debug_exec = true )**
 -   **/ iexec ( command , debug_exec = true )**
 -   **debug_echo ( string )**
@@ -151,7 +158,7 @@
 -   **path_simple_error ( path )**
 -   @error exits with status E_PATH (83)
 
-## VCS (line 758)
+## VCS (line 827)
 
 -   @ VCSVERSION : variable used as version marker like `branch@commit_sha`
 -   @ SCRIPT_VCS : VCS type of the script (only 'git' for now)
@@ -179,7 +186,7 @@
 -   **git_change_branch ( target_dir , branch = 'master' )**
 -   @param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 1023)
+## COLORIZED CONTENTS (line 1092)
 
 -   **get_text_format_tag ( code )**
     @param code must be one of the library colors or text-options codes
@@ -200,7 +207,7 @@
 -   **parse_color_tags ( "string with <bold>tags</bold>" )**
 -   **strip_colors ( string )**
 
-## TEMPORARY FILES (line 1189)
+## TEMPORARY FILES (line 1258)
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory to create (default is `tmp/`)
@@ -214,13 +221,13 @@
 -   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
     @param dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 1276)
+## LOG FILES (line 1345)
 
 -   **get_log_filepath ()**
 -   **log ( message , type='' )**
 -   **read_log ()**
 
-## CONFIGURATION FILES (line 1314)
+## CONFIGURATION FILES (line 1383)
 
 -   **get_global_configfile ( file_name )**
 -   **get_user_configfile ( file_name )**
@@ -231,7 +238,7 @@
 -   **get_configval ( file_path , key )**
 -   **build_configstring ( array_keys , array_values )**
 
-## SCRIPT OPTIONS / ARGUMENTS (line 1467)
+## SCRIPT OPTIONS / ARGUMENTS (line 1536)
 
 -   **get_short_options_array ()**
 -   **get_short_options_string ( delimiter = '|' )**
@@ -246,7 +253,7 @@
 -   **parse_common_options_strict ( "$@" = SCRIPT_OPTS )**
 -   **parse_common_options ( "$@" = SCRIPT_OPTS )**
 
-## SCRIPT INFOS (line 1697)
+## SCRIPT INFOS (line 1766)
 
 -   **get_script_version_string ( quiet = false )**
 -   **script_title ( lib = false )**
@@ -258,7 +265,7 @@
 -   **script_short_version ( quiet = false )**
 -   **script_version ( quiet = false )**
 
-## DOCBUILDER (line 1909)
+## DOCBUILDER (line 1978)
 
 -   @ DOCBUILDER_MASKS = ()
 -   @ DOCBUILDER_MARKER = '##@!@##'
@@ -266,7 +273,7 @@
 -   **build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )**
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
-## LIBRARY INFOS (line 2017)
+## LIBRARY INFOS (line 2086)
 
 -   **get_library_version_string ( path = $0 )**
 -   **library_info ()**
@@ -278,14 +285,14 @@
 -   **library_debug ( "$*" )**
 -   **/ libdebug ( "$*" )**
 
-## LIBRARY INTERNALS (line 2139)
+## LIBRARY INTERNALS (line 2208)
 
 -   @ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
 -   **make_library_homedir ()**
 -   **make_library_cachedir ()**
 -   **clean_library_cachedir ()**
 
-## INSTALLATION WIZARD (line 2164)
+## INSTALLATION WIZARD (line 2233)
 
 -   @ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
 -   @ SCRIPT_REPOSITORY_URL = url of your distant repository
@@ -301,9 +308,9 @@
 -   **script_update ( path = $HOME/bin/ )**
 -   **script_uninstall ( path = $HOME/bin/ )**
 
-## COMPATIBILITY (line 2316)
+## COMPATIBILITY (line 2385)
 
 
 ----
 
-[*Doc generated at 29-6-2014 00:44:09 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 21-11-2014 16:12:53 from path 'src/piwi-bash-library.sh'*]
