@@ -229,9 +229,9 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION
 ##@ LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL
 declare -rx LIB_NAME="Piwi Bash library"
-declare -rx LIB_VERSION="2.0.3"
-declare -rx LIB_DATE="2014-06-29"
-declare -rx LIB_VCSVERSION="master@e3e9631639da6b24e8de63e5a000f4a879539fff"
+declare -rx LIB_VERSION="2.0.4"
+declare -rx LIB_DATE="2014-11-21"
+declare -rx LIB_VCSVERSION="master@3473ae5dceb5c25a59e95ce60490290a56962912"
 declare -rx LIB_DESCRIPTION="An open source day-to-day bash library"
 declare -rx LIB_LICENSE_TYPE="GPL-3.0"
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
