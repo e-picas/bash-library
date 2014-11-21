@@ -3,6 +3,9 @@
 ## 2.0.4 (current dev)
 
 - moving test scripts from 'bin/' to 'demo/'
+- all scripts now use shebang `/usr/bin/env bash`
+- new 'evaluate()' method and derivatives to replace internal 'eval()' catching all events
+- new 'eval.sh' demo script for the 'evaluate()' method
 
 ## 2.0.3 (current master)
 
