@@ -23,7 +23,7 @@ piwi-bash-library - An open source day-to-day bash library.
 ## DESCRIPTION
 
 **Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
-free software replacement for the original Bourne shell (sh). The present library is a tool
+free software replacement of the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
 `source path/to/piwi-bash-library.sh` and call its methods.
 
@@ -31,22 +31,22 @@ The library is NOT a script doing some work itself except dealing with a copy of
 ; it is just a library. This manual explains the library itself, its options and
 usage methods but you MAY keep in mind that the final manual page to read is the one of
 the real script you will call, using the tools of the library to build its own work. See the
-"Interface" section of this manual for informations about the library interface (when calling
+"Interface" section of this manual for information about the library interface (when calling
 it directly).
 
 The following features are available using the library:
 
 -   some common methods to work with strings and arrays in Bash
--   manage information messages like warnings and errors
--   manage a simple **help or usage information** for each script (just defining some variables
-    in this script)
--   create some **colorized and styled content** for terminal output: some methods are designed
-    to wrap a string between colored or styled tags, according to the current system running,
+-   a management of information messages like warnings and errors
+-   a management of a simple **help or usage information** for each script (just defining some variables
+    in the script)
+-   the creation of some **colorized and stylized content** for terminal output: some methods are designed
+    to wrap a string between colored or styled tags, according to the current system,
     and to build a colorized content using XML-like tags (`<mytag>my content</mytag>`)
--   manage a **configuration dotfile** for a script: some methods allows you to read, write,
+-   a management of a **configuration dotfile** for a script: some methods allow you to read, write,
     update and delete configuration values in a file
--   manage **temporary files** and **log files**
--   use a set of **common options** (described in next "Options" section) to let the user interact
+-   a management **temporary files** and **log files**
+-   a set of **common options** (described in next "Options" section) to let the user interact
     with the script, such as increase or decrease verbosity, make a dry run, ask to force 
     commands or to always prompt for confirmation
 
@@ -90,18 +90,18 @@ add an `md` prefix to get the documentation in Markdown format ('mddocumentation
 :   update the library with a newer version if so ; this will update the MINOR version
 
 **version**
-:   get the version informations about the library ; use option `quiet` to get only
+:   get the version information about the library ; use option `quiet` to get only
 the version number
 
 ## OPTIONS
 
 Each script depending on the library may define its own options. Report to the script
-manpage or help string for more infos.
+manpage or help string for more information.
 
 *The following common options are supported (MAY be used first):*
 
 **--dry-run**
-:    see commands to run but not run them actually ; this will define the environment variable
+:    see commands to run but do not run them actually ; this will define the environment variable
 `DRYRUN` on `true`
 
 **-f**, **--force**
@@ -169,7 +169,7 @@ repository ; it defaults to "**master**"
 **-p**, **--preset** =type
 :    defines the preset type to use for an installation ; can be "**default**" (default value),
 "**user**", "**dev**" or "**full**" ; the value of this option will be used to define the
-files to install ; see the "Files" section below for more informations
+files to install ; see the "Files" section below for more information
 
 **-r**, **--release** =version
 :    defines the GIT version tag to use from the remote repository ; the release MUST exist in the
@@ -197,7 +197,7 @@ NAME VERSION DATE DESCRIPTION_USAGE LICENSE_USAGE HOMEPAGE_USAGE SYNOPSIS_USAGE 
 :   these are used to build the help information of the scripts ; they may be defined for each script
 
 SYNOPSIS_MANPAGE DESCRIPTION_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE
-:    these are used to build man-pages and help informations ; they may be defined for each script
+:    these are used to build man-pages and help information ; they may be defined for each script
 
 NAME VERSION DATE PRESENTATION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO
 :   these are used to build the version string of the scripts ; they may be defined for each script
