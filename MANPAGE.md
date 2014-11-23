@@ -45,7 +45,7 @@ The following features are available using the library:
     and to build a colorized content using XML-like tags (`<mytag>my content</mytag>`)
 -   a management of a **configuration dotfile** for a script: some methods allow you to read, write,
     update and delete configuration values in a file
--   a management **temporary files** and **log files**
+-   a management of **temporary files** and **log files**
 -   a set of **common options** (described in next "Options" section) to let the user interact
     with the script, such as increase or decrease verbosity, make a dry run, ask to force 
     commands or to always prompt for confirmation
