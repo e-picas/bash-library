@@ -35,6 +35,10 @@ the best practice is to use **the internal interface** as it presents facilities
     tar -xvf master.tar.gz
     ./piwi-bash-library-master/src/piwi-bash-library.sh help
 
+To read the library's manpage, run:
+
+    man ./piwi-bash-library-master/piwi-bash-library.man
+
 ### Usage
 
 To use the library in a bash script, just `source` it at the top of your code or before any
@@ -44,9 +48,9 @@ call of its methods or variables:
     source path/to/piwi-bash-library.sh
     ...
 
-### Developer documentation
+The full documentation of the library is available online at <http://github.com/atelierspierrot/piwi-bash-library/wiki>.
 
-The full documentation is available online at <http://github.com/atelierspierrot/piwi-bash-library/wiki>.
+### Developer documentation
 
 A quick overview of the whole library methods or variables can be written on screen running
 (the `-v` option renders a complete doc with comments for each method):
