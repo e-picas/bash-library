@@ -6,6 +6,8 @@
 - all scripts now use shebang `/usr/bin/env bash`
 - new 'evaluate()' method and derivatives to replace internal 'eval()' catching all events
 - new 'eval.sh' demo script for the 'evaluate()' method
+- removing all 'doc/' contents: the documentation is now handle by the wiki or the repository at
+    <http://github.com/atelierspierrot/piwi-bash-library/wiki>
 
 ## 2.0.3 (current master)
 
