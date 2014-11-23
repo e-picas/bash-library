@@ -601,6 +601,8 @@ quietecho () { quiet_echo "$*"; }
 ## - stdout is loaded in global `$CMD_OUT`
 ## - stderr is loaded in global `$CMD_ERR`
 ## - final status is loaded in global `$CMD_STATUS`
+##@env CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
+##@error will end with any caught error (exit status !=0)
 evaluate () {
     unset CMD_OUT CMD_ERR CMD_STATUS
     local f_out=`mktemp`;

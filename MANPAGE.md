@@ -208,6 +208,9 @@ SCRIPT_OPTS SCRIPT_ARGS SCRIPT_PROGRAMS OPTIONS_ALLOWED LONG_OPTIONS_ALLOWED ARG
 LOREMIPSUM LOREMIPSUM_SHORT LOREMIPSUM_MULTILINE
 :   these are defined for tests with sample strings
 
+CMD_OUT CMD_ERR CMD_STATUS
+:   these are defined after usage of the `evaluate()` method or derivatives with respectively the STDOUT, STDERR and
+exit STATUS of the evaluated command
 
 ## EXIT STATUS
 
