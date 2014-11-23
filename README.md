@@ -28,7 +28,7 @@ arguments and help or usage strings.
 Installing the *Piwi Bash Library* is as simple as making a copy of two files in your target
 directory: the **library source itself** and **its Unix manual page**.
 
-You can install the package in many ways explained in the [Global documentation](doc/Global-doc.md) ;
+You can install the package in many ways explained in the [Global documentation](http://github.com/atelierspierrot/piwi-bash-library/wiki) ;
 the best practice is to use **the internal interface** as it presents facilities to update the library.
 
     wget --no-check-certificate https://github.com/atelierspierrot/piwi-bash-library/archive/master.tar.gz
@@ -46,7 +46,7 @@ call of its methods or variables:
 
 ### Developer documentation
 
-Documentation files are included in the [`doc/` directory](doc) of the package.
+The full documentation is available online at <http://github.com/atelierspierrot/piwi-bash-library/wiki>.
 
 A quick overview of the whole library methods or variables can be written on screen running
 (the `-v` option renders a complete doc with comments for each method):
