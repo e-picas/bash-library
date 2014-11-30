@@ -287,8 +287,8 @@ get_path () {
 ## get the full real path of a script directory (passed as argument) or from current executed script
 get_script_path () {
     local arg="${1:-${0}}"
-    local relpath=$(dirname "${arg}")
-    local abspath=$(cd "${relpath}" && pwd)
+    local relpath=$(dirname "$arg")
+    local abspath=$(cd "$relpath" && pwd)
     if [ -z "$abspath" ]; then return 1; fi
     echo "$abspath"
     return 0
@@ -328,8 +328,8 @@ get_date () {
 #### get_ip ()
 ## this will load current IP address in USERIP & USERISP
 get_ip () {
-    export USERIP=$(ifconfig | awk '/inet / { print $2 } ' | sed -e "s/addr://" 2>&-)
-    export USERISP=$(ifconfig | awk '/P-t-P/ { print $3 } ' | sed -e "s/P-t-P://" 2>&-)
+    export USERIP="$(ifconfig | awk '/inet / { print $2 } ' | sed -e "s/addr://" 2>&-)"
+    export USERISP="$(ifconfig | awk '/P-t-P/ { print $3 } ' | sed -e "s/P-t-P://" 2>&-)"
     return 0
 }
 
@@ -346,7 +346,7 @@ get_extension () {
 ## isolate a file name without dir & extension
 get_filename () {
     local arg="${1:-${0}}"
-    filename="$(get_basename "${arg}")"
+    filename="$(get_basename "$arg")"
     echo "${filename%.*}" && return 0 || return 1;
 }
 
@@ -368,7 +368,7 @@ get_dirname () {
 ## get the real path of a script (passed as argument) or from current executed script
 get_absolute_path () {
     local arg="${1:-${0}}"
-    local dirpath=$(get_script_path "$arg")
+    local dirpath="$(get_script_path "$arg")"
     if [ -z "$dirpath" ]; then return 1; fi
     echo "${dirpath}/$(basename "$arg")" && return 0 || return 1;
 }
@@ -383,8 +383,7 @@ resolve () {
     if [ $# -eq 0 ]; then return 0; fi
     local _path="$1"
     if [ "${_path:0:1}" = '~' ]; then _path="${_path/\~/${HOME}}"; fi
-    if [ "${_path:0:2}" = '..' ]; then _path="${_path/..\//$(pwd)/../}"; fi
-    if [ "${_path:0:1}" = '.' ]; then _path="${_path/.\//$(pwd)/}"; fi
+    if [ "${_path:0:1}" != '/' ]; then _path="$(pwd)/${_path}"; fi
     echo "$_path"
 }
 
@@ -828,6 +827,21 @@ error () {
         $((LINELENGTH - $(string_length "$SECONDLINE"))) "${SECONDLINE}<${COLOR_ERROR}>";
     parse_color_tags "\n<${COLOR_ERROR}>${TMPSTR}</${COLOR_ERROR}>\n" >&2
     exit "$ERRSTATUS"
+}
+
+#### get_stack_trace ( first_item = 0 )
+## get a formated stack trace
+get_stack_trace () {
+    echo "Stack trace:"
+    local i="${1:-0}"
+    for t in "${BASH_SOURCE[@]}"; do
+        if [ "$i" -lt "$(("${#BASH_SOURCE[@]}" - 1))" ]
+        then echo "#${i} '${FUNCNAME[${i}]} ()' : called in '${BASH_SOURCE[$((i+1))]}' at line ${BASH_LINENO[${i}]}"
+        else echo "#${i} ${BASH_SOURCE[${i}]} : ${FUNCNAME[${i}]}"
+        fi
+        i=$((i + 1))
+    done
+    return 0
 }
 
 #### simple_usage ( synopsis = SYNOPSIS_ERROR )
@@ -2194,25 +2208,26 @@ declare -xa DOCBUILDER_MASKS=()
 declare -x DOCBUILDER_MARKER='##@!@##'
 ##@ DOCBUILDER_RULES = ( ... )
 declare -xa DOCBUILDER_RULES=(
-    '^####.[^#]*$'                          # fct name line     : #### name ( what ever )
-    '^####.[^#]*#*$'                        # title line        : #### title # (this will be followed by the line number and a new line)
+    '^#### [^#]*$'                          # fct name line     : #### name ( what ever )
+    '^#### [^#]* #*$'                       # title line        : #### title # (this will be followed by the line number and a new line)
     '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
-    '^##([^!]*)$'                           # comment line      : ## comment (will NOT match "##! comment")
-    '^##@[^ ]* .*$'                         # alone tag line
+    '^## .*$'                               # comment line      : ## comment (will NOT match "##! comment")
+    '^##@ .*$'                              # var line          : ##@ varname ( what ever )
 );
+
 declare -xa DOCBUILDER_TERMINAL_MASKS=(
-    "s|^#### \(.* (.*)\)$|\\\t\1|g"         # fct name line
+    "s|^#### \(.*\)$|\\\n\\\t\1|g"          # fct name line
     "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
     "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
     "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # simple tag line
+    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # var line
 );
 declare -xa DOCBUILDER_MARKDOWN_MASKS=(
-    "s|^#### \(.* (.*)\)$|-   \*\*\1\*\*|g"     # fct name line
+    "s|^#### \(.*\)$|\\\n-   \*\*\1\*\*\\\n|g"  # fct name line
     "s|^#### \(.*\) #*$|\\\n## \1|g"            # title line
     "s|^##\(@.*\) \(.*\)$|    \1 \2|g"          # tag line
-    "s|^##* \(.*\)$|\\\n    \1|g"               # comment line
-    "s|^##\(@.*\) \(.*\)$|-   \1 \2|g"          # simple tag line
+    "s|^##* \(.*\)$|\\\t\1|g"                   # comment line
+    "s|^##@ \(.*\)$|\\\n-   \1|g"               # var line
 );
 
 #### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
@@ -2248,51 +2263,51 @@ generate_documentation () {
     IFS=$'\n'
     local indoc=false
     local intag=false
-    for line in $(cat "$sourcefile"); do
-        if [ "${line}" == "${DOCBUILDER_MARKER}" ]; then
-            if ${indoc}; then indoc=false; break; else indoc=true; fi
+    while read line; do
+        if [ "$line" = "$DOCBUILDER_MARKER" ]; then
+            if [ "$indoc" = 'true' ]; then indoc=false; break; else indoc=true; fi
             continue;
         fi
         line_str=''
-        fct_line=$(echo "${line}" | grep -o "${DOCBUILDER_RULES[0]}" | sed "${DOCBUILDER_MASKS[0]}")
-        if [ ${indoc} -a -n "${fct_line}" ]; then
-            line_str="${fct_line}"
+        fct_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[0]}" | sed "${DOCBUILDER_MASKS[0]}")"
+        if [ "$indoc" = 'true' ] && [ -n "$fct_line" ]; then
+            line_str="$fct_line"
             intag=true
-        elif ${indoc}; then
-            title_line=$(echo "${line}" | grep -o "${DOCBUILDER_RULES[1]}" | sed "${DOCBUILDER_MASKS[1]}")
+        elif [ "$indoc" = 'true' ]; then
+            title_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[1]}" | sed "${DOCBUILDER_MASKS[1]}")"
             if [ -n "${title_line}" ]; then
                 line_str="${title_line} (line ${i})\n"
-            elif ${intag}; then
-                arg_line=$(echo "${line}" | grep -o "${DOCBUILDER_RULES[2]}" | sed "${DOCBUILDER_MASKS[2]}")
-                comm_line=$(echo "${line}" | grep -o "${DOCBUILDER_RULES[3]}" | sed "${DOCBUILDER_MASKS[3]}")
+            elif [ "$intag" = 'true' ]; then
+                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[2]}" | sed "${DOCBUILDER_MASKS[2]}")"
+                comm_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[3]}" | sed "${DOCBUILDER_MASKS[3]}")"
                 if [ "$VERBOSE" = 'true' ]; then
-                    if [ -n "${arg_line}" ]; then
-                        line_str="${arg_line}"
+                    if [ -n "$arg_line" ]; then
+                        line_str="$arg_line"
                     else
-                        if [ -n "${comm_line}" ]
-                        then line_str="${comm_line}"
-                        else intag=false;
+                        if [ -n "$comm_line" ]
+                        then line_str="$comm_line"
+#                        else intag=false;
                         fi
                     fi
                 else
-                    if [ -n "${arg_line}" -a -n "${comm_line}" ]; then intag=false; fi
+                    if [ -n "$arg_line" ] && [ -n "$comm_line" ]; then intag=false; fi
                 fi
             else
                 intag=false;
-                arg_line=$(echo "${line}" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")
-                if [ -n "${arg_line}" ]; then line_str="${arg_line}"; fi
+                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
+                if [ -n "$arg_line" ]; then line_str="$arg_line"; fi
             fi
         fi
-        if [ -n "${line_str}" ]; then docstr+="\n${line_str}"; fi
-        i=$(($i+1))
-    done
-    IFS=${old_IFS}
+        if [ -n "$line_str" ]; then docstr+="\n${line_str}"; fi
+        i=$((i+1))
+    done < "$sourcefile" ;
+    IFS="$old_IFS"
     export IFS
-    now=`date '+%d-%-m-%Y %X'`
+    now="$(date '+%d-%-m-%Y %X')"
     docstr+="\n\n----\n\n[*Doc generated at ${now} from path '${sourcefile}'*]"
-    if [ -n "${output}" ]
-        then _echo "${docstr}" > "${output}"
-        else _echo "${docstr}"
+    if [ -n "$output" ]
+        then _echo "$docstr" > "$output"
+        else _echo "$docstr"
     fi
     return 0
 }
