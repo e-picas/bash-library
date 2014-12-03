@@ -287,8 +287,8 @@ get_path () {
 ## get the full real path of a script directory (passed as argument) or from current executed script
 get_script_path () {
     local arg="${1:-${0}}"
-    local relpath=$(dirname "$arg")
-    local abspath=$(cd "$relpath" && pwd)
+    local relpath="$(dirname "$arg")"
+    local abspath="$(cd "$relpath" && pwd)"
     if [ -z "$abspath" ]; then return 1; fi
     echo "$abspath"
     return 0
@@ -818,13 +818,13 @@ error () {
     local ERRSTRING="${1:-unknown error}"
     local ERRSTATUS="${2:-${E_ERROR}}"
     if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
-    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '-h')"
-    local SECONDLINE=$(colorize "${TAG}!! >> ${ERRSTRING}" bold)
+    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '--help')"
+    local SECONDLINE="$(colorize "${TAG}!! >> ${ERRSTRING}" bold)"
     printf -v TMPSTR \
         "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
         0 "$LINELENGTH" "$PADDER" \
-        $((LINELENGTH - $(string_length "$FIRSTLINE"))) "$FIRSTLINE" \
-        $((LINELENGTH - $(string_length "$SECONDLINE"))) "${SECONDLINE}<${COLOR_ERROR}>";
+        "$((LINELENGTH - $(string_length "$FIRSTLINE")))" "$FIRSTLINE" \
+        "$((LINELENGTH - $(string_length "$SECONDLINE")))" "${SECONDLINE}<${COLOR_ERROR}>";
     parse_color_tags "\n<${COLOR_ERROR}>${TMPSTR}</${COLOR_ERROR}>\n" >&2
     exit "$ERRSTATUS"
 }
@@ -861,7 +861,7 @@ simple_usage () {
     else
         USAGESTR="$(_echo "$COMMON_SYNOPSIS_ERROR")"
     fi
-    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '-h' for help.")" "$USAGESTR";
+    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$USAGESTR";
     echo
     return 0
 }
@@ -1733,15 +1733,38 @@ build_configstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
+#### read_from_pipe ( file=/dev/stdin )
+read_from_pipe () {
+    local fpipe="${1:-/dev/stdin}"
+    SCRIPT_INPUT=''
+    if test -s "$fpipe"; then SCRIPT_INPUT="$(cat "$fpipe")"; fi
+    export SCRIPT_INPUT
+}
+
 #### get_short_options_array ()
 get_short_options_array () {
     local -a short_options=()
-    explode_letters "$OPTIONS_ALLOWED"
+    local shortoptions="${OPTIONS_ALLOWED//-:/}"
+    explode_letters "$shortoptions"
+    local b=''
     for i in "${EXPLODED_ARRAY[@]}"; do
-        if [ "$i" != ':' ] && [ "$i" != '-' ]; then
-            short_options+=( "$i" )
+        if [ "$i" = ':' ] && [ -n "$b" ]; then
+            b="${b}${i}"
+        elif [ "$i" != '-' ]; then
+            if [ -n "$b" ]; then
+                short_options+=( "$b" )
+            fi
+            b="$i"
+        else
+            if [ -n "$b" ]; then
+                short_options+=( "$b" )
+            fi
+            b=''
         fi
     done
+    if [ -n "$b" ]; then
+        short_options+=( "$b" )
+    fi
     echo "${short_options[@]}"
 }
 
@@ -1757,7 +1780,7 @@ get_long_options_array () {
     local -a long_options=()
     explode "$LONG_OPTIONS_ALLOWED" ","
     for i in "${EXPLODED_ARRAY[@]}"; do
-        long_options+=( "${i%:*}" )
+        long_options+=( "$i" )
     done
     echo "${long_options[@]}"
 }
@@ -1775,6 +1798,17 @@ get_option_arg () {
     if [ -n "$1" ]; then echo "${1#=}"; fi; return 0;
 }
 
+#### get_option_declaration ( option_name )
+get_option_declaration () {
+    local _optname="$1"
+    local -a opts_table=( $(get_options_array) )
+    local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
+    echo "${opts_table[${optiondef_ind}]}"
+    return 0
+}
+
 #### get_long_option ( "$x" )
 ## echoes the name of a long option
 get_long_option () {
@@ -1790,16 +1824,26 @@ get_long_option () {
 #### get_long_option_arg ( "$x" )
 ## echoes the argument of a long option
 get_long_option_arg () {
-    local arg="$1"
-    if [ -n "$arg" ]; then
-        if [[ "$arg" =~ .*=.* ]]
-            then arg="${arg#*=}"
-            else arg="$(echo "${arg}" | cut -d " " -f2-)"
-        fi
-        echo "$arg"
+    local arg=''
+    local argstr="$1"
+    if [ -n "$argstr" ]; then
+        [[ "$argstr" =~ .*\ .* ]] && arg="$(echo "$argstr" | cut -d " " -f2-)";
+        [[ "$argstr" =~ .*=.* ]] && arg="${argstr#*=}";
+        [[ "$argstr" != "$arg" ]] && echo "$arg";
         return 0
     fi
     return 1
+}
+
+#### get_long_option_declaration ( option_name )
+get_long_option_declaration () {
+    local _optname="$1"
+    local -a opts_table=( $(get_long_options_array) )
+    local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
+    echo "${opts_table[${optiondef_ind}]}"
+    return 0
 }
 
 #### get_next_argument ()
@@ -1825,56 +1869,88 @@ get_last_argument () {
     fi
 }
 
+declare -x PARAMS
+#### rearrange_script_options_new ( "$@" , "$0"  )
+rearrange_script_options_new () {
+    local progname="$1"
+    shift
+    local separator=' -- '
+    SCRIPT_PARAMS="$(getopt --quiet --shell 'bash' --options "$OPTIONS_ALLOWED" --longoptions "$LONG_OPTIONS_ALLOWED" --name "$progname" -- "$@")"
+    export SCRIPT_PARAMS
+    eval set -- "$SCRIPT_PARAMS"
+    rearrange_script_options "$@"
+    return 0
+}
+
 #### rearrange_script_options ( "$@" )
 ## this will separate script options from script arguments (emulation of GNU "getopt")
 ## options are loaded in $SCRIPT_OPTS with their arguments
 ## arguments are loaded in $SCRIPT_ARGS
 rearrange_script_options () {
+#    getopt --test > /dev/null
+#    if [ $? -eq 4 ]||[ -z $? ]; then
+#        rearrange_script_options_new "$*"
+#        return 0
+#    fi
     SCRIPT_OPTS=()
     SCRIPT_ARGS=()
-    local oldoptind=${OPTIND}
+    local oldoptind="$OPTIND"
     local -a params=( "$@" )
     local numargs="${#params[@]}"
+    local -a longopts_table=( $(get_long_options_array) )
     local firstoptdone=false
     local firstchar
     local arg
-    for i in "${!params[@]}"; do
-        arg="${params[${i}]}"
-        firstchar="${arg:0:1}"
-        if [ "${firstchar}" != "-" ]
-            then SCRIPT_ARGS+=( "$arg" )
-            elif ! ${firstoptdone}; then firstoptdone=true;
-        fi
-        if ! ${firstoptdone}; then unset params["$i"]; fi
-    done
+#    for i in "${!params[@]}"; do
+#        arg="${params[${i}]}"
+#        firstchar="${arg:0:1}"
+#        if [ "$firstchar" != "-" ]
+#            then SCRIPT_ARGS+=( "$arg" )
+#            elif [ "$firstoptdone" != 'true' ]; then firstoptdone=true;
+#        fi
+#        if [ "$firstoptdone" != 'true' ]; then unset params["$i"]; fi
+#    done
     OPTIND=1
     local eoo=false
     while getopts ":${OPTIONS_ALLOWED}" OPTION "${params[@]-}"; do
-        OPTARG="${OPTARG#=}"
+        OPTNAME="$OPTION"
+        OPTARG="$(get_option_arg "${OPTARG:-}")"
         local argindex=false
-        case "$OPTION" in
-            -) LONGOPT="$(get_long_option "${OPTARG}")"
-               LONGOPTARG="$(get_long_option_arg "${OPTARG}")"
-                case "$OPTARG" in
+        case "$OPTNAME" in
+            -)  LONGOPTNAME="$(get_long_option "$OPTARG")"
+                LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+                optiondef=$(get_long_option_declaration "$LONGOPTNAME")
+                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+                    LONGOPTARG="${!OPTIND}"
+                    OPTIND=$((OPTIND + 1))
+                fi
+                case "$LONGOPTNAME" in
                     -) eoo=true; break;;
                     *) if [ "$eoo" != 'true' ]; then
-                        if [ ! -z "$LONGOPTARG" ] && [ "$LONGOPT" != "$LONGOPTARG" ]; then
-                            SCRIPT_OPTS+=( "--${LONGOPT} ${LONGOPTARG}" )
+                        if [ ! -z "$LONGOPTARG" ] && [ "$LONGOPTNAME" != "$LONGOPTARG" ]; then
+                            SCRIPT_OPTS+=( "--${LONGOPTNAME}='${LONGOPTARG}'" )
                             SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${LONGOPTARG}}" )
                         else
-                            SCRIPT_OPTS+=( "--${LONGOPT}" )
+                            SCRIPT_OPTS+=( "--${LONGOPTNAME}" )
                         fi
                     fi;;
                 esac ;;
-            *) if [ "$eoo" != 'true' ] && [ "$OPTION" != '?' ]; then
+            \?)
+                SCRIPT_ARGS+=( "-${OPTION}" )
+                ;;
+            *) if [ "$eoo" != 'true' ]; then
                     if [ ! -z "$OPTARG" ]; then
-                        SCRIPT_OPTS+=( "-${OPTION}${OPTARG}" )
+                        SCRIPT_OPTS+=( "-${OPTION}='${OPTARG}'" )
                         SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${OPTARG}}" )
                     else
                         SCRIPT_OPTS+=( "-${OPTION}" )
                     fi
                 fi;;
         esac
+    done
+    while [ "$OPTIND" -lt $((numargs + 1)) ]; do
+        SCRIPT_ARGS+=( "${!OPTIND}" )
+        OPTIND=$((OPTIND + 1))
     done
     OPTIND="$oldoptind"
     SCRIPT_ARGS=( $(array_filter "${SCRIPT_ARGS[@]-}") )
@@ -1926,11 +2002,11 @@ parse_common_options () {
         case "$OPTION" in
         # common options
             h) if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
-            i) export INTERACTIVE=true; export QUIET=false;;
+            i) export INTERACTIVE=true; export FORCED=false;;
             v) export VERBOSE=true; export QUIET=false;;
-            f) export FORCED=true;;
+            f) export FORCED=true;export INTERACTIVE=false;;
             x) export DEBUG=true;;
-            q) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
+            q) export VERBOSE=false; export QUIET=true;;
             V) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
             -) LONGOPTARG="$(get_long_option_arg "$OPTARG")"
                 case "$OPTARG" in
@@ -1939,12 +2015,12 @@ parse_common_options () {
                     usage) if [ -z "$actiontodo" ]; then actiontodo='usage'; fi;;
                     man*) if [ -z "$actiontodo" ]; then actiontodo='man'; fi;;
                     version) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
-                    interactive) export INTERACTIVE=true; export QUIET=false;;
+                    interactive) export INTERACTIVE=true; export FORCED=false;;
                     verbose) export VERBOSE=true; export QUIET=false;;
-                    force) export FORCED=true;;
+                    force) export FORCED=true; export INTERACTIVE=false;;
                     debug) export DEBUG=true;;
                     dry-run) export DRYRUN=true; verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
-                    quiet) export VERBOSE=false; export INTERACTIVE=false; export QUIET=true;;
+                    quiet) export VERBOSE=false; export QUIET=true;;
                     working-dir*) set_working_directory "$LONGOPTARG";;
                     log*) set_log_filename "$LONGOPTARG";;
         # library options
