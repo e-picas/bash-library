@@ -16,16 +16,32 @@ if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
 fi
 ######## !Inclusion of the lib
 
+NAME="Bash-Lib-Test-Getopts"
+VERSION="0.1.0"
+DATE="2014-12-01"
+DESCRIPTION="A dev test script for options handling"
+OPTIONS_USAGE="\n\
+This file is a development test for options, arguments and piped content handling.\n\
+To test it, use one of the followings:\n\n\
+- full test with a large set of options with arguments and some 'actions' mixed:\n\
+\t$0 myaction1 -v --interactive -t 'two -- words' -u=qsdf -a --force --test1 'three wor ds' --test2='three wor ds' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+- same test with a piped content from a previous command:\n\
+\techo 'this is my piped contet' | $0 myaction1 -v --interactive -t 'two -- words' -u=qsdf -a --force --test1 'three wor ds' --test2='three wor ds' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+- same test with options errors:\n\
+\t$0 myaction1 -v --interactive -z -t -u=qsdf -a --force --test1 --test2='three wor ds' --test3='mlkj' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+";
+# definitions of short and long options
+OPTIONS_ALLOWED="t:u::a${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="test1:,test2::,${COMMON_LONG_OPTIONS_ALLOWED}"
+
+parse_common_options "$@"
+
 quietecho "_ go"
 echo
 
 # command line "as is"
 echo "> original script's arguments are: $*"
 echo
-
-# definitions of short and long options
-OPTIONS_ALLOWED="t:u::a${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="test1:,test2::,${COMMON_LONG_OPTIONS_ALLOWED}"
 
 # check
 echo "> script settings:"
@@ -37,6 +53,11 @@ longopts_table=( $(get_long_options_array) )
 echo " - long options table is:     ${longopts_table[@]}"
 echo
 
+# parse common options before re-arrangement
+echo "> parsing common options ..."
+parse_common_options_strict "$@"
+echo
+
 # rearrangement of options & arguments using 'getopt'
 rearrange_script_options_new "$0" "$@"
 echo "> re-arranging options & arguments:"
@@ -46,9 +67,9 @@ echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[@]}"
 eval set -- "$SCRIPT_PARAMS"
 echo
 
-# parse common options
-parse_common_options_strict
+# parse common options after re-arrangement
 echo "> parsing common options ..."
+parse_common_options_strict
 echo
 
 # check of new script arguments
@@ -123,6 +144,24 @@ else
     echo " - none"
 fi
 echo
+
+#test="$(cat /dev/stdin)"
+#echo "1: $test"
+
+#read test
+#echo "2: $test"
+
+#read_from_pipe() { read PIPED <&0 ; export PIPED; }
+
+#read_from_pipe "$@ $(cat)"
+#echo "3: $PIPED"
+
+#read_from_pipe "$*" <&0
+#echo "4: $PIPED"
+
+#read_from_pipe() { if read -t 0; then cat;fi }
+#echo $(read_from_pipe <&0)
+#echo "$PIPED"
 
 quietecho "_ ok"
 if ! $QUIET; then libdebug "$*"; fi

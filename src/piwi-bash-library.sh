@@ -882,6 +882,24 @@ simple_error () {
     exit "$ERRSTATUS"
 }
 
+#### simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+## writes multiple errors strings as a simple message with a synopsis usage info
+##@error default status is E_ERROR (90)
+simple_error_multi () {
+    local -a ERRSTACK=( "${!1:-unknown error}" )
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    for ERRSTRING in "${ERRSTACK[@]}"; do
+        if [ "$DEBUG" = 'true' ]; then
+            ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
+        fi
+        if [ -n "$LOGFILEPATH" ]; then log "$ERRSTRING" "error:${ERRSTATUS}"; fi
+        printf "$(parse_color_tags "<bold>error:</bold> %s")" "$ERRSTRING" >&2;
+        echo >&2
+    done
+    simple_usage "${3:-}" >&2
+    exit "$ERRSTATUS"
+}
+
 #### gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
 ## must echoes something like 'sourcefile:lineno: message'
 gnu_error_string () {
@@ -1869,8 +1887,8 @@ get_last_argument () {
     fi
 }
 
-declare -x PARAMS
-#### rearrange_script_options_new ( "$@" , "$0"  )
+#### rearrange_script_options_new ( "$0" , "$@"  )
+declare -x SCRIPT_PARAMS
 rearrange_script_options_new () {
     local progname="$1"
     shift
@@ -1961,29 +1979,96 @@ rearrange_script_options () {
 #### parse_common_options_strict ( "$@" = SCRIPT_OPTS )
 ## parse common script options as described in $COMMON_OPTIONS_INFO throwing an error for unknown options
 ## this will stop options treatment at '--'
+declare -ax SCRIPT_OPTS_ERRS=()
 parse_common_options_strict () {
     if [ $# -gt 0 ]
         then parse_common_options "$@"
         else parse_common_options
     fi
-    local oldoptind="$OPTIND"
-    OPTIND=1
+    if [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -eq 0 ]; then set -- "${SCRIPT_OPTS[@]}";
+    elif [ "${#SCRIPT_OPTS[@]}" -eq 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then set -- "${SCRIPT_ARGS[@]}";
+    elif [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+    fi
+    local -a params=( "$@" )
+    local numargs="${#params[@]}"
     local -a short_options=( $(get_short_options_array) )
     local -a long_options=( $(get_long_options_array) )
-    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
-        if [ "$OPTION" = '-' ]
-        then LONGOPT="$(get_long_option "$OPTARG")"
-            if ! in_array "$LONGOPT" "${long_options[@]}"; then
-                unknown_option_simple_error "$LONGOPT"
+    local oldoptind="$OPTIND"
+    local argreq=false
+    local prevopt
+    OPTIND=1
+    while [ "$OPTIND" -lt $((numargs + 1)) ]; do
+        opt="${!OPTIND}"
+        if [ "$opt" = '--' ]
+        then
+            break;
+        elif [ "${opt:0:2}" = '--' ]
+        then
+            if [ "$argreq" = 'true' ]; then
+                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+            fi
+            OPTARG="${opt:2}"
+            LONGOPT="$(get_long_option "$OPTARG")"
+            LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+            prevopt="$LONGOPT"
+            if
+                ! in_array "$LONGOPT" "${long_options[@]}" &&
+                ! in_array "${LONGOPT}:" "${long_options[@]}" &&
+                ! in_array "${LONGOPT}::" "${long_options[@]}";
+            then
+                SCRIPT_OPTS_ERRS+=("Unknown option '$LONGOPT'!")
+                argreq=false
+            else
+                if in_array "${LONGOPT}:" "${long_options[@]}" && [ -z "$LONGOPTARG" ]; then
+                    argreq=true
+                else
+                    argreq=false
+                fi
+            fi
+        elif [ "${opt:0:1}" = '-' ]
+        then
+            if [ "$argreq" = 'true' ]; then
+                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+            fi
+            SHORTOPT="${opt:1:1}"
+            SHORTOPTARG="$(get_option_arg "${opt:2}")"
+            prevopt="$SHORTOPT"
+            if
+                ! in_array "$SHORTOPT" "${short_options[@]}" &&
+                ! in_array "${SHORTOPT}:" "${short_options[@]}" &&
+                ! in_array "${SHORTOPT}::" "${short_options[@]}";
+            then
+                SCRIPT_OPTS_ERRS+=("Unknown option '$SHORTOPT'!")
+            else
+                if in_array "${SHORTOPT}:" "${short_options[@]}" && [ -z "$SHORTOPTARG" ]; then
+                    argreq=true
+                else
+                    argreq=false
+                fi
             fi
         else
-            if ! in_array "$OPTION" "${short_options[@]}"; then
-                unknown_option_simple_error "$OPTION"
-            fi
+            argreq=false
         fi
+        OPTIND=$((OPTIND + 1))
     done
+    if [ "${#SCRIPT_OPTS_ERRS[@]}" -gt 0 ]; then
+        simple_error_multi SCRIPT_OPTS_ERRS[@] "$E_OPTS"
+    fi
+
+#    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
+#        if [ "$OPTION" = '-' ]
+#        then LONGOPT="$(get_long_option "$OPTARG")"
+#            if ! in_array "$LONGOPT" "${long_options[@]}"; then
+#                unknown_option_simple_error "$LONGOPT"
+#            fi
+#        else
+#            if ! in_array "$OPTION" "${short_options[@]}"; then
+#                unknown_option_simple_error "$OPTION"
+#            fi
+#        fi
+#    done
     OPTIND="$oldoptind"
-    export OPTIND
+    export OPTIND SCRIPT_OPTS_ERRS
     return 0
 }
 
