@@ -247,13 +247,13 @@ get_system_info () {
         then uname -osr
         else uname -vsr
     fi
-    return 0
+    return $?
 }
 
 #### get_machine_name ()
 get_machine_name () {
     uname -n
-    return 0
+    return $?
 }
 
 #### add_path ( path )
@@ -307,7 +307,7 @@ get_date () {
     then date -d "@${1}" +'%d/%m/%Y (%A) %X (UTC %z)'
     else date +'%d/%m/%Y (%A) %X (UTC %z)'
     fi
-    return 0
+    return $?
 }
 
 #### get_ip ()
@@ -374,6 +374,16 @@ resolve () {
 
 #### ARRAY #############################################################################
 
+#### in_array ( item , $array[@] )
+##@return 0 if item is found in array
+in_array () {
+    needle="$1"; shift
+    for item; do
+        [ "$needle" = "$item" ] && return 0
+    done
+    return 1
+}
+
 #### array_search ( item , $array[@] )
 ##@return the index of an array item, 0 based
 array_search () {
@@ -383,16 +393,6 @@ array_search () {
         [ -z "$1" ] && { i=0; break; }
     done
     [ "$i" != '0' ] && echo "$i" && return 0
-    return 1
-}
-
-#### in_array ( item , $array[@] )
-##@return 0 if item is found in array
-in_array () {
-    needle="$1"; shift
-    for item; do
-        [ "$needle" = "$item" ] && return 0
-    done
     return 1
 }
 
@@ -455,19 +455,6 @@ upper_case_first () {
 ## alias of 'upper_case_first'
 ucfirst () { upper_case_first "$*"; }
 
-#### explode ( str , delim = ' ' )
-# explode a string in an array using a delimiter
-# result is loaded in '$EXPLODED_ARRAY'
-explode () {
-    if [ -n "$1" ]; then
-        local IFS="${2:- }"
-        read -a EXPLODED_ARRAY <<< "$1"
-        export EXPLODED_ARRAY
-        return 0
-    fi
-    return 1
-}
-
 ##@ MAX_LINE_LENGTH = 80 : default max line length for word wrap (integer)
 declare -xi MAX_LINE_LENGTH=80
 ##@ LINE_ENDING = \n : default line ending character for word wrap
@@ -478,6 +465,19 @@ declare -x LINE_ENDING="\n"
 word_wrap () {
     if [ $# -gt 0 ]; then
         echo "$*" | sed -e "s/.\{${MAX_LINE_LENGTH}\} /&${LINE_ENDING}/g"
+        return 0
+    fi
+    return 1
+}
+
+#### explode ( str , delim = ' ' )
+# explode a string in an array using a delimiter
+# result is loaded in '$EXPLODED_ARRAY'
+explode () {
+    if [ -n "$1" ]; then
+        local IFS="${2:- }"
+        read -a EXPLODED_ARRAY <<< "$1"
+        export EXPLODED_ARRAY
         return 0
     fi
     return 1
@@ -1763,6 +1763,8 @@ declare -xa SCRIPT_OPTS=()
 declare -xa SCRIPT_ARGS=()
 ##@ SCRIPT_PROGRAMS=()  array of program's options
 declare -xa SCRIPT_PROGRAMS=()
+##@ SCRIPT_OPTS_ERRS=()  array of options errors
+declare -ax SCRIPT_OPTS_ERRS=()
 ##@ ARGIND  integer of current argument index
 declare -xi ARGIND=0
 ##@ ARGUMENT    current argument string (see $ARGIND)
@@ -2035,7 +2037,6 @@ rearrange_script_options () {
 #### parse_common_options_strict ( "$@" = SCRIPT_OPTS )
 ## parse common script options as described in $COMMON_OPTIONS_INFO throwing an error for unknown options
 ## this will stop options treatment at '--'
-declare -ax SCRIPT_OPTS_ERRS=()
 parse_common_options_strict () {
     if [ $# -gt 0 ]
         then parse_common_options "$@"
