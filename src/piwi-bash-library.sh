@@ -2693,8 +2693,8 @@ clean_library_cachedir () {
 }
 
 #### INSTALLATION WIZARD #################################################################
-#! All internal installation methods are prefixed with 'instwiz_'
-#! All internal installation constants are prefixed with 'LIBINST_'
+##! All internal installation methods are prefixed with 'instwiz_'
+##! All internal installation constants are prefixed with 'LIBINST_'
 
 ##@ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
 declare -rxa INSTALLATION_VARS=(SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF)
@@ -2710,7 +2710,7 @@ declare -xa SCRIPT_FILES_MAN=()
 ##@ SCRIPT_FILES_CONF = array of configuration files
 declare -xa SCRIPT_FILES_CONF=()
 
-#! internal vars for installation
+##! internal vars for installation
 declare -x LIBINST_TARGET=''
 declare -x LIBINST_CLONE=''
 declare -x LIBINST_BRANCH='master'
