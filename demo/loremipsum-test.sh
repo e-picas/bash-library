@@ -30,21 +30,21 @@ for ((i=0; i<$_MAX; i++)); do
 done
 
 if [ "${#SCRIPT_PROGRAMS[@]}" -gt 0 ]; then
-    echo "- program(s) requested: '${SCRIPT_PROGRAMS[@]}'"
+    _echo "- program(s) requested: '${SCRIPT_PROGRAMS[@]}'"
 fi
 
 if $(in_array "less" "${SCRIPT_PROGRAMS[@]}"); then
     verecho "- loading test str in '$_TMPFILE'"
-    echo "$_TESTSTR" > "$_TMPFILE"
+    _echo "$_TESTSTR" > "$_TMPFILE"
     verecho "- opening it with 'less -cfre~'"
     cat "$_TMPFILE" | less -cfre~
 elif $(in_array "more" "${SCRIPT_PROGRAMS[@]}"); then
     verecho "- loading test str in '$_TMPFILE'"
-    echo "$_TESTSTR" > "$_TMPFILE"
+    _echo "$_TESTSTR" > "$_TMPFILE"
     verecho "- opening it with 'more -cf'"
     cat "$_TMPFILE" | more -cf
 else
-    echo "$_TESTSTR"
+    _echo "$_TESTSTR"
 fi
 
 quietecho "_ ok"
