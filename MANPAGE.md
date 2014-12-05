@@ -190,8 +190,8 @@ COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_C
 VERBOSE QUIET DEBUG INTERACTIVE FORCED
 :    the library flags, activated by script common options (see previous section)
 
-USEROS
-:    the current user operating system
+USEROS USERSHELL SHELLVERSION
+:    the current user operating system, binary shell in use and bash version
 
 NAME VERSION DATE DESCRIPTION_USAGE LICENSE_USAGE HOMEPAGE_USAGE SYNOPSIS_USAGE OPTIONS_USAGE
 :   these are used to build the help information of the scripts ; they may be defined for each script
@@ -278,5 +278,5 @@ Created and maintained by **Pierre Cassat** (*piwi* - <http://e-piwi.fr/>)
 
 ## SEE ALSO
 
-bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopts(1)
+bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopt(1), getopts(1)
 
