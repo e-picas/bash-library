@@ -1933,6 +1933,7 @@ rearrange_script_options_new () {
         2) error "an internal 'getopt' error occurred!";;
         3) error "an internal error occurred while calling 'getopt'!";;
     esac
+    if [ "$SCRIPT_PARAMS" = ' --' ]; then SCRIPT_PARAMS=''; fi
     export SCRIPT_PARAMS
     eval set -- "$SCRIPT_PARAMS"
     rearrange_script_options "$@"
