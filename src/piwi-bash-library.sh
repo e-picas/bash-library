@@ -1925,7 +1925,6 @@ rearrange_script_options_new () {
     fi
     local progname="$1"
     shift
-    local separator=' -- '
     # use '--alernative' option to allow single dash for long options
     SCRIPT_PARAMS="$(getopt --quiet --shell 'bash' --options "$OPTIONS_ALLOWED" --longoptions "$LONG_OPTIONS_ALLOWED" --name "$progname" -- "$@")"
     local _ret="$?"
