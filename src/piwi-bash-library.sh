@@ -527,19 +527,22 @@ onoff_bit () {
 
 #### UTILS #############################################################################
 
+##@ ECHOCMD (read-only)
+# test if 'echo' is shell builtin or program
+if [ "$($(which echo) --version)" = '--version' ]
+then ECHOCMD='builtin'
+else ECHOCMD='gnu'
+fi
+declare -rx ECHOCMD
+
 #### _echo ( string )
 ## echoes the string with the true 'echo -e' command
 ## use this for colorization
 _echo () {
 #    tput sgr0
-    case "$USEROS" in
-#        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*" >&2;;
-        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -e "$*";;
-        Darwin) echo "$*";;
-        *) if [ -f /bin/echo ]
-            then /bin/echo "$*"
-            else echo "$*"
-        fi;;
+    case "$ECHOCMD" in
+        gnu) $(which echo) -e "$*";;
+        builtin) echo "$*";;
     esac
     return 0
 }
@@ -549,14 +552,9 @@ _echo () {
 ## use this for colorization and no new line
 _necho () {
 #    tput sgr0
-    case "$USEROS" in
-#        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -en "$*" >&2;;
-        Linux|FreeBSD|OpenBSD|SunOS) $(which echo) -en "$*";;
-#        *) echo -n "$*" >&2;;
-        *) if [ -f /bin/echo ]
-            then /bin/echo -n "$*"
-            else echo "$*"
-        fi;;
+    case "$ECHOCMD" in
+        gnu) $(which echo) -en "$*";;
+        builtin) echo -n "$*" >&2;;
     esac
     return 0
 }
@@ -1272,10 +1270,12 @@ declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
 ## echoes the terminal tag code for color: "\ 033[CODEm"
 get_text_format_tag () {
     if [ -n "$1" ]; then
-        if in_array "$USEROS" "${LINUX_OS[@]}"
-            then echo "\033[${1}m"
-            else echo "\033[${1}m"
-        fi
+        case "$USEROS" in
+            Linux|FreeBSD|OpenBSD|SunOS)
+                echo "\033[${1}m";;
+            *)
+                echo "\x1B[${1}m";;
+        esac
         return 0
     fi
     return 1
@@ -1290,7 +1290,7 @@ get_color_code () {
                 then echo "${LIBCOLORS_CODES_BACKGROUND[$(array_search "$1" "${LIBCOLORS[@]}")]}";
                 else echo "${LIBCOLORS_CODES_FOREGROUND[$(array_search "$1" "${LIBCOLORS[@]}")]}";
             fi
-        else return 1;
+            return 0
         fi
     fi
     return 1
@@ -1305,7 +1305,7 @@ get_color_tag () {
                 then get_text_format_tag "${LIBCOLORS_CODES_BACKGROUND[$(array_search "$1" "${LIBCOLORS[@]}")]}";
                 else get_text_format_tag "${LIBCOLORS_CODES_FOREGROUND[$(array_search "$1" "${LIBCOLORS[@]}")]}";
             fi
-        else return 1;
+            return 0;
         fi
     fi
     return 1
@@ -1316,8 +1316,9 @@ get_color_tag () {
 get_text_option_code () {
     if [ -n "$1" ]; then
         if in_array "$1" "${LIBTEXTOPTIONS[@]}"
-            then echo "${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
-            else return 1;
+        then
+            echo "${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
+            return 0;
         fi
     fi
     return 1
@@ -1328,8 +1329,9 @@ get_text_option_code () {
 get_text_option_tag () {
     if [ -n "$1" ]; then
         if in_array "$1" "${LIBTEXTOPTIONS[@]}"
-            then get_text_format_tag "${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
-            else return 1;
+        then
+            get_text_format_tag "${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
+            return 0;
         fi
     fi
     return 1
@@ -1340,8 +1342,9 @@ get_text_option_tag () {
 get_text_option_tag_close () {
     if [ -n "$1" ]; then
         if in_array "$1" "${LIBTEXTOPTIONS[@]}"
-            then get_text_format_tag "2${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
-            else return 1;
+        then
+            get_text_format_tag "2${LIBTEXTOPTIONS_CODES[$(array_search "$1" "${LIBTEXTOPTIONS[@]}")]}";
+            return 0;
         fi
     fi
     return 1
@@ -1374,6 +1377,7 @@ colorize () {
         then echo "$1"
         else echo "${opentag}${1}${closetag}"
     fi
+    return 0
 }
 
 #### parse_color_tags ( "string with <bold>tags</bold>" )
@@ -1428,7 +1432,7 @@ strip_colors () {
     if [ $# -eq 0 ]; then return 0; fi
     transformed=''
     while read -r line; do
-        case ${USEROS} in
+        case "$USEROS" in
             Linux|FreeBSD|OpenBSD|SunOS)
                 stripped_line=$(echo "${line}" | sed -r "s/\x1B\[([0-9]{1,2}(;[0-9]{1,2})?)?[m|K]//g");;
             *)
