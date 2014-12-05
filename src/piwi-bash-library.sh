@@ -59,17 +59,6 @@ declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
 # common colors
 declare -rxa COLOR_VARS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
 
-##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)
-## terminal colors
-declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
-declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
-
-##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden ) (read-only)
-## terminal text options
-declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
-declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
-
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
 ##@ WORKINGDIR = pwd
 declare -x INTERACTIVE=false
@@ -87,6 +76,10 @@ declare -x TEMPDIR=''
 declare -rx USEROS="$(uname)"
 ##@ LINUX_OS = ( Linux FreeBSD OpenBSD SunOS ) (read-only)
 declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
+##@ USERSHELL = "$SHELL" (read-only)
+declare -rx USERSHELL="$SHELL"
+##@ SHELLVERSION = "$BASH_VERSION" (read-only)
+declare -rx SHELLVERSION="$BASH_VERSION"
 
 
 #### SETTINGS #####################################################################
@@ -150,17 +143,9 @@ declare -x COMMON_LONG_OPTIONS_ALLOWED='working-dir:,force,help,interactive,log:
 declare -x COMMON_OPTIONS_ALLOWED_MASK='h|f|i|q|v|x|V'
 declare -x COMMON_LONG_OPTIONS_ALLOWED_MASK='working-dir|force|help|interactive|log|quiet|verbose|version|debug|dry-run|libvers|man|usage'
 
-##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)
-##@ SCRIPT_OPTS=() | SCRIPT_ARGS=() | SCRIPT_PROGRAMS=()
 ##@ OPTIONS_ALLOWED | LONG_OPTIONS_ALLOWED : to be defined by the script
-declare -rx ORIGINAL_SCRIPT_OPTS="$@"
-declare -xa SCRIPT_OPTS=()
-declare -xa SCRIPT_ARGS=()
-declare -xa SCRIPT_PROGRAMS=()
 declare -x OPTIONS_ALLOWED="$COMMON_OPTIONS_ALLOWED"
 declare -x LONG_OPTIONS_ALLOWED="$COMMON_LONG_OPTIONS_ALLOWED"
-declare -xi ARGIND=0
-declare -x ARGUMENT=''
 
 ##@ COMMON_SYNOPSIS COMMON_SYNOPSIS_ACTION COMMON_SYNOPSIS_ERROR COMMON_SYNOPSIS_MANPAGE COMMON_SYNOPSIS_ACTION_MANPAGE COMMON_SYNOPSIS_ERROR_MANPAGE (read-only)
 declare -rx COMMON_SYNOPSIS="${0}  -[common options]  -[script options [=value]]  [--]  [arguments]";
@@ -1271,6 +1256,17 @@ git_change_branch () {
 
 #### COLORIZED CONTENTS #############################################################################
 
+##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)
+## terminal colors
+declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
+declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
+declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
+
+##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden ) (read-only)
+## terminal text options
+declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
+declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
+
 #### get_text_format_tag ( code )
 ##@param code must be one of the library colors or text-options codes
 ## echoes the terminal tag code for color: "\ 033[CODEm"
@@ -1751,6 +1747,23 @@ build_configstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
+##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)   original list of raw command line arguments
+declare -rx ORIGINAL_SCRIPT_OPTS="$@"
+##@ SCRIPT_PARAMS=''    string of re-arranged parameters (options & arguments)
+declare -x SCRIPT_PARAMS=''
+##@ SCRIPT_PIPED_INPUT=''   string of any piped content from previous command
+declare -x SCRIPT_PIPED_INPUT=''
+##@ SCRIPT_OPTS=()  array of options with arguments
+declare -xa SCRIPT_OPTS=()
+##@ SCRIPT_ARGS=()  array of script's arguments
+declare -xa SCRIPT_ARGS=()
+##@ SCRIPT_PROGRAMS=()  array of program's options
+declare -xa SCRIPT_PROGRAMS=()
+##@ ARGIND  integer of current argument index
+declare -xi ARGIND=0
+##@ ARGUMENT    current argument string (see $ARGIND)
+declare -x ARGUMENT=''
+
 #### read_from_pipe ( file=/dev/stdin )
 read_from_pipe () {
     local fpipe="${1:-/dev/stdin}"
@@ -1888,7 +1901,6 @@ get_last_argument () {
 }
 
 #### rearrange_script_options_new ( "$0" , "$@"  )
-declare -x SCRIPT_PARAMS
 rearrange_script_options_new () {
     local progname="$1"
     shift
