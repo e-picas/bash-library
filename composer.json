@@ -13,9 +13,6 @@
         "name": "Pierre Cassat (piwi)",
         "homepage": "http://e-piwi.fr/"
     }],
-    "require-dev": {
-        "piwi/markdown-extended": "dev-master"
-    },
     "support": { "issues": "http://github.com/atelierspierrot/piwi-bash-library/issues" },
     "bin": [ "src/piwi-bash-library.sh", "src/piwi-bash-library.man" ],
     "extra": {
