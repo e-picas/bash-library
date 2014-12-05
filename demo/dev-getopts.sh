@@ -5,12 +5,12 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
+LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
-        "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
+        "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
         0 $(tput cols) "${PADDER}";
     exit 1
 fi
@@ -34,6 +34,39 @@ To test it, use one of the followings:\n\n\
 OPTIONS_ALLOWED="t:u::a${COMMON_OPTIONS_ALLOWED}"
 LONG_OPTIONS_ALLOWED="test1:,test2::,${COMMON_LONG_OPTIONS_ALLOWED}"
 
+# methods override
+simple_usage () {
+    _echo "$(simple_synopsis)"
+    exit 0
+}
+script_long_usage () {
+    local TMP_USAGE="$(parse_color_tags  "<bold>$(script_short_title)</bold>")"
+    if [ -n "$DESCRIPTION_USAGE" ]; then
+        TMP_USAGE+="\n${DESCRIPTION_USAGE}";
+    elif [ -n "$DESCRIPTION" ]; then
+        TMP_USAGE+="\n${DESCRIPTION}";
+    fi
+    local SYNOPSIS_STR="$(get_synopsis_string)"
+    local OPTIONS_STR=''
+    if [ $# -gt 0 ]; then
+        if [ "$1" = 'lib' ]; then
+            OPTIONS_STR="$COMMON_OPTIONS_USAGE"
+        else
+            OPTIONS_STR="$1"
+        fi
+    elif [ -n "$OPTIONS_USAGE" ]; then
+        OPTIONS_STR="$OPTIONS_USAGE"
+    elif [ -n "$OPTIONS" ]; then
+        OPTIONS_STR="$OPTIONS"
+    fi
+    printf "$(parse_color_tags "\n%s\n\n<bold>usage:</bold> %s\n%s\n\n<${COLOR_COMMENT}>%s</${COLOR_COMMENT}>")" \
+        "$(_echo "$TMP_USAGE")" "$(_echo "$SYNOPSIS_STR")" "$(_echo "$OPTIONS_STR")" \
+        "$(library_info)";
+    echo
+    return 0
+}
+
+# let's go
 parse_common_options "$@"
 
 quietecho "_ go"
@@ -53,13 +86,14 @@ longopts_table=( $(get_long_options_array) )
 echo " - long options table is:     ${longopts_table[@]}"
 echo
 
-# parse common options before re-arrangement
+# parse common options BEFORE re-arrangement for eventual errors
 echo "> parsing common options ..."
 parse_common_options_strict "$@"
 echo
 
 # rearrangement of options & arguments using 'getopt'
 rearrange_script_options_new "$0" "$@"
+#rearrange_script_options "$@"
 echo "> re-arranging options & arguments:"
 echo " - SCRIPT_PARAMS are: $SCRIPT_PARAMS"
 echo " - SCRIPT_OPTS are:   ${SCRIPT_OPTS[@]}"
@@ -67,13 +101,13 @@ echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[@]}"
 eval set -- "$SCRIPT_PARAMS"
 echo
 
-# parse common options after re-arrangement
-echo "> parsing common options ..."
-parse_common_options_strict
-echo
-
 # check of new script arguments
 echo "> script's arguments are now: $*"
+echo
+
+# parse common options after re-arrangement
+echo "> parsing common options ..."
+parse_common_options_strict "$@"
 echo
 
 # loop over options
@@ -136,32 +170,15 @@ fi
 echo
 
 # read any piped content via '/dev/stdin'
-read_from_pipe '/dev/stdin'
+#read_from_pipe '/dev/stdin'
+read_from_pipe
 echo "> caught piped content:"
-if [ -n "$SCRIPT_INPUT" ]; then
-    echo " - $SCRIPT_INPUT"
+if [ -n "$SCRIPT_PIPED_INPUT" ]; then
+    echo " - $SCRIPT_PIPED_INPUT"
 else
     echo " - none"
 fi
 echo
-
-#test="$(cat /dev/stdin)"
-#echo "1: $test"
-
-#read test
-#echo "2: $test"
-
-#read_from_pipe() { read PIPED <&0 ; export PIPED; }
-
-#read_from_pipe "$@ $(cat)"
-#echo "3: $PIPED"
-
-#read_from_pipe "$*" <&0
-#echo "4: $PIPED"
-
-#read_from_pipe() { if read -t 0; then cat;fi }
-#echo $(read_from_pipe <&0)
-#echo "$PIPED"
 
 quietecho "_ ok"
 if ! $QUIET; then libdebug "$*"; fi
