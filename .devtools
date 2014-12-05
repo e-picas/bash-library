@@ -3,4 +3,4 @@ DEFAULT_VERSIONTAG_HOOK=pre-tag-hook.sh
 DEFAULT_FIXRIGHTS_BIN_MASK="*.sh"
 DEFAULT_MANPAGE_FILENAME=src/piwi-bash-library.man
 DEFAULT_MD2MAN_FILENAME=src/piwi-bash-library.man
-DEFAULT_MD2MAN_MARKDOWN_BIN=vendor/bin/markdown-extended
+DEFAULT_MD2MAN_MARKDOWN_BIN=modules/markdown-extended/bin/markdown-extended
