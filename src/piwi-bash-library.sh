@@ -1906,10 +1906,23 @@ get_last_argument () {
 
 #### rearrange_script_options_new ( "$0" , "$@"  )
 rearrange_script_options_new () {
+    getopt --test > /dev/null
+    local _vers="$?"
+    if [ -n "$_vers" ] && [ "$_vers" -ne 4 ]; then
+        verecho "> no newest version of 'getopt' found! Processing old 'rearrange_script_options()'"
+        rearrange_script_options "$@"
+        return 0
+    fi
     local progname="$1"
     shift
     local separator=' -- '
+    # use '--alernative' option to allow single dash for long options
     SCRIPT_PARAMS="$(getopt --quiet --shell 'bash' --options "$OPTIONS_ALLOWED" --longoptions "$LONG_OPTIONS_ALLOWED" --name "$progname" -- "$@")"
+    local _ret="$?"
+    case "$_ret" in
+        2) error "an internal 'getopt' error occurred!";;
+        3) error "an internal error occurred while calling 'getopt'!";;
+    esac
     export SCRIPT_PARAMS
     eval set -- "$SCRIPT_PARAMS"
     rearrange_script_options "$@"
@@ -1921,11 +1934,6 @@ rearrange_script_options_new () {
 ## options are loaded in $SCRIPT_OPTS with their arguments
 ## arguments are loaded in $SCRIPT_ARGS
 rearrange_script_options () {
-#    getopt --test > /dev/null
-#    if [ $? -eq 4 ]||[ -z $? ]; then
-#        rearrange_script_options_new "$*"
-#        return 0
-#    fi
     SCRIPT_OPTS=()
     SCRIPT_ARGS=()
     local oldoptind="$OPTIND"
@@ -1935,15 +1943,17 @@ rearrange_script_options () {
     local firstoptdone=false
     local firstchar
     local arg
-#    for i in "${!params[@]}"; do
-#        arg="${params[${i}]}"
-#        firstchar="${arg:0:1}"
-#        if [ "$firstchar" != "-" ]
-#            then SCRIPT_ARGS+=( "$arg" )
-#            elif [ "$firstoptdone" != 'true' ]; then firstoptdone=true;
-#        fi
-#        if [ "$firstoptdone" != 'true' ]; then unset params["$i"]; fi
-#    done
+    if [ -z "$SCRIPT_PARAMS" ]; then
+        for i in "${!params[@]}"; do
+            arg="${params[${i}]}"
+            firstchar="${arg:0:1}"
+            if [ "$firstchar" != "-" ]
+                then SCRIPT_ARGS+=( "$arg" )
+                elif [ "$firstoptdone" != 'true' ]; then firstoptdone=true;
+            fi
+            if [ "$firstoptdone" != 'true' ]; then unset params["$i"]; fi
+        done
+    fi
     OPTIND=1
     local eoo=false
     while getopts ":${OPTIONS_ALLOWED}" OPTION "${params[@]-}"; do
@@ -1955,24 +1965,29 @@ rearrange_script_options () {
                 LONGOPTARG="$(get_long_option_arg "$OPTARG")"
                 optiondef=$(get_long_option_declaration "$LONGOPTNAME")
                 if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+                    if [ -z "$SCRIPT_PARAMS" ]; then
+                        OPTIND=$((OPTIND + 1))
+                    fi
                     LONGOPTARG="${!OPTIND}"
-                    OPTIND=$((OPTIND + 1))
+                    if [ -n "$SCRIPT_PARAMS" ]; then
+                        OPTIND=$((OPTIND + 1))
+                    fi
                 fi
                 case "$LONGOPTNAME" in
-                    -) eoo=true; break;;
-                    *) if [ "$eoo" != 'true' ]; then
-                        if [ ! -z "$LONGOPTARG" ] && [ "$LONGOPTNAME" != "$LONGOPTARG" ]; then
+                    -)  eoo=true;
+                        OPTIND=$((OPTIND + 1))
+                        break;;
+                    *)  if [ ! -z "$LONGOPTARG" ] && [ "$LONGOPTNAME" != "$LONGOPTARG" ]; then
                             SCRIPT_OPTS+=( "--${LONGOPTNAME}='${LONGOPTARG}'" )
                             SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${LONGOPTARG}}" )
                         else
                             SCRIPT_OPTS+=( "--${LONGOPTNAME}" )
-                        fi
-                    fi;;
+                        fi;;
                 esac ;;
             \?)
                 SCRIPT_ARGS+=( "-${OPTION}" )
                 ;;
-            *) if [ "$eoo" != 'true' ]; then
+            *)  if [ "$eoo" != 'true' ]; then
                     if [ ! -z "$OPTARG" ]; then
                         SCRIPT_OPTS+=( "-${OPTION}='${OPTARG}'" )
                         SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${OPTARG}}" )
@@ -1982,13 +1997,30 @@ rearrange_script_options () {
                 fi;;
         esac
     done
+    if [ -z "$SCRIPT_PARAMS" ]; then
+        OPTIND=$((OPTIND + 1))
+    fi
     while [ "$OPTIND" -lt $((numargs + 1)) ]; do
-        SCRIPT_ARGS+=( "${!OPTIND}" )
+        if [ "${!OPTIND}" != '--' ]; then
+            if [ -z "$SCRIPT_PARAMS" ]; then
+                SCRIPT_ARGS=( "${SCRIPT_ARGS[@]//${!OPTIND}}" )
+            fi
+            SCRIPT_ARGS+=( "${!OPTIND}" )
+        fi
         OPTIND=$((OPTIND + 1))
     done
     OPTIND="$oldoptind"
     SCRIPT_ARGS=( $(array_filter "${SCRIPT_ARGS[@]-}") )
-    export OPTIND SCRIPT_OPTS SCRIPT_ARGS
+    if [ -z "$SCRIPT_PARAMS" ]; then
+        if [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -eq 0 ];
+            then SCRIPT_PARAMS="${SCRIPT_OPTS[@]}";
+        elif [ "${#SCRIPT_OPTS[@]}" -eq 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ];
+            then SCRIPT_PARAMS="${SCRIPT_ARGS[@]}";
+        elif [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ];
+            then SCRIPT_PARAMS="${SCRIPT_OPTS[@]} -- ${SCRIPT_ARGS[@]}";
+        fi
+    fi
+    export OPTIND SCRIPT_OPTS SCRIPT_ARGS SCRIPT_PARAMS
     return 0
 }
 
@@ -2103,11 +2135,11 @@ parse_common_options () {
         case "$OPTION" in
         # common options
             h) if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
-            i) export INTERACTIVE=true; export FORCED=false;;
-            v) export VERBOSE=true; export QUIET=false;;
-            f) export FORCED=true;export INTERACTIVE=false;;
-            x) export DEBUG=true;;
-            q) export VERBOSE=false; export QUIET=true;;
+            i) INTERACTIVE=true; FORCED=false;;
+            v) VERBOSE=true; QUIET=false;;
+            f) FORCED=true;INTERACTIVE=false;;
+            x) DEBUG=true;;
+            q) VERBOSE=false; QUIET=true;;
             V) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
             -) LONGOPTARG="$(get_long_option_arg "$OPTARG")"
                 case "$OPTARG" in
@@ -2116,12 +2148,12 @@ parse_common_options () {
                     usage) if [ -z "$actiontodo" ]; then actiontodo='usage'; fi;;
                     man*) if [ -z "$actiontodo" ]; then actiontodo='man'; fi;;
                     version) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
-                    interactive) export INTERACTIVE=true; export FORCED=false;;
-                    verbose) export VERBOSE=true; export QUIET=false;;
-                    force) export FORCED=true; export INTERACTIVE=false;;
-                    debug) export DEBUG=true;;
-                    dry-run) export DRYRUN=true; verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
-                    quiet) export VERBOSE=false; export QUIET=true;;
+                    interactive) INTERACTIVE=true; FORCED=false;;
+                    verbose) VERBOSE=true; QUIET=false;;
+                    force) FORCED=true; INTERACTIVE=false;;
+                    debug) DEBUG=true;;
+                    dry-run) DRYRUN=true; verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
+                    quiet) VERBOSE=false; QUIET=true;;
                     working-dir*) set_working_directory "$LONGOPTARG";;
                     log*) set_log_filename "$LONGOPTARG";;
         # library options
@@ -2130,7 +2162,6 @@ parse_common_options () {
                     *) 
                         if [ -n "$LONGOPTARG" ] && [ "$(which "$OPTARG")" ]; then
                             SCRIPT_PROGRAMS+=( "$OPTARG" )
-                            export SCRIPT_PROGRAMS
                         fi
                         ;;
                 esac ;;
@@ -2138,7 +2169,7 @@ parse_common_options () {
         esac
     done
     OPTIND="$oldoptind"
-    export OPTIND
+    export OPTIND INTERACTIVE FORCED VERBOSE QUIET DEBUG DRYRUN SCRIPT_PROGRAMS
     if [ ! -z "$actiontodo" ]; then
         case "$actiontodo" in
             help) script_long_usage; exit 0;;
