@@ -11,19 +11,24 @@ This document explains how to use the package during development and the things 
     by **Machtelt Garrels**.
 -   [Advanced Bash-Scripting Guide](http://www.tldp.org/LDP/abs/html/abs-guide.html),
     by **Mendel Cooper**.
+-   Usage of bash test-suite: <https://github.com/sstephenson/bats>, by **Sam Stephenson**.
 
 
 ## Dev procedures
 
 To install/update dependencies:
 
-    php composer.phar install
-    php composer.phar update
+    git submodules init
+    git submodule update
+
+To run the test suite:
+
+    ./build/run-tests.sh [test-filename]
 
 To generate the manpage from `MANPAGE.md`:
 
-    chmod a+x vendor/piwi/markdown-extended/bin/markdown-extended
-    php vendor/piwi/markdown-extended/bin/markdown-extended -f man -o src/piwi-bash-library.man MANPAGE.md
+    chmod a+x modules/markdown-extended/bin/markdown-extended
+    php modules/markdown-extended/bin/markdown-extended -f man -o src/piwi-bash-library.man MANPAGE.md
     man src/piwi-bash-library.man
 
 To generate the documentation to `DOCUMENTATION.md`:
@@ -37,6 +42,10 @@ To generate the documentation to `DOCUMENTATION.md`:
 -   write a Tutorial
 -   add a new 'taillog' action
 -   add a '--plain' option for a script-usable output rendering (lists of options for instance)
+
+-   review all usage of synopsis and more largely user strings
+-   review documentation strings and buildings
+-   include the `binstaller` work for internal interface
 
 -   new feature: execute a list of commands (from an array) with the possibility to split
     them one by one and choose which part to execute or not (in the base of the `iexec` method)
