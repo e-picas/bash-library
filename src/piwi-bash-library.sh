@@ -2599,7 +2599,7 @@ ${TOP_STR}\n\
 - %s mode is %s (option '%s')\n\
 - %s mode is %s (option '%s')\n\
 ------------------------------------------------------------------------\n\
- status: %s - pid: %s - user: %s\n\
+ status: %s - pid: %s - user: %s - shell: %s\n\
  %s\n\
 ------------------------------------------------------------------------";
     printf -v TMP_DEBUG "$TMP_DEBUG_MASK" \
@@ -2610,9 +2610,9 @@ ${TOP_STR}\n\
         "$(colorize 'FORCED' bold)" "$(colorize "$(onoff_bit "$FORCED")" bold "$COLOR_INFO")" "-f" \
         "$(colorize 'DEBUG' bold)" "$(colorize "$(onoff_bit "$DEBUG")" bold "$COLOR_INFO")" "-x" \
         "$(colorize 'QUIET' bold)" "$(colorize "$(onoff_bit "$QUIET")" bold "$COLOR_INFO")" "-q" \
-        "$?" "$$" "$(whoami)" "$(get_system_info)";
+        "$?" "$$" "$(whoami)" "${USERSHELL} ${SHELLVERSION}" "$(get_system_info)";
+    TMP_DEBUG+="\n$(parse_color_tags "<${COLOR_COMMENT}>$(library_info)</${COLOR_COMMENT}>")";
     _echo "$TMP_DEBUG"
-    parse_color_tags "<${COLOR_COMMENT}>$(library_info)</${COLOR_COMMENT}>";
     return 0
 }
 
