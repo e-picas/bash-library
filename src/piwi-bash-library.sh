@@ -1771,9 +1771,17 @@ declare -x ARGUMENT=''
 #### read_from_pipe ( file=/dev/stdin )
 read_from_pipe () {
     local fpipe="${1:-/dev/stdin}"
-    SCRIPT_INPUT=''
-    if test -s "$fpipe"; then SCRIPT_INPUT="$(cat "$fpipe")"; fi
-    export SCRIPT_INPUT
+    local fpipedir="$(dirname "$fpipe")"
+    if [ -e "$fpipe" ] && [ -p "$fpipe" ]; then
+#        while [[ -L "$fpipe" ]]; do
+#            fpipe="$(readlink "$fpipe")"
+#            if [ ! -e "$fpipe" ]; then
+#                fpipe="${fpipedir}/${fpipe}"
+#            fi
+#        done
+        SCRIPT_PIPED_INPUT="$(cat "$fpipe")"
+    fi
+    export SCRIPT_PIPED_INPUT
 }
 
 #### get_short_options_array ()
