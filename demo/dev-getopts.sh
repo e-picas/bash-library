@@ -98,7 +98,7 @@ echo "> re-arranging options & arguments:"
 echo " - SCRIPT_PARAMS are: $SCRIPT_PARAMS"
 echo " - SCRIPT_OPTS are:   ${SCRIPT_OPTS[@]}"
 echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[@]}"
-eval set -- "$SCRIPT_PARAMS"
+[ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
 echo
 
 # check of new script arguments
@@ -112,51 +112,56 @@ echo
 
 # loop over options
 echo "> options loop:"
-OPTIND=1
-while getopts ":${OPTIONS_ALLOWED}" OPTION; do
+if [ $# -gt 0 ]
+then
+    OPTIND=1
+    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
 
-    # OPTIND is the current option index
+        # OPTIND is the current option index
 
-    # OPTNAME should be the one letter name of short option
-    OPTNAME="$OPTION"
+        # OPTNAME should be the one letter name of short option
+        OPTNAME="$OPTION"
 
-    # OPTARG should be the optional argument of the option
-    OPTARG="$(get_option_arg "${OPTARG:-}")"
+        # OPTARG should be the optional argument of the option
+        OPTARG="$(get_option_arg "${OPTARG:-}")"
 
-#    echo "> for option index '${OPTIND}' option is '${OPTNAME}' with argument '${OPTARG}'"
-    case "$OPTION" in
+    #    echo "> for option index '${OPTIND}' option is '${OPTNAME}' with argument '${OPTARG}'"
+        case "$OPTION" in
 
-        # case of long options
-        -)
+            # case of long options
+            -)
 
-            # LONGOPTIND should be the same as OPTIND
+                # LONGOPTIND should be the same as OPTIND
 
-            # LONGOPTNAME should be the name of the long option
-            LONGOPTNAME="$(get_long_option "$OPTARG")"
+                # LONGOPTNAME should be the name of the long option
+                LONGOPTNAME="$(get_long_option "$OPTARG")"
 
-            # LONGOPTARG should be the optional argument of the option
-            LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+                # LONGOPTARG should be the optional argument of the option
+                LONGOPTARG="$(get_long_option_arg "$OPTARG")"
 
-            # special load of arg if it is required (no mandatory equal sign)
-            optiondef=$(get_long_option_declaration "$LONGOPTNAME")
-#            if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
-            if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
-                LONGOPTARG="${!OPTIND}"
-                OPTIND=$((OPTIND + 1))
-            fi
+                # special load of arg if it is required (no mandatory equal sign)
+                optiondef=$(get_long_option_declaration "$LONGOPTNAME")
+    #            if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
+                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+                    LONGOPTARG="${!OPTIND}"
+                    OPTIND=$((OPTIND + 1))
+                fi
 
-            case "$LONGOPTION" in
-                *) echo " - [${OPTIND}] long option '${LONGOPTNAME}' with arg '${LONGOPTARG}'";;
-                \?) echo " - [${OPTIND}] unknown long option '${LONGOPTNAME}'";;
-            esac
-            ;;
+                case "$LONGOPTION" in
+                    *) echo " - [${OPTIND}] long option '${LONGOPTNAME}' with arg '${LONGOPTARG}'";;
+                    \?) echo " - [${OPTIND}] unknown long option '${LONGOPTNAME}'";;
+                esac
+                ;;
 
-        # case of short options
-        *) echo " - [${OPTIND}] option '$OPTION' with arg '$OPTARG'";;
-        \?) echo " - [${OPTIND}] unknown option '$OPTION'";;
+            # case of short options
+            *) echo " - [${OPTIND}] option '$OPTION' with arg '$OPTARG'";;
+            \?) echo " - [${OPTIND}] unknown option '$OPTION'";;
 
-    esac
-done
+        esac
+    done
+else
+    echo " - none"
+fi
 echo
 
 # loop over arguments
@@ -166,6 +171,8 @@ if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
         get_next_argument
         echo " - [${ARGIND}] argument is '$ARGUMENT'"
     done
+else
+    echo " - none"
 fi
 echo
 
