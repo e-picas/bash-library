@@ -987,7 +987,7 @@ get_version_string () {
         if [ ! -z "$_infile" ]
         then echo "$_infile"
         elif [ "$SCRIPT_VCS" = 'git' ]; then
-            if git_is_clone; then
+            if git_is_clone 2>/dev/null; then
                 git_get_version
             fi
         fi
@@ -2548,7 +2548,7 @@ library_short_version () {
     local TMP_VERS="${LIB_NAME} ${LIB_VERSION}"
     local LIB_MODULE="$(dirname "$LIBRARY_REALPATH")/.."
     local _done=false
-    if git_is_clone "$LIB_MODULE" "$LIB_SOURCES_URL"; then
+    if git_is_clone "$LIB_MODULE" "$LIB_SOURCES_URL" 2>/dev/null; then
         add="$(git_get_version)"
         if [ -n "$add" ]; then
             _done=true
