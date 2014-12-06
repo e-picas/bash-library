@@ -1796,21 +1796,16 @@ get_short_options_array () {
         if [ "$i" = ':' ] && [ -n "$b" ]; then
             b="${b}${i}"
         elif [ "$i" != '-' ]; then
-            if [ -n "$b" ]; then
-                short_options+=( "$b" )
-            fi
+            [ -n "$b" ] && short_options+=( "$b" );
             b="$i"
         else
-            if [ -n "$b" ]; then
-                short_options+=( "$b" )
-            fi
+            [ -n "$b" ] && short_options+=( "$b" );
             b=''
         fi
     done
-    if [ -n "$b" ]; then
-        short_options+=( "$b" )
-    fi
+    [ -n "$b" ] && short_options+=( "$b" );
     echo "${short_options[@]}"
+    return 0
 }
 
 #### get_short_options_string ( delimiter = '|' )
@@ -1818,7 +1813,29 @@ get_short_options_string () {
     local delimiter="${1:-|}"
     local -a short_options=( $(get_short_options_array) )
     implode short_options[@] "${delimiter}"
+    return 0
 }
+
+#### get_option_declaration ( option_name )
+get_option_declaration () {
+    local _optname="$1"
+    local -a opts_table=( $(get_options_array) )
+    local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
+    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
+    echo "${opts_table[${optiondef_ind}]}"
+    return 0
+}
+
+#### get_option_argument ( "$x" )
+## echoes the argument of an option
+get_option_argument () {
+    if [ -n "$1" ]; then echo "${1#=}"; fi; return 0;
+}
+
+#### / get_option_arg ( "$x" )
+## alias of 'get_option_argument'
+get_option_arg () { get_option_argument "$*"; return $?; }
 
 #### get_long_options_array ()
 get_long_options_array () {
@@ -1839,16 +1856,10 @@ get_long_options_string () {
     return 0
 }
 
-#### get_option_arg ( "$x" )
-## echoes the argument of an option
-get_option_arg () {
-    if [ -n "$1" ]; then echo "${1#=}"; fi; return 0;
-}
-
-#### get_option_declaration ( option_name )
-get_option_declaration () {
+#### get_long_option_declaration ( option_name )
+get_long_option_declaration () {
     local _optname="$1"
-    local -a opts_table=( $(get_options_array) )
+    local -a opts_table=( $(get_long_options_array) )
     local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
@@ -1856,9 +1867,9 @@ get_option_declaration () {
     return 0
 }
 
-#### get_long_option ( "$x" )
+#### get_long_option_name ( "$x" )
 ## echoes the name of a long option
-get_long_option () {
+get_long_option_name () {
     local arg="$1"
     if [ -n "$arg" ]; then
         if [[ "$arg" =~ .*=.* ]]; then arg="${arg%=*}"; fi
@@ -1868,9 +1879,13 @@ get_long_option () {
     return 1
 }
 
-#### get_long_option_arg ( "$x" )
+#### / get_long_option ( "$x" )
+## alias of 'get_long_option_name()'
+get_long_option () { get_long_option_name "$*"; return $?; }
+
+#### get_long_option_argument ( "$x" )
 ## echoes the argument of a long option
-get_long_option_arg () {
+get_long_option_argument () {
     local arg=''
     local argstr="$1"
     if [ -n "$argstr" ]; then
@@ -1882,14 +1897,30 @@ get_long_option_arg () {
     return 1
 }
 
-#### get_long_option_declaration ( option_name )
-get_long_option_declaration () {
-    local _optname="$1"
-    local -a opts_table=( $(get_long_options_array) )
-    local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
-    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
-    [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
-    echo "${opts_table[${optiondef_ind}]}"
+#### / get_long_option_arg ( "$x" )
+## alias of 'get_long_option_argument'
+get_long_option_arg () { get_long_option_argument "$*"; return $?; }
+
+##@ LONGOPTNAME=''  : the name of current long option treated
+declare -x LONGOPTNAME=''
+##@ LONGOPTARG=''   : the argument set for current long option
+declare -x LONGOPTARG=''
+
+#### parse_long_option ( $OPTARG , ${!OPTIND} )
+## This will parse and retrieve the name and argument of current long option.
+parse_long_option () {
+    [ $# -eq 0 ] && return 1;
+    local _optarg="$1"
+    local _nextarg="${2:-}"
+    LONGOPTNAME="$(get_long_option "$_optarg")"
+    LONGOPTARG="$(get_long_option_arg "$_optarg")"
+    local optiondef="$(get_long_option_declaration "$LONGOPTNAME")"
+#    if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
+    if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+        LONGOPTARG="$_nextarg"
+        ((OPTIND++))
+    fi
+    export LONGOPTNAME LONGOPTARG OPTIND
     return 0
 }
 
@@ -1982,16 +2013,16 @@ rearrange_script_options () {
                 optiondef=$(get_long_option_declaration "$LONGOPTNAME")
                 if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
                     if [ -z "$SCRIPT_PARAMS" ]; then
-                        OPTIND=$((OPTIND + 1))
+                        ((OPTIND++))
                     fi
                     LONGOPTARG="${!OPTIND}"
                     if [ -n "$SCRIPT_PARAMS" ]; then
-                        OPTIND=$((OPTIND + 1))
+                        ((OPTIND++))
                     fi
                 fi
                 case "$LONGOPTNAME" in
                     -)  eoo=true;
-                        OPTIND=$((OPTIND + 1))
+                        ((OPTIND++))
                         break;;
                     *)  if [ ! -z "$LONGOPTARG" ] && [ "$LONGOPTNAME" != "$LONGOPTARG" ]; then
                             SCRIPT_OPTS+=( "--${LONGOPTNAME}='${LONGOPTARG}'" )
@@ -2014,7 +2045,7 @@ rearrange_script_options () {
         esac
     done
     if [ -z "$SCRIPT_PARAMS" ]; then
-        OPTIND=$((OPTIND + 1))
+        ((OPTIND++))
     fi
     while [ "$OPTIND" -lt $((numargs + 1)) ]; do
         if [ "${!OPTIND}" != '--' ]; then
@@ -2023,7 +2054,7 @@ rearrange_script_options () {
             fi
             SCRIPT_ARGS+=( "${!OPTIND}" )
         fi
-        OPTIND=$((OPTIND + 1))
+        ((OPTIND++))
     done
     OPTIND="$oldoptind"
     SCRIPT_ARGS=( $(array_filter "${SCRIPT_ARGS[@]-}") )
@@ -2112,10 +2143,11 @@ parse_common_options_strict () {
         else
             argreq=false
         fi
-        OPTIND=$((OPTIND + 1))
+        ((OPTIND++))
     done
     if [ "${#SCRIPT_OPTS_ERRS[@]}" -gt 0 ]; then
         simple_error_multi SCRIPT_OPTS_ERRS[@] "$E_OPTS"
+        return 1
     fi
 
 #    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
