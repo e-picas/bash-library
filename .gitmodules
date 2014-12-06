@@ -4,3 +4,6 @@
 [submodule "modules/bats"]
 	path = modules/bats
 	url = https://github.com/sstephenson/bats.git
+[submodule "modules/wiki"]
+	path = modules/wiki
+	url = https://github.com/atelierspierrot/piwi-bash-library.wiki.git

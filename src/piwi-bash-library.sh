@@ -35,29 +35,29 @@
 #### ENVIRONMENT #############################################################################
 
 ##@ SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)
-declare -rxa SCRIPT_VARS=(NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS)
+declare -rxa SCRIPT_VARS="(NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS)" 2>/dev/null;
 
 ##@ USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)
 ##@ USAGE_SUFFIX = "_USAGE"
-declare -rxa USAGE_VARS=(NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE)
-declare -rx USAGE_SUFFIX="_USAGE"
+declare -rxa USAGE_VARS="(NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE)" 2>/dev/null;
+declare -rx USAGE_SUFFIX="_USAGE" 2>/dev/null;
 
 ##@ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO ) (read-only)
 # see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
-declare -rxa VERSION_VARS=(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO)
+declare -rxa VERSION_VARS="(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO)" 2>/dev/null;
 
 ##@ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
 ##@ MANPAGE_SUFFIX = "_MANPAGE"
 # see http://en.wikipedia.org/wiki/Man_page
-declare -rxa MANPAGE_VARS=(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)
-declare -rx MANPAGE_SUFFIX="_MANPAGE"
+declare -rxa MANPAGE_VARS="(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)" 2>/dev/null;
+declare -rx MANPAGE_SUFFIX="_MANPAGE" 2>/dev/null;
 
 ##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED ) (read-only)
-declare -rxa LIB_FLAGS=(VERBOSE QUIET DEBUG INTERACTIVE FORCED)
+declare -rxa LIB_FLAGS="(VERBOSE QUIET DEBUG INTERACTIVE FORCED)" 2>/dev/null;
 
 ##@ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT ) (read-only)
 # common colors
-declare -rxa COLOR_VARS=(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)
+declare -rxa COLOR_VARS="(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)" 2>/dev/null;
 
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
 ##@ WORKINGDIR = pwd
@@ -73,13 +73,13 @@ declare -x LOGFILEPATH=''
 declare -x TEMPDIR=''
 
 ##@ USEROS = "$(uname)" (read-only)
-declare -rx USEROS="$(uname)"
+declare -rx USEROS="$(uname)" 2>/dev/null;
 ##@ LINUX_OS = ( Linux FreeBSD OpenBSD SunOS ) (read-only)
-declare -rxa LINUX_OS=(Linux FreeBSD OpenBSD SunOS)
+declare -rxa LINUX_OS="(Linux FreeBSD OpenBSD SunOS)" 2>/dev/null;
 ##@ USERSHELL = "$SHELL" (read-only)
-declare -rx USERSHELL="$SHELL"
+declare -rx USERSHELL="$SHELL" 2>/dev/null;
 ##@ SHELLVERSION = "$BASH_VERSION" (read-only)
-declare -rx SHELLVERSION="$BASH_VERSION"
+declare -rx SHELLVERSION="$BASH_VERSION" 2>/dev/null;
 
 
 #### SETTINGS #####################################################################
@@ -116,19 +116,19 @@ case "$USEROS" in
 esac
 
 ##@ LIB_FILENAME_DEFAULT = "piwi-bash-library" (read-only)
-declare -rx LIB_FILENAME_DEFAULT='piwi-bash-library'
+declare -rx LIB_FILENAME_DEFAULT='piwi-bash-library' 2>/dev/null;
 ##@ LIB_NAME_DEFAULT = "piwibashlib" (read-only)
-declare -rx LIB_NAME_DEFAULT='piwibashlib'
+declare -rx LIB_NAME_DEFAULT='piwibashlib' 2>/dev/null;
 ##@ LIB_LOGFILE = "piwibashlib.log" (read-only)
-declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log"
+declare -rx LIB_LOGFILE="${LIB_NAME_DEFAULT}.log" 2>/dev/null;
 ##@ LIB_TEMPDIR = "tmp" (read-only)
-declare -rx LIB_TEMPDIR='tmp'
+declare -rx LIB_TEMPDIR='tmp' 2>/dev/null;
 ##@ LIB_SYSHOMEDIR = "${HOME}/.piwi-bash-library/" (read-only)
-declare -rx LIB_SYSHOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}"
+declare -rx LIB_SYSHOMEDIR="${HOME}/.${LIB_FILENAME_DEFAULT}" 2>/dev/null;
 ##@ LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/" (read-only)
-declare -rx LIB_SYSCACHEDIR="${LIB_SYSHOMEDIR}/cache"
+declare -rx LIB_SYSCACHEDIR="${LIB_SYSHOMEDIR}/cache" 2>/dev/null;
 
-declare -rx VCS_VERSION_MASK='@vcsversion@'
+declare -rx VCS_VERSION_MASK='@vcsversion@' 2>/dev/null;
 declare -x TEST_VAR='test'
 
 
@@ -148,18 +148,18 @@ declare -x OPTIONS_ALLOWED="$COMMON_OPTIONS_ALLOWED"
 declare -x LONG_OPTIONS_ALLOWED="$COMMON_LONG_OPTIONS_ALLOWED"
 
 ##@ COMMON_SYNOPSIS COMMON_SYNOPSIS_ACTION COMMON_SYNOPSIS_ERROR COMMON_SYNOPSIS_MANPAGE COMMON_SYNOPSIS_ACTION_MANPAGE COMMON_SYNOPSIS_ERROR_MANPAGE (read-only)
-declare -rx COMMON_SYNOPSIS="${0}  -[common options]  -[script options [=value]]  [--]  [arguments]";
-declare -rx COMMON_SYNOPSIS_ACTION="${0}  -[common options]  -[script options [=value]]  [--]  <action>";
-declare -rx COMMON_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>";
-declare -rx COMMON_SYNOPSIS_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>arguments</underline>]";
-declare -rx COMMON_SYNOPSIS_ACTION_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]";
-declare -rx COMMON_SYNOPSIS_ERROR_MANPAGE="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>";
+declare -rx COMMON_SYNOPSIS="${0}  -[common options]  -[script options [=value]]  [--]  [arguments]" 2>/dev/null;
+declare -rx COMMON_SYNOPSIS_ACTION="${0}  -[common options]  -[script options [=value]]  [--]  <action>" 2>/dev/null;
+declare -rx COMMON_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>" 2>/dev/null;
+declare -rx COMMON_SYNOPSIS_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>arguments</underline>]" 2>/dev/null;
+declare -rx COMMON_SYNOPSIS_ACTION_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]" 2>/dev/null;
+declare -rx COMMON_SYNOPSIS_ERROR_MANPAGE="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>" 2>/dev/null;
 
 ##@ OPTIONS_ADDITIONAL_INFOS_MANPAGE : information string about command line options how-to (read-only)
 declare -rx OPTIONS_ADDITIONAL_INFOS_MANPAGE="\tYou can group short options like '<bold>-xc</bold>', \
 set an option argument like '<bold>-d(=)value</bold>' \n\
 \tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
-to explicitly specify the end of the script options.";
+to explicitly specify the end of the script options." 2>/dev/null;
 
 ##@ COMMON_OPTIONS_MANPAGE : information string about common script options (read-only)
 declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this information message \n\
@@ -174,7 +174,7 @@ declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this info
 \t<bold>--usage</bold>\t\t\t\tshow quick usage information \n\
 \t<bold>--man</bold>\t\t\t\tsee the current script manpage if available \n\
 \t<bold>--dry-run</bold>\t\t\tsee commands to run but not run them actually \n\
-\t<bold>--libvers</bold>\t\t\tsee the library version";
+\t<bold>--libvers</bold>\t\t\tsee the library version" 2>/dev/null;
 
 ##@ COMMON_OPTIONS_USAGE: raw information string about common script options (read-only)
 declare -rx COMMON_OPTIONS_USAGE="\n\
@@ -192,43 +192,43 @@ declare -rx COMMON_OPTIONS_USAGE="\n\
 \t--usage\t\t\tshow quick usage information \n\
 \t--man\t\t\tsee the current script manpage if available \n\
 \t\t\t\ta 'manpage-like' output will be guessed otherwise\n\
-\t--libvers\t\tsee the library version";
+\t--libvers\t\tsee the library version" 2>/dev/null;
 
 ##@ COMMON_OPTIONS_FULLINFO_MANPAGE : concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
-declare -rx COMMON_OPTIONS_FULLINFO_MANPAGE="${COMMON_OPTIONS_MANPAGE}\n\n${OPTIONS_ADDITIONAL_INFOS_MANPAGE}";
+declare -rx COMMON_OPTIONS_FULLINFO_MANPAGE="${COMMON_OPTIONS_MANPAGE}\n\n${OPTIONS_ADDITIONAL_INFOS_MANPAGE}" 2>/dev/null;
 
 
 #### LOREM IPSUM #############################################################################
 
 ##@ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE (read-only)
-declare -rx LOREMIPSUM="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat."
-declare -rx LOREMIPSUM_SHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum."
+declare -rx LOREMIPSUM="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat." 2>/dev/null;
+declare -rx LOREMIPSUM_SHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 2>/dev/null;
 declare -rx LOREMIPSUM_MULTILINE="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi. \n\
 Sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. \n\
 Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus \n\
 autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, \n\
-ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat.";
+ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat." 2>/dev/null;
 
 
 #### LIBRARY SETUP #######################################################################
 
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION
 ##@ LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL
-declare -rx LIB_NAME="Piwi Bash library"
-declare -rx LIB_VERSION="2.0.4"
-declare -rx LIB_DATE="2014-11-21"
-declare -rx LIB_VCSVERSION="master@3473ae5dceb5c25a59e95ce60490290a56962912"
-declare -rx LIB_DESCRIPTION="An open source day-to-day bash library"
-declare -rx LIB_LICENSE_TYPE="GPL-3.0"
-declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html"
-declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>"
-declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library"
-declare -rx LIB_SCRIPT_VCS='git'
-declare -rx LIB_SOURCES_URL="https://github.com/atelierspierrot/piwi-bash-library"
+declare -rx LIB_NAME="Piwi Bash library" 2>/dev/null;
+declare -rx LIB_VERSION="2.0.4" 2>/dev/null;
+declare -rx LIB_DATE="2014-11-21" 2>/dev/null;
+declare -rx LIB_VCSVERSION="master@3473ae5dceb5c25a59e95ce60490290a56962912" 2>/dev/null;
+declare -rx LIB_DESCRIPTION="An open source day-to-day bash library" 2>/dev/null;
+declare -rx LIB_LICENSE_TYPE="GPL-3.0" 2>/dev/null;
+declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html" 2>/dev/null;
+declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>" 2>/dev/null;
+declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library" 2>/dev/null;
+declare -rx LIB_SCRIPT_VCS='git' 2>/dev/null;
+declare -rx LIB_SOURCES_URL="https://github.com/atelierspierrot/piwi-bash-library" 2>/dev/null;
 
-declare -rx LIB_LICENSE="License ${LIB_LICENSE_TYPE}: <${LIB_LICENSE_URL}>"
-declare -rx LIB_SOURCES="Sources & updates: <${LIB_SOURCES_URL}>"
-declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law.";
+declare -rx LIB_LICENSE="License ${LIB_LICENSE_TYPE}: <${LIB_LICENSE_URL}>" 2>/dev/null;
+declare -rx LIB_SOURCES="Sources & updates: <${LIB_SOURCES_URL}>" 2>/dev/null;
+declare -rx LIB_ADDITIONAL_INFO="This is free software: you are free to change and redistribute it ; there is NO WARRANTY, to the extent permitted by law." 2>/dev/null;
 
 declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_NAME}</bold>, \"${LIB_DESCRIPTION}\". \n\
 \t${LIB_COPYRIGHT} - Some rights reserved. \n\
@@ -236,7 +236,7 @@ declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_
 \t${LIB_LICENSE}.\n\
 \t${LIB_SOURCES}.\n\
 \tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
-\t${LIB_ADDITIONAL_INFO}";
+\t${LIB_ADDITIONAL_INFO}" 2>/dev/null;
 
 
 #### SYSTEM #############################################################################
@@ -530,15 +530,15 @@ onoff_bit () {
 ##@ ECHOCMD (read-only)
 # test if 'echo' is shell builtin or program
 if [ "$($(which echo) --version)" = '--version' ]
-then ECHOCMD='builtin'
-else ECHOCMD='gnu'
+then declare -rx ECHOCMD='builtin' 2>/dev/null;
+else declare -rx ECHOCMD='gnu' 2>/dev/null;
 fi
-declare -rx ECHOCMD
 
 #### _echo ( string )
 ## echoes the string with the true 'echo -e' command
 ## use this for colorization
-_echo () {
+##! the 'function' keyword seems mandatory here when sourcing the library
+function _echo () {
 #    tput sgr0
     case "$ECHOCMD" in
         gnu) $(which echo) -e "$*";;
@@ -964,7 +964,7 @@ path_simple_error () {
 
 #### VCS #############################################################################
 
-declare -rxa VCS_VARS=(VCSVERSION SCRIPT_VCS)
+declare -rxa VCS_VARS="(VCSVERSION SCRIPT_VCS)" 2>/dev/null;
 
 ##@ VCSVERSION : variable used as version marker like `branch@commit_sha`
 
@@ -1256,14 +1256,14 @@ git_change_branch () {
 
 ##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)
 ## terminal colors
-declare -rxa LIBCOLORS=(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)
-declare -rxa LIBCOLORS_CODES_FOREGROUND=(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)
-declare -rxa LIBCOLORS_CODES_BACKGROUND=(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)
+declare -rxa LIBCOLORS="(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)" 2>/dev/null;
+declare -rxa LIBCOLORS_CODES_FOREGROUND="(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)" 2>/dev/null;
+declare -rxa LIBCOLORS_CODES_BACKGROUND="(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)" 2>/dev/null;
 
 ##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden ) (read-only)
 ## terminal text options
-declare -rxa LIBTEXTOPTIONS=(normal bold small underline blink reverse hidden)
-declare -rxa LIBTEXTOPTIONS_CODES=(0 1 2 4 5 7 8)
+declare -rxa LIBTEXTOPTIONS="(normal bold small underline blink reverse hidden)" 2>/dev/null;
+declare -rxa LIBTEXTOPTIONS_CODES="(0 1 2 4 5 7 8)" 2>/dev/null;
 
 #### get_text_format_tag ( code )
 ##@param code must be one of the library colors or text-options codes
@@ -1752,7 +1752,7 @@ build_configstring () {
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
 ##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)   original list of raw command line arguments
-declare -rx ORIGINAL_SCRIPT_OPTS="$@"
+declare -rx ORIGINAL_SCRIPT_OPTS="$@" 2>/dev/null;
 ##@ SCRIPT_PARAMS=''    string of re-arranged parameters (options & arguments)
 declare -x SCRIPT_PARAMS=''
 ##@ SCRIPT_PIPED_INPUT=''   string of any piped content from previous command
@@ -2060,11 +2060,11 @@ rearrange_script_options () {
     SCRIPT_ARGS=( $(array_filter "${SCRIPT_ARGS[@]-}") )
     if [ -z "$SCRIPT_PARAMS" ]; then
         if [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -eq 0 ];
-            then SCRIPT_PARAMS="${SCRIPT_OPTS[@]}";
+            then SCRIPT_PARAMS="${SCRIPT_OPTS[*]}";
         elif [ "${#SCRIPT_OPTS[@]}" -eq 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ];
-            then SCRIPT_PARAMS="${SCRIPT_ARGS[@]}";
+            then SCRIPT_PARAMS="${SCRIPT_ARGS[*]}";
         elif [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ];
-            then SCRIPT_PARAMS="${SCRIPT_OPTS[@]} -- ${SCRIPT_ARGS[@]}";
+            then SCRIPT_PARAMS="${SCRIPT_OPTS[*]} -- ${SCRIPT_ARGS[*]}";
         fi
     fi
     export OPTIND SCRIPT_OPTS SCRIPT_ARGS SCRIPT_PARAMS
@@ -2703,10 +2703,10 @@ libdebug () {
 #### LIBRARY INTERNALS ###################################################################
 
 ##@ LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE
-declare -rx LIBRARY_REALPATH="$(realpath "${BASH_SOURCE[0]}")"
-declare -rx LIBRARY_DIR="$(dirname "$LIBRARY_REALPATH")"
-declare -rx LIBRARY_BASEDIR="$(dirname "$LIBRARY_DIR")"
-declare -rx LIBRARY_SOURCEFILE="$(basename "$LIBRARY_REALPATH")"
+declare -rx LIBRARY_REALPATH="$(realpath "${BASH_SOURCE[0]}")" 2>/dev/null;
+declare -rx LIBRARY_DIR="$(dirname "$LIBRARY_REALPATH")" 2>/dev/null;
+declare -rx LIBRARY_BASEDIR="$(dirname "$LIBRARY_DIR")" 2>/dev/null;
+declare -rx LIBRARY_SOURCEFILE="$(basename "$LIBRARY_REALPATH")" 2>/dev/null;
 
 #### make_library_homedir ()
 ## make dir '$HOME/.piwi-bash-library' if it doesn't exist
@@ -2735,7 +2735,7 @@ clean_library_cachedir () {
 ##! All internal installation constants are prefixed with 'LIBINST_'
 
 ##@ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
-declare -rxa INSTALLATION_VARS=(SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF)
+declare -rxa INSTALLATION_VARS="(SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF)" 2>/dev/null;
 
 ##@ SCRIPT_REPOSITORY_URL = url of your distant repository
 declare -x SCRIPT_REPOSITORY_URL=''
@@ -2908,6 +2908,7 @@ script_uninstall () {
 
 # this MUST only be parsed when calling the lib directly
 # any method of the internal api is prefixed by `intlib_`
+#if [ "$_" != "$0" ] || [ "$(basename "$0")" != "$(basename "${BASH_SOURCE[0]}")" ]; then return 0; fi
 if [ "$(basename "$0")" != "$(basename "${BASH_SOURCE[0]}")" ]; then return 0; fi
 #echo "BASH LIBRARY !!!"
 
@@ -2919,14 +2920,14 @@ declare -x INTLIB_PRESET='default'
 declare -x INTLIB_BRANCH='master'
 declare -x INTLIB_TARGET
 declare -x INTLIB_RELEASE
-declare -rx INTLIB_RELEASE_MASK="%s.tar.gz"
-declare -rx INTLIB_RELEASE_MASK_URL="${LIB_SOURCES_URL}/archive/%s"
+declare -rx INTLIB_RELEASE_MASK="%s.tar.gz" 2>/dev/null;
+declare -rx INTLIB_RELEASE_MASK_URL="${LIB_SOURCES_URL}/archive/%s" 2>/dev/null;
 # days to make automatic version check
 declare -x INTLIB_OUTDATED_CHECK=30
 # days to force user update (message is always shown)
 declare -x INTLIB_OUTDATED_FORCE=90
-declare -rxa INTLIB_PRESET_ALLOWED=( default dev user full )
-declare -rxa INTLIB_ACTION_ALLOWED=( install uninstall check update version help usage documentation mddocumentation clean )
+declare -rxa INTLIB_PRESET_ALLOWED="( default dev user full )" 2>/dev/null;
+declare -rxa INTLIB_ACTION_ALLOWED="( install uninstall check update version help usage documentation mddocumentation clean continue )" 2>/dev/null;
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
@@ -3152,10 +3153,9 @@ intlib_check_uptodate () {
 intlib_check_uptodate
 
 # parsing options
-rearrange_script_options "$@"
-[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
-[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
-[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
+#rearrange_script_options "$@"
+rearrange_script_options_new "$0" "$@"
+[ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
 parse_common_options_strict
 OPTIND=1
 while getopts ":${OPTIONS_ALLOWED}" OPTION; do
