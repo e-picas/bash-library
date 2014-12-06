@@ -827,6 +827,42 @@ get_stack_trace () {
     return 0
 }
 
+#### get_synopsis_string ()
+## builds a synopsis string using script's declared available options
+get_synopsis_string () {
+    local -a short_options=( $(get_short_options_array) )
+    local -a long_options=( $(get_long_options_array) )
+    local short_options_string=''
+    local long_options_string=''
+    local i=1
+    for o in "${short_options[@]}"; do
+        short_options_string+="${o//:/}"
+        if [ "$i" -lt "${#short_options[@]}" ]; then
+            short_options_string+='|'
+        fi
+        i=$((i + 1))
+    done
+    i=1
+    for o in "${long_options[@]}"; do
+        long_options_string+="${o//:/}"
+        if [ "$i" -lt "${#long_options[@]}" ]; then
+            long_options_string+='|'
+        fi
+        i=$((i + 1))
+    done
+    synopsis="${0}  [-${short_options_string}]\n\t[--${long_options_string}]\n\t[--]  <arguments>";
+    echo "$synopsis"
+    return 0
+}
+
+#### simple_synopsis ()
+## writes a synopsis string using script's declared available options
+simple_synopsis () {
+    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$(get_synopsis_string)";
+    echo
+    return 0
+}
+
 #### simple_usage ( synopsis = SYNOPSIS_ERROR )
 ## writes a synopsis usage info
 simple_usage () {
