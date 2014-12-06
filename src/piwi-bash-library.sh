@@ -2051,9 +2051,12 @@ rearrange_script_options () {
                     if [ -z "$SCRIPT_PARAMS" ]; then
                         ((OPTIND++))
                     fi
-                    LONGOPTARG="${!OPTIND}"
-                    if [ -n "$SCRIPT_PARAMS" ]; then
-                        ((OPTIND++))
+                    if [ "${!OPTIND:0:1}" != '-' ]
+                    then
+                        LONGOPTARG="${!OPTIND}"
+                        if [ -n "$SCRIPT_PARAMS" ]; then
+                            ((OPTIND++))
+                        fi
                     fi
                 fi
                 case "$LONGOPTNAME" in
