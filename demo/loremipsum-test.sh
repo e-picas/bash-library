@@ -2,13 +2,13 @@
 # global test
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
+if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
-        "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "${PADDER}";
+        "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -30,25 +30,25 @@ for ((i=0; i<$_MAX; i++)); do
 done
 
 if [ "${#SCRIPT_PROGRAMS[@]}" -gt 0 ]; then
-    echo "- program(s) requested: '${SCRIPT_PROGRAMS[@]}'"
+    _echo "- program(s) requested: '${SCRIPT_PROGRAMS[@]}'"
 fi
 
 if $(in_array "less" "${SCRIPT_PROGRAMS[@]}"); then
     verecho "- loading test str in '$_TMPFILE'"
-    echo "$_TESTSTR" > "$_TMPFILE"
+    _echo "$_TESTSTR" > "$_TMPFILE"
     verecho "- opening it with 'less -cfre~'"
     cat "$_TMPFILE" | less -cfre~
 elif $(in_array "more" "${SCRIPT_PROGRAMS[@]}"); then
     verecho "- loading test str in '$_TMPFILE'"
-    echo "$_TESTSTR" > "$_TMPFILE"
+    _echo "$_TESTSTR" > "$_TMPFILE"
     verecho "- opening it with 'more -cf'"
     cat "$_TMPFILE" | more -cf
 else
-    echo "$_TESTSTR"
+    _echo "$_TESTSTR"
 fi
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

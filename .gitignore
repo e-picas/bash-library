@@ -1,27 +1,8 @@
-### OS & software files
-.DS_Store
-.AppleDouble
-.LSOverride
-.Spotlight-V100
-.Trashes
-Icon
-._*
-*~
-*~lock*
-Thumbs.db
-ehthumbs.db
-Desktop.ini
+### Repo ignored
 
-# IDE files
-# to be commented to include them in a project
-.project
-.buildpath
-.idea/*
-
-### Les Ateliers specifics
-
-# the composer lock file
+# the composer stuff
 composer.lock
+vendor/*
 
 # any "tmp*" file or dir anywhere
 *tmp*
@@ -30,12 +11,16 @@ composer.lock
 user/*
 */user/*
 
-# the external packages installed by Composer, Template Engine or others
-vendor/*
-*/vendor/*
-
 # specific to the "wip" branch
 build/*
+modules/*
+tests/*
+ROADMAP.md
+.gitmodules
+.devtools
+pre-tag-hook.sh
+
+# specific to the "wip" branch for dev
 dev/*
 
 # specific for the piwi-bash-lib

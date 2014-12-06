@@ -1,15 +1,30 @@
 # ChangeLog
 
-## 2.0.4 (current dev)
+## 2.1.0 (current dev)
+
+## 2.1.0-alpha (current master)
+
+!! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
+
+- 'piwi/markdown-extended' is now a GIT submodule
+- new 'sstephenson/bats' submodule for unit-testing
+- new test suite with BATS in 'tests/'
+- removing all 'doc/' contents: the documentation is now handle by the wiki on the repository at
+    <http://github.com/atelierspierrot/piwi-bash-library/wiki>
+- new internal builders in 'build/'
+- large review of the options & arguments treatments: we now try to use the 'getopt' first to re-arrange
+    everything, then the classic 'getopts'
+- the whole library has been verified with <http://www.shellcheck.net/>
+- new stack trace method
+
+## 2.0.4
 
 - moving test scripts from 'bin/' to 'demo/'
 - all scripts now use shebang `/usr/bin/env bash`
 - new 'evaluate()' method and derivatives to replace internal 'eval()' catching all events
 - new 'eval.sh' demo script for the 'evaluate()' method
-- removing all 'doc/' contents: the documentation is now handle by the wiki or the repository at
-    <http://github.com/atelierspierrot/piwi-bash-library/wiki>
 
-## 2.0.3 (current master)
+## 2.0.3
 
 - renaming old 'atelierspierrot/markdown-extended' to 'piwi/markdown-extended'
 - fix bug #1: internal interface process (global install by default vs. local one)

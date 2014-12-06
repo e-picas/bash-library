@@ -1,6 +1,6 @@
 Man:        piwi-bash-library.sh Manual
 Name:       Piwi Bash Library
-Author:     Les Ateliers Pierrot
+Author:     Pierre Cassat
 Date: 2014-11-21
 Version: 2.0.4
 
@@ -190,8 +190,8 @@ COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_C
 VERBOSE QUIET DEBUG INTERACTIVE FORCED
 :    the library flags, activated by script common options (see previous section)
 
-USEROS
-:    the current user operating system
+USEROS USERSHELL SHELLVERSION
+:    the current user operating system, binary shell in use and bash version
 
 NAME VERSION DATE DESCRIPTION_USAGE LICENSE_USAGE HOMEPAGE_USAGE SYNOPSIS_USAGE OPTIONS_USAGE
 :   these are used to build the help information of the scripts ; they may be defined for each script
@@ -247,8 +247,8 @@ is installed by the interface using the "dev" or "full" presets
 
 ## LICENSE
 
-Copyright (C) 2013-2014 Les Ateliers Pierrot
-<http://www.ateliers-pierrot.fr/> - Some rights reserved.
+Copyright (C) 2013-2014, , Pierre Cassat & contributors
+<http://e-piwi.fr/> - Some rights reserved.
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -263,13 +263,13 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>. 
+For documentation, sources & updates, see <http://github.com/piwi/bash-library>. 
 
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
 
 ## BUGS
 
-To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
+To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
 
 ## AUTHOR
 
@@ -278,5 +278,5 @@ Created and maintained by **Pierre Cassat** (*piwi* - <http://e-piwi.fr/>)
 
 ## SEE ALSO
 
-bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopts(1)
+bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopt(1), getopts(1)
 

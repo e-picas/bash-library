@@ -7,15 +7,15 @@ ACTION_DESCRIPTION="Synchronize current script (bin and dependencies) with a cop
 \tthe script uses the 'rsync' binary so target dir contents won't be deleted but replaced if they are older than current version. \n\
 \t<${COLOR_COMMENT}>- Synchornized dir is '${_BASEDIR}/'</${COLOR_COMMENT}> \n\
 \t<${COLOR_COMMENT}>- Synchronized binary is '$0'</${COLOR_COMMENT}>";
-if $SCRIPTMAN; then return; fi
+if [ "$SCRIPTMAN" = 'true' ]; then return; fi
 
 root_required
 targetdir_required
 
-BASETARGET=${_TARGET%%/$_BASEDIR}
-if [ ! -d $BASETARGET ]; then path_error "${BASETARGET}"; fi
+BASETARGET="${_TARGET%%/$_BASEDIR}"
+if [ ! -d "$BASETARGET" ]; then path_error "${BASETARGET}"; fi
 
-BASESCRIPT=`basename $0`
+BASESCRIPT=$(basename "$0")
 BASELIB_DIR="${_BASEDIR}/../../src/"
 
 iexec "rsync -rP ${_BASEDIR} ${BASETARGET}"

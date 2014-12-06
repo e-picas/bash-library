@@ -2,13 +2,13 @@
 # config files
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
+if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
-        "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "${PADDER}";
+        "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -56,14 +56,14 @@ quietecho "_ go"
 filename=testconfig
 keys=(one two three)
 values=('value one' 'value two' 'value three')
-filepath=$(get_user_configfile $filename)
+filepath=$(get_user_configfile "$filename")
 actiondone=false
 
 ACTION="${SCRIPT_ARGS[0]}"
 if [ -z "$ACTION" ]; then ACTION="read"; fi
 if [ ! -z "$ACTION" ]
 then
-    case $ACTION in
+    case "$ACTION" in
         delete)
             verecho "Deleting config file '$filepath':"
             iexec "rm -f $filepath"
@@ -75,11 +75,11 @@ then
             verecho "_ ok"
             echo
             verecho "Testing value of config var 'one':"
-            echo $one
+            echo "$one"
             echo
             actiondone=true
             verecho "New config file content is:"
-            cat $filepath
+            cat "$filepath"
             ;;
         write)
             verecho "Writing config file '$filepath':"
@@ -88,7 +88,7 @@ then
             echo
             actiondone=true
             verecho "New config file content is:"
-            cat $filepath
+            cat "$filepath"
             ;;
         add)
             verecho "Adding new value 'four=value four' in config file '$filepath':"
@@ -97,7 +97,7 @@ then
             echo
             actiondone=true
             verecho "New config file content is:"
-            cat $filepath
+            cat "$filepath"
             ;;
         replace)
             verecho "Replacing value 'four=new value four' in config file '$filepath':"
@@ -106,7 +106,7 @@ then
             echo
             actiondone=true
             verecho "New config file content is:"
-            cat $filepath
+            cat "$filepath"
             ;;
         get)
             verecho "Getting config value 'three' and 'four' from config file '$filepath':"
@@ -116,13 +116,13 @@ then
             echo
             actiondone=true
             verecho "Config file content is:"
-            cat $filepath
+            cat "$filepath"
             ;;
     esac
 fi
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

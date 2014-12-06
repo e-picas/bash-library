@@ -2,13 +2,13 @@
 # config files
 
 ######## Inclusion of the lib
-LIBFILE="`dirname $0`/../src/piwi-bash-library.sh"
-if [ -f "${LIBFILE}" ]; then source "${LIBFILE}"; else
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
+if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
-        "Sent in '$0' line '${LINENO}' by '`whoami`' - pwd is '`pwd`'" \
-        0 $(tput cols) "${PADDER}";
+        "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -51,7 +51,7 @@ OPTIND=1
 ACTION="${SCRIPT_ARGS[0]}"
 if [ ! -z "$ACTION" ]
 then
-    case $ACTION in
+    case "$ACTION" in
         write)
             if [ ! -n "$LOGFILEPATH" ]; then get_log_filepath; fi
             verecho "Writing 10 test messages in log file '$LOGFILEPATH':"
@@ -85,7 +85,7 @@ else
 fi
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile
