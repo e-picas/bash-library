@@ -1,9 +1,12 @@
 #!/bin/bash
 
 _here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-_source=${_here}/../src/piwi-bash-library.sh
-_output=${_here}/documentation.md
-_lib=${_source}
+_source=src/piwi-bash-library.sh
+_output=DOCUMENTATION.md
+_lib=${_here}/../${_source}
+
+#_source=${_here}/../dev/test-doc.sh
+#_output=${_here}/documentation.md # for dev
 
 source ${_lib} || echo "!! piwi-bash-library not found!" ;
 
