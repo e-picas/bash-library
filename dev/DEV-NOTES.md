@@ -12,7 +12,7 @@ The goal is to be able to:
 -   use required and optional options'arguments
 
 If the `getopt` command is available and is the "new" version, the best seems
-to let it re-arrange options as it works quite fine in most of cases
+to let it re-arrange options as it works quite fine in most of cases:
 
     getopt --test > /dev/null
     if [ -n $? ] && [ $? -ne 4 ]; then
@@ -22,11 +22,14 @@ to let it re-arrange options as it works quite fine in most of cases
 
 The rules for options'arguments must be:
 
+-   for short and long options:
+    -   if an argument contains special characters or a space, it must be surrounded
+        between quotes (simples or doubles)
 -   for short options:
     -   if the argument is required, it can be written just after the option, separated
         by an equal sign eventually, or as the next argument, separated by a space
     -   if the argument is optional, it must be written just after the option, separated
-        by an equal sign eventually
+        by an equal sign eventually (no space is allowed as the argument is optional)
 -   for long options:
     -   if the argument is required, it can be written separated from the option by an
         equal sign or a space
