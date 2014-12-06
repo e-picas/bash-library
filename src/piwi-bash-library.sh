@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
 #
 # Piwi Bash Library - An open source day-to-day bash library
-# Copyright (C) 2013-2014 Pierre Cassat
-# Created & maintained by Pierre Cassat & contributors
 # <http://github.com/piwi/bash-library>
+# Copyright (C) 2013-2014, Pierre Cassat & contributors
 # <http://e-piwi.fr/> - <me [at] e-piwi.fr>
 # 
 # This program is free software: you can redistribute it and/or modify

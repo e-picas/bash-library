@@ -82,9 +82,8 @@ The "Piwi Bash library" is open source, licensed under the
 [GNU GPL v.3 license](http://www.gnu.org/licenses/gpl-3.0.html).
 
     Piwi Bash Library - An open source day-to-day bash library
-    Copyright (C) 2013-2014 Pierre Cassat
+    Copyright (C) 2013-2014, Pierre Cassat & contributors
     <http://e-piwi.fr/> - Some rights reserved.
-    Created & maintained by Pierre Cassat & contributors
 
     This program is free software: you can redistribute it and/or modify
     it under the terms of the GNU General Public License as published by
