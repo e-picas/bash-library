@@ -5,13 +5,13 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
-        0 $(tput cols) "${PADDER}";
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -50,8 +50,8 @@ SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[-a]  [-t [=value]]  
 quietecho "_ go"
 
 rearrange_script_options "$@"
-echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[@]}'"
-echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[@]}'"
+echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[*]}'"
+echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[*]}'"
 [ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
 [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
 [ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
@@ -64,7 +64,7 @@ echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
 echo "- received arguments: '${ORIGINAL_SCRIPT_OPTS}'";
 echo
 echo "# re-arranging options and arguments:"
-echo "- rearranged arguments: '$@'";
+echo "- rearranged arguments: '$*'";
 echo
 
 echo "# first loop for the 't' or 'test' option"
@@ -73,11 +73,11 @@ echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
 OPTIND=1
 while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
-    case $OPTION in
+    case "$OPTION" in
         t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
         -)  # for long options with argument, use fct 'get_long_option_arg ( $arg )'
-            LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
-            case $OPTARG in
+            LONGOPTARG=$(get_long_option_arg "$OPTARG")
+            case "$OPTARG" in
                 test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
                 ?) echo " - unknown long option '$OPTARG'";;
             esac ;;
@@ -91,7 +91,7 @@ echo "# to test it, run:"
 echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
 OPTIND=1
 while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
-    case $OPTION in
+    case "$OPTION" in
         a) echo " - test option A";;
         ?) echo " - unknown option '$OPTION'";;
     esac
@@ -118,7 +118,7 @@ echo " - 'ARGIND' is: $ARGIND"
 echo
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

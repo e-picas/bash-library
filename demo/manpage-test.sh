@@ -2,13 +2,13 @@
 # manpage
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
-        0 $(tput cols) "${PADDER}";
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -53,7 +53,7 @@ OPTIONS_USAGE="\n\
 parse_common_options "$@"
 quietecho "_ go"
 
-if ! $VERBOSE; then 
+if [ "$VERBOSE" = 'false' ]; then
     MANPAGE_NODEPEDENCY=true
 fi
 
@@ -61,8 +61,8 @@ actiondone=false
 OPTIND=1
 while getopts "${COMMON_OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
-    case $OPTION in
-        -) case $OPTARG in
+    case "$OPTION" in
+        -) case "$OPTARG" in
             library)
                 library_help
                 actiondone=true
@@ -84,12 +84,12 @@ This is a simple test of in-script full 'USAGE' custom string (so automatic manp
     esac
 done
 
-if ! $actiondone; then
+if [ "$actiondone" != 'true' ]; then
     script_help
 fi
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

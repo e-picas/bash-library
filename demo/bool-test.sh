@@ -2,13 +2,13 @@
 # bool tests
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
-        0 $(tput cols) "${PADDER}";
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -26,14 +26,14 @@ export FALSEVAL=true
 TRUEVAL=true
 FALSEVAL=false
 
-echo "# test like 'if \$var ...'"
-if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
-if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
+echo "# test like 'if [ \"\$var\" = 'true' ...'"
+if [ "$TRUEVAL" = 'true' ]; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if [ "$FALSEVAL" = 'true' ]; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 echo
 
-echo "# test like 'if ! \$var ...'"
-if ! $TRUEVAL; then echo "TRUEVAL is false"; else echo "TRUEVAL is true"; fi
-if ! $FALSEVAL; then echo "FALSEVAL is false"; else echo "FALSEVAL is true"; fi
+echo "# test like 'if [ \"\$var\" = 'false' ...'"
+if [ "$TRUEVAL" = 'false' ]; then echo "TRUEVAL is false"; else echo "TRUEVAL is true"; fi
+if [ "$FALSEVAL" = 'false' ]; then echo "FALSEVAL is false"; else echo "FALSEVAL is true"; fi
 echo
 
 export TRUEVAL=false
@@ -45,21 +45,21 @@ testbool () {
 }
 
 echo "# manipulation ..."
-if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
-if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
+if [ "$TRUEVAL" = 'true' ]; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if [ "$FALSEVAL" = 'true' ]; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 
 testbool
-if $TRUEVAL; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
-if $FALSEVAL; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
+if [ "$TRUEVAL" = 'true' ]; then echo "TRUEVAL is true"; else echo "TRUEVAL is false"; fi
+if [ "$FALSEVAL" = 'true' ]; then echo "FALSEVAL is true"; else echo "FALSEVAL is false"; fi
 echo
 
 # onoff_bit
 echo "# test of the fct 'onoff_bit'"
-echo "TRUEVAL is `onoff_bit $TRUEVAL`"
-echo "FALSEVAL is `onoff_bit $FALSEVAL`"
+echo "TRUEVAL is $(onoff_bit "$TRUEVAL")"
+echo "FALSEVAL is $(onoff_bit "$FALSEVAL")"
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

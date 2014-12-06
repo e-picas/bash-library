@@ -5,13 +5,13 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
-        0 $(tput cols) "${PADDER}";
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
@@ -80,10 +80,10 @@ echo
 echo "> script settings:"
 echo " - short options are:         ${OPTIONS_ALLOWED}"
 shortopts_table=( $(get_short_options_array) )
-echo " - short options table is:    ${shortopts_table[@]}"
+echo " - short options table is:    ${shortopts_table[*]}"
 echo " - long options are:          ${LONG_OPTIONS_ALLOWED}"
 longopts_table=( $(get_long_options_array) )
-echo " - long options table is:     ${longopts_table[@]}"
+echo " - long options table is:     ${longopts_table[*]}"
 echo
 
 # parse common options BEFORE re-arrangement for eventual errors
@@ -96,8 +96,8 @@ rearrange_script_options_new "$0" "$@"
 #rearrange_script_options "$@"
 echo "> re-arranging options & arguments:"
 echo " - SCRIPT_PARAMS are: $SCRIPT_PARAMS"
-echo " - SCRIPT_OPTS are:   ${SCRIPT_OPTS[@]}"
-echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[@]}"
+echo " - SCRIPT_OPTS are:   ${SCRIPT_OPTS[*]}"
+echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[*]}"
 [ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
 echo
 
@@ -192,7 +192,7 @@ fi
 echo
 
 quietecho "_ ok"
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile

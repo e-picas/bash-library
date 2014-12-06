@@ -5,21 +5,21 @@
 #
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname $0)/../src/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
         "Unable to find required library file '${LIBFILE}'!" \
         "Sent in '${0}' line '${LINENO}' by '$(whoami)' - pwd is '$(pwd)'" \
-        0 $(tput cols) "${PADDER}";
+        0 "$(tput cols)" "$PADDER";
     exit 1
 fi
 ######## !Inclusion of the lib
 
 #### script settings ##########################
 
-_REALPATH="`realpath $BASH_SOURCE`"
-declare -x _BASEDIR="`dirname $_REALPATH`/interface-test"
+_REALPATH=$(realpath "$BASH_SOURCE")
+declare -x _BASEDIR="$(dirname "$_REALPATH")/interface-test"
 declare -x _BACKUP_DIR="${_BASEDIR}/backup/"
 declare -x _PROJECT="project"
 declare -x _SET="full"
@@ -55,21 +55,21 @@ list_actions () {
     local actions_str="\n<underline>Available actions:</underline>\n"
     export SCRIPTMAN=true
     for action in $_BASEDIR/*.sh; do
-        myaction=${action##$_BASEDIR/}
+        myaction="${action##$_BASEDIR/}"
         actions_str="${actions_str}\n    <bold>${myaction%%.sh}</bold> \n"
         source "${_BASEDIR}/${myaction}"
         if [ -n "$ACTION_DESCRIPTION" ]; then
             actions_str="${actions_str}\t${ACTION_DESCRIPTION}\n"
         fi
     done
-    actions_str="${actions_str}\n<${COLOR_COMMENT}>`library_info`</${COLOR_COMMENT}>";
+    actions_str="${actions_str}\n<${COLOR_COMMENT}>$(library_info)</${COLOR_COMMENT}>";
     parse_color_tags "${actions_str}\n"
 }
 
 #### root_required ()
 # ensure current user is root
 root_required () {
-    THISUSER=`whoami`
+    THISUSER=$(whoami)
     if [ "$THISUSER" != "root" ]; then
         error "You need to run this as a 'sudo' user!"
     fi
@@ -88,7 +88,7 @@ project_required () {
 # ensure the project root directory is defined
 targetdir_required () {
     if [ -z "$_TARGET" ]; then
-        prompt 'Target directory of the project to work on' `pwd` ''
+        prompt 'Target directory of the project to work on' "$(pwd)" ''
         export _TARGET=$USERRESPONSE
     fi
     if [ ! -d "$_TARGET" ]; then error "Unknown root directory '${_TARGET}' !"; fi
@@ -120,20 +120,20 @@ parse_common_options
 
 OPTIND=1
 ACTION="${SCRIPT_ARGS[0]}"
-while getopts "${OPTIONS_ALLOWED}" OPTION $options; do
+while getopts "${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
-    case $OPTION in
+    case "$OPTION" in
         d|f|h|i|l|q|v|V|x) rien=rien;;
         z) script_title; list_actions; exit 0;;
-        s) _SET=$OPTARG;;
-        p) _PROJECT=$OPTARG;;
-        t) _TARGET=$OPTARG;;
-        -) LONGOPTARG="`get_long_option_arg \"${OPTARG}\"`"
-            case $OPTARG in
+        s) _SET="$OPTARG";;
+        p) _PROJECT="$OPTARG";;
+        t) _TARGET="$OPTARG";;
+        -) LONGOPTARG=$(get_long_option_arg "$OPTARG")
+            case "$OPTARG" in
                 actions) script_title; list_actions; exit 0;;
-                set*) _SET=$LONGOPTARG;;
-                project*) _PROJECT=$LONGOPTARG;;
-                target*) _TARGET=$LONGOPTARG;;
+                set*) _SET="$LONGOPTARG";;
+                project*) _PROJECT="$LONGOPTARG";;
+                target*) _TARGET="$LONGOPTARG";;
                 \?) error "Unknown long option '$OPTARG'";;
             esac ;;
         \?) error "Unknown option '$OPTION'";;
@@ -158,6 +158,6 @@ else
     simple_error 'please define an action to launch'
 fi
 
-if ! $QUIET; then libdebug "$*"; fi
+if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 # Endfile
