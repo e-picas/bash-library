@@ -1992,6 +1992,7 @@ parse_long_option () {
         LONGOPTARG="$_nextarg"
         ((OPTIND++))
     fi
+    LONGOPTARG="$(echo "$LONGOPTARG" | sed -e "s/^'//" -e "s/'$//")"
     export LONGOPTNAME LONGOPTARG OPTIND
     return 0
 }
