@@ -567,7 +567,7 @@ verbose_echo () {
 
 #### / verecho ( string )
 ## alias of 'verbose_echo'
-verecho () { verbose_echo "$*"; }
+verecho () { verbose_echo "$*"; return $?; }
 
 #### quiet_echo ( string )
 ## echoes the string if "quiet" is "off"
@@ -577,7 +577,7 @@ quiet_echo () {
 
 #### / quietecho ( string )
 ## alias of 'quiet_echo'
-quietecho () { quiet_echo "$*"; }
+quietecho () { quiet_echo "$*"; return $?; }
 
 #### evaluate ( command )
 ## evaluates the command catching events:
@@ -624,11 +624,11 @@ interactive_evaluate () {
 
 #### / ievaluate ( command )
 ## alias of 'interactive_evaluate'
-ievaluate () { interactive_evaluate "$*"; }
+ievaluate () { interactive_evaluate "$*"; return $?; }
 
 #### / ieval ( command )
 ## alias of 'interactive_evaluate'
-ieval () { interactive_evaluate "$*"; }
+ieval () { interactive_evaluate "$*"; return $?; }
 
 #### debug_evaluate ( command )
 ## evaluates the command if "dryrun" is "off", just write it on screen otherwise
@@ -651,11 +651,11 @@ debug_evaluate () {
 
 #### / debevaluate ( command )
 ## alias of 'debug_evaluate'
-debevaluate () { debug_evaluate "$*"; }
+debevaluate () { debug_evaluate "$*"; return $?; }
 
 #### / debeval ( command )
 ## alias of 'debug_evaluate'
-debeval () { debug_evaluate "$*"; }
+debeval () { debug_evaluate "$*"; return $?; }
 
 #### interactive_exec ( command , debug_exec = true )
 ## executes the command after user confirmation if "interactive" is "on"
@@ -690,7 +690,7 @@ interactive_exec () {
 
 #### / iexec ( command , debug_exec = true )
 ## alias of 'interactive_exec'
-iexec () { interactive_exec "$*"; }
+iexec () { interactive_exec "$*"; return $?; }
 
 #### debug_echo ( string )
 ## echoes the string if "debug" is "on"
@@ -700,7 +700,7 @@ debug_echo () {
 
 #### / debecho ( string )
 ## alias of 'debug_echo'
-debecho () { debug_echo "$*"; }
+debecho () { debug_echo "$*"; return $?; }
 
 #### debug_exec ( command )
 ## execute the command if "dryrun" is "off", just write it on screen otherwise
@@ -715,7 +715,7 @@ debug_exec () {
 
 #### / debexec ( command )
 ## alias of 'debug_exec'
-debexec () { debug_exec "$*"; }
+debexec () { debug_exec "$*"; return $?; }
 
 #### prompt ( string , default = y , options = Y/n )
 ## prompt user a string proposing different response options and selecting a default one
@@ -1828,6 +1828,7 @@ get_long_options_array () {
         long_options+=( "$i" )
     done
     echo "${long_options[@]}"
+    return 0
 }
 
 #### get_long_options_string ( delimiter = '|' )
@@ -1835,6 +1836,7 @@ get_long_options_string () {
     local delimiter="${1:-|}"
     local -a long_options=( $(get_long_options_array) )
     implode long_options[@] "$delimiter"
+    return 0
 }
 
 #### get_option_arg ( "$x" )
@@ -1901,16 +1903,20 @@ get_next_argument () {
         ((ARGIND++))
         export ARGIND ARGUMENT
         return 0
-    else return 1
+    else
+        return 1
     fi
 }
 
 #### get_last_argument ()
 ## echoes the last script argument
 get_last_argument () {
-    if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
-        echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"; return 0;
-    else return 1
+    if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]
+    then
+        echo "${SCRIPT_ARGS[${#SCRIPT_ARGS[@]}-1]}"
+        return 0
+    else
+        return 1
     fi
 }
 
@@ -2192,7 +2198,7 @@ parse_common_options () {
 }
 
 
-#### SCRIPT INFOS #####################################################################
+#### SCRIPT INFO #####################################################################
 
 #### get_script_version_string ( quiet = false )
 get_script_version_string () {
