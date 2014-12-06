@@ -247,7 +247,7 @@ is installed by the interface using the "dev" or "full" presets
 
 ## LICENSE
 
-Copyright (C) 2013-2014, , Pierre Cassat & contributors
+Copyright (C) 2013-2014, Pierre Cassat & contributors
 <http://e-piwi.fr/> - Some rights reserved.
 
 This program is free software: you can redistribute it and/or modify
