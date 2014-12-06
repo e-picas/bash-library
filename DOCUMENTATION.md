@@ -1134,4 +1134,4 @@
 
 ----
 
-[*Doc generated at 06-12-2014 20:32:25 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 06-12-2014 20:58:46 from path 'src/piwi-bash-library.sh'*]

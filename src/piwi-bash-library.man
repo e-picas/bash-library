@@ -1,6 +1,6 @@
 .\" author: Pierre Cassat
 
-.TH  "NAME" "3" "2014-11-21" "Version 2.0.4" "piwi-bash-library.sh Manual"
+.TH  "NAME" "3" "2014-12-06" "Version 2.1.0-alpha" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -283,7 +283,7 @@ is installed by the interface using the "dev" or "full" presets
 .SH LICENSE
 
 .PP
-Copyright (C) 2013-2014, Pierre Cassat
+Copyright (C) 2013-2014, , Pierre Cassat & contributors
 <http://e-piwi.fr/> - Some rights reserved.
 
 .PP
