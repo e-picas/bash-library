@@ -131,23 +131,27 @@ then
             # case of long options
             -)
 
-                # LONGOPTIND should be the same as OPTIND
+                # full self-handling
+#                # LONGOPTIND should be the same as OPTIND
+#
+#                # LONGOPTNAME should be the name of the long option
+#                LONGOPTNAME="$(get_long_option "$OPTARG")"
+#
+#                # LONGOPTARG should be the optional argument of the option
+#                LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+#
+#                # special load of arg if it is required (no mandatory equal sign)
+#                optiondef=$(get_long_option_declaration "$LONGOPTNAME")
+##                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
+#                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+#                    LONGOPTARG="${!OPTIND}"
+#                    OPTIND=$((OPTIND + 1))
+#                fi
 
-                # LONGOPTNAME should be the name of the long option
-                LONGOPTNAME="$(get_long_option "$OPTARG")"
+                # all-in-one facility
+                parse_long_option "$OPTARG" "${!OPTIND}"
 
-                # LONGOPTARG should be the optional argument of the option
-                LONGOPTARG="$(get_long_option_arg "$OPTARG")"
-
-                # special load of arg if it is required (no mandatory equal sign)
-                optiondef=$(get_long_option_declaration "$LONGOPTNAME")
-    #            if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
-                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
-                    LONGOPTARG="${!OPTIND}"
-                    OPTIND=$((OPTIND + 1))
-                fi
-
-                case "$LONGOPTION" in
+                case "$LONGOPTNAME" in
                     *) echo " - [${OPTIND}] long option '${LONGOPTNAME}' with arg '${LONGOPTARG}'";;
                     \?) echo " - [${OPTIND}] unknown long option '${LONGOPTNAME}'";;
                 esac
