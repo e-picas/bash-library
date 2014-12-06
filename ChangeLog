@@ -1,6 +1,8 @@
 # ChangeLog
 
-## 2.1.0 (current dev - alpha)
+## 2.1.0 (current dev)
+
+## 2.1.0-alpha (current master)
 
 !! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
 
@@ -15,7 +17,7 @@
 - the whole library has been verified with <http://www.shellcheck.net/>
 - new stack trace method
 
-## 2.0.4 (current master)
+## 2.0.4
 
 - moving test scripts from 'bin/' to 'demo/'
 - all scripts now use shebang `/usr/bin/env bash`
