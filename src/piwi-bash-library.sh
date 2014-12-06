@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
 #
 # Piwi Bash Library - An open source day-to-day bash library
-# Copyright (C) 2013-2014 Les Ateliers Pierrot
+# Copyright (C) 2013-2014 Pierre Cassat
 # Created & maintained by Pierre Cassat & contributors
-# <http://github.com/atelierspierrot/piwi-bash-library>
-# <www.ateliers-pierrot.fr> - <contact@ateliers-pierrot.fr>
+# <http://github.com/piwi/bash-library>
+# <http://e-piwi.fr/> - <me [at] e-piwi.fr>
 # 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -35,32 +35,36 @@
 #### ENVIRONMENT #############################################################################
 
 ##@ SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)
+## List of variables defined by the caller script used to build all informational strings.
+## These are all RECOMMENDED.
 declare -rxa SCRIPT_VARS="(NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS)" 2>/dev/null;
 
 ##@ USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)
-##@ USAGE_SUFFIX = "_USAGE"
+## List of variables defined by the caller script used to build the 'usage' string (common option `--usage`).
 declare -rxa USAGE_VARS="(NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE)" 2>/dev/null;
+##@ USAGE_SUFFIX = "_USAGE"
+## Suffix used to build some of the `USAGE_VARS` variable names ; it is stripped to fallback over "classic" variable.
 declare -rx USAGE_SUFFIX="_USAGE" 2>/dev/null;
 
 ##@ VERSION_VARS = ( NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO ) (read-only)
-# see http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion
+## List of variables defined by the caller script used to build the 'version' string (common option `--version`).
+##@see <http://www.gnu.org/prep/standards/standards.html#g_t_002d_002dversion>
 declare -rxa VERSION_VARS="(NAME VERSION DATE DESCRIPTION COPYRIGHT LICENSE HOMEPAGE SOURCES ADDITIONAL_INFO)" 2>/dev/null;
 
 ##@ MANPAGE_VARS = ( NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE ) (read-only)
-##@ MANPAGE_SUFFIX = "_MANPAGE"
-# see http://en.wikipedia.org/wiki/Man_page
+## List of variables defined by the caller script used to build the 'manpage' string (common option `--manpage`).
+##@see <http://en.wikipedia.org/wiki/Man_page>
 declare -rxa MANPAGE_VARS="(NAME VERSION DATE DESCRIPTION_MANPAGE SYNOPSIS_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE HOMEPAGE_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE)" 2>/dev/null;
+##@ MANPAGE_SUFFIX = "_MANPAGE"
+## Suffix used to build some of the `USAGE_VARS` variable names ; it is stripped to fallback over "classic" variable.
 declare -rx MANPAGE_SUFFIX="_MANPAGE" 2>/dev/null;
 
 ##@ LIB_FLAGS = ( VERBOSE QUIET DEBUG INTERACTIVE FORCED ) (read-only)
+## List of variables defined as global flags ; they are enabled/disabled by common options.
 declare -rxa LIB_FLAGS="(VERBOSE QUIET DEBUG INTERACTIVE FORCED)" 2>/dev/null;
 
-##@ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT ) (read-only)
-# common colors
-declare -rxa COLOR_VARS="(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)" 2>/dev/null;
-
 ##@ INTERACTIVE = DEBUG = VERBOSE = QUIET = FORCED = DRYRUN = false
-##@ WORKINGDIR = pwd
+##@ WORKINGDIR = `pwd`
 declare -x INTERACTIVE=false
 declare -x QUIET=false
 declare -x VERBOSE=false
@@ -72,22 +76,34 @@ declare -x LOGFILE=''
 declare -x LOGFILEPATH=''
 declare -x TEMPDIR=''
 
+##@ COLOR_VARS = ( COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT ) (read-only)
+## List of variables defined by the library as "common colors" names.
+declare -rxa COLOR_VARS="(COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT)" 2>/dev/null;
+
 ##@ USEROS = "$(uname)" (read-only)
+## Current running operating system name.
 declare -rx USEROS="$(uname)" 2>/dev/null;
 ##@ LINUX_OS = ( Linux FreeBSD OpenBSD SunOS ) (read-only)
+## List of Linux-like OSs.
 declare -rxa LINUX_OS="(Linux FreeBSD OpenBSD SunOS)" 2>/dev/null;
 ##@ USERSHELL = "$SHELL" (read-only)
+## Path of the shell currently in use (value of the global `$SHELL` variable).
 declare -rx USERSHELL="$SHELL" 2>/dev/null;
 ##@ SHELLVERSION = "$BASH_VERSION" (read-only)
+## Version number of current shell in use (value of the global `$BASH_VERSION` variable).
 declare -rx SHELLVERSION="$BASH_VERSION" 2>/dev/null;
 
 
 #### SETTINGS #####################################################################
 
 # lib error codes
-# Error codes in Bash must return an exit code between 0 and 255
-#+ In the library, to be conform with C/C++ programs, we will try to use codes from 80 to 120
-#+ (error codes in C/C++ begin at 64 but the recent evolutions of Bash reserved codes 64 to 78).
+##@ E_ERROR=90
+##@ E_OPTS=81
+##@ E_CMD=82
+##@ E_PATH=83
+## Error codes in Bash must return an exit code between 0 and 255.
+## In the library, to be conform with C/C++ programs, we will try to use codes from 80 to 120
+## (error codes in C/C++ begin at 64 but the recent evolutions of Bash reserved codes 64 to 78).
 declare -x E_ERROR=90
 declare -x E_OPTS=81
 declare -x E_CMD=82
@@ -135,8 +151,10 @@ declare -x TEST_VAR='test'
 #### COMMON OPTIONS #############################################################################
 
 ##@ COMMON_OPTIONS_ALLOWED = "fhiqvVx-:"
+## List of default common short options.
 ##@ COMMON_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common short options
 ##@ COMMON_LONG_OPTIONS_ALLOWED="working-dir:,working-directory:,force,help,interactive,log:,logfile:,quiet,verbose,version,debug,dry-run,libvers,man,usage"
+## List of default common long options.
 ##@ COMMON_LONG_OPTIONS_ALLOWED_MASK : REGEX mask that matches all common long options
 declare -x COMMON_OPTIONS_ALLOWED='fhiqvVx-:'
 declare -x COMMON_LONG_OPTIONS_ALLOWED='working-dir:,force,help,interactive,log:,quiet,verbose,version,debug,dry-run,libvers,man,usage'
@@ -148,6 +166,7 @@ declare -x OPTIONS_ALLOWED="$COMMON_OPTIONS_ALLOWED"
 declare -x LONG_OPTIONS_ALLOWED="$COMMON_LONG_OPTIONS_ALLOWED"
 
 ##@ COMMON_SYNOPSIS COMMON_SYNOPSIS_ACTION COMMON_SYNOPSIS_ERROR COMMON_SYNOPSIS_MANPAGE COMMON_SYNOPSIS_ACTION_MANPAGE COMMON_SYNOPSIS_ERROR_MANPAGE (read-only)
+## Default values for synopsis strings (final fallback).
 declare -rx COMMON_SYNOPSIS="${0}  -[common options]  -[script options [=value]]  [--]  [arguments]" 2>/dev/null;
 declare -rx COMMON_SYNOPSIS_ACTION="${0}  -[common options]  -[script options [=value]]  [--]  <action>" 2>/dev/null;
 declare -rx COMMON_SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>" 2>/dev/null;
@@ -155,13 +174,15 @@ declare -rx COMMON_SYNOPSIS_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common 
 declare -rx COMMON_SYNOPSIS_ACTION_MANPAGE="~\$ <bold>${0}</bold>  -[<underline>common options</underline>]  -[<underline>script options</underline> [=<underline>value</underline>]]  [--]  [<underline>action</underline>]" 2>/dev/null;
 declare -rx COMMON_SYNOPSIS_ERROR_MANPAGE="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[--${COMMON_LONG_OPTIONS_ALLOWED_MASK}]\n\t[--script-options [=value]]  [--]  <arguments>" 2>/dev/null;
 
-##@ OPTIONS_ADDITIONAL_INFOS_MANPAGE : information string about command line options how-to (read-only)
+##@ OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
+## Information string about command line options how-to
 declare -rx OPTIONS_ADDITIONAL_INFOS_MANPAGE="\tYou can group short options like '<bold>-xc</bold>', \
 set an option argument like '<bold>-d(=)value</bold>' \n\
 \tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
 to explicitly specify the end of the script options." 2>/dev/null;
 
-##@ COMMON_OPTIONS_MANPAGE : information string about common script options (read-only)
+##@ COMMON_OPTIONS_MANPAGE (read-only)
+## Information string about common script options
 declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this information message \n\
 \t<bold>-v | --verbose</bold>\t\t\tincrease script verbosity \n\
 \t<bold>-q | --quiet</bold>\t\t\tdecrease script verbosity, nothing will be written unless errors \n\
@@ -176,7 +197,8 @@ declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this info
 \t<bold>--dry-run</bold>\t\t\tsee commands to run but not run them actually \n\
 \t<bold>--libvers</bold>\t\t\tsee the library version" 2>/dev/null;
 
-##@ COMMON_OPTIONS_USAGE: raw information string about common script options (read-only)
+##@ COMMON_OPTIONS_USAGE (read-only)
+## Raw information string about common script options
 declare -rx COMMON_OPTIONS_USAGE="\n\
 \t-v, --verbose\t\tincrease script verbosity \n\
 \t-q, --quiet\t\tdecrease script verbosity, nothing will be written unless errors \n\
@@ -194,13 +216,14 @@ declare -rx COMMON_OPTIONS_USAGE="\n\
 \t\t\t\ta 'manpage-like' output will be guessed otherwise\n\
 \t--libvers\t\tsee the library version" 2>/dev/null;
 
-##@ COMMON_OPTIONS_FULLINFO_MANPAGE : concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
+##@ COMMON_OPTIONS_FULLINFO_MANPAGE (read-only)
+## Concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE
 declare -rx COMMON_OPTIONS_FULLINFO_MANPAGE="${COMMON_OPTIONS_MANPAGE}\n\n${OPTIONS_ADDITIONAL_INFOS_MANPAGE}" 2>/dev/null;
 
 
 #### LOREM IPSUM #############################################################################
 
-##@ LOREMIPSUM , LOREMIPSUM_SHORT , LOREMIPSUM_MULTILINE (read-only)
+##@ LOREMIPSUM (844 chars.) , LOREMIPSUM_SHORT (446 chars.) , LOREMIPSUM_MULTILINE (861 chars. / 5 lines) (read-only)
 declare -rx LOREMIPSUM="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Et harum quidem rerum facilis est et expedita distinctio. Nam libero tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo minus id quod maxime placeat facere possimus, omnis voluptas assumenda est, omnis dolor repellendus. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet ut et voluptates repudiandae sint et molestiae non recusandae. Itaque earum rerum hic tenetur a sapiente delectus, ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis doloribus asperiores repellat." 2>/dev/null;
 declare -rx LOREMIPSUM_SHORT="Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 2>/dev/null;
 declare -rx LOREMIPSUM_MULTILINE="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi. \n\
@@ -212,8 +235,8 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 
 #### LIBRARY SETUP #######################################################################
 
-##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION
-##@ LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL
+##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL (read-only)
+## Library internal setup
 declare -rx LIB_NAME="Piwi Bash library" 2>/dev/null;
 declare -rx LIB_VERSION="2.0.4" 2>/dev/null;
 declare -rx LIB_DATE="2014-11-21" 2>/dev/null;
@@ -221,10 +244,10 @@ declare -rx LIB_VCSVERSION="master@3473ae5dceb5c25a59e95ce60490290a56962912" 2>/
 declare -rx LIB_DESCRIPTION="An open source day-to-day bash library" 2>/dev/null;
 declare -rx LIB_LICENSE_TYPE="GPL-3.0" 2>/dev/null;
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html" 2>/dev/null;
-declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014 Les Ateliers Pierrot <http://www.ateliers-pierrot.fr/>" 2>/dev/null;
-declare -rx LIB_PACKAGE="atelierspierrot/piwi-bash-library" 2>/dev/null;
+declare -rx LIB_COPYRIGHT="Copyright (c) 2013-2014, Pierre Cassat <http://e-piwi.fr/>" 2>/dev/null;
+declare -rx LIB_PACKAGE="piwi/bash-library" 2>/dev/null;
 declare -rx LIB_SCRIPT_VCS='git' 2>/dev/null;
-declare -rx LIB_SOURCES_URL="https://github.com/atelierspierrot/piwi-bash-library" 2>/dev/null;
+declare -rx LIB_SOURCES_URL="https://github.com/piwi/bash-library" 2>/dev/null;
 
 declare -rx LIB_LICENSE="License ${LIB_LICENSE_TYPE}: <${LIB_LICENSE_URL}>" 2>/dev/null;
 declare -rx LIB_SOURCES="Sources & updates: <${LIB_SOURCES_URL}>" 2>/dev/null;
@@ -235,7 +258,7 @@ declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_
 \tPackage [<${COLOR_NOTICE}>${LIB_PACKAGE}</${COLOR_NOTICE}>] version [<${COLOR_NOTICE}>${LIB_VERSION}</${COLOR_NOTICE}>].\n\
 \t${LIB_LICENSE}.\n\
 \t${LIB_SOURCES}.\n\
-\tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
+\tBug reports: <http://github.com/piwi/bash-library/issues>.\n\
 \t${LIB_ADDITIONAL_INFO}" 2>/dev/null;
 
 
@@ -527,8 +550,8 @@ onoff_bit () {
 
 #### UTILS #############################################################################
 
-##@ ECHOCMD (read-only)
-# test if 'echo' is shell builtin or program
+##@ ECHOCMD (read-only: 'builtin' or 'gnu')
+## Test if 'echo' is shell builtin or program
 if [ "$($(which echo) --version)" = '--version' ]
 then declare -rx ECHOCMD='builtin' 2>/dev/null;
 else declare -rx ECHOCMD='gnu' 2>/dev/null;
@@ -1002,9 +1025,11 @@ path_simple_error () {
 
 declare -rxa VCS_VARS="(VCSVERSION SCRIPT_VCS)" 2>/dev/null;
 
-##@ VCSVERSION : variable used as version marker like `branch@commit_sha`
+##@ VCSVERSION
+## Variable used as version marker like `branch@commit_sha`
 
-##@ SCRIPT_VCS : VCS type of the script (only 'git' for now)
+##@ SCRIPT_VCS
+## VCS type of the script (only 'git' for now)
 declare -x SCRIPT_VCS=''
 
 #### get_version_string ( file_path = $0 , constant_name = VCSVERSION )
@@ -1123,7 +1148,8 @@ vcs_change_branch () {
     return 1
 }
 
-##@ CURRENT_GIT_CLONE_DIR : environment variable to store current GIT clone directory
+##@ CURRENT_GIT_CLONE_DIR
+## Environment variable to store current GIT clone directory
 declare -x CURRENT_GIT_CLONE_DIR
 
 #### git_is_clone ( path = pwd , remote_url = null )
@@ -1291,19 +1317,19 @@ git_change_branch () {
 #### COLORIZED CONTENTS #############################################################################
 
 ##@ LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)
-## terminal colors
+## Terminal colors table
 declare -rxa LIBCOLORS="(default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey)" 2>/dev/null;
 declare -rxa LIBCOLORS_CODES_FOREGROUND="(39 30 31 32 33 34 35 36 90 97 91 92 93 94 95 96 37)" 2>/dev/null;
 declare -rxa LIBCOLORS_CODES_BACKGROUND="(49 40 41 42 43 44 45 46 100 107 101 102 103 104 105 106 47)" 2>/dev/null;
 
 ##@ LIBTEXTOPTIONS = ( normal bold small underline blink reverse hidden ) (read-only)
-## terminal text options
+## Terminal text options table
 declare -rxa LIBTEXTOPTIONS="(normal bold small underline blink reverse hidden)" 2>/dev/null;
 declare -rxa LIBTEXTOPTIONS_CODES="(0 1 2 4 5 7 8)" 2>/dev/null;
 
 #### get_text_format_tag ( code )
-##@param code must be one of the library colors or text-options codes
 ## echoes the terminal tag code for color: "\ 033[CODEm"
+##@param code must be one of the library colors or text-options codes
 get_text_format_tag () {
     if [ -n "$1" ]; then
         case "$USEROS" in
@@ -1387,10 +1413,10 @@ get_text_option_tag_close () {
 }
 
 #### colorize ( string , text_option , foreground , background )
+## echoes a colorized string ; all arguments are optional except `string`
 ##@param text_option must be in LIBTEXTOPTIONS
 ##@param foreground must be in LIBCOLORS
 ##@param background must be in LIBCOLORS
-## echoes a colorized string ; all arguments are optional except `string`
 colorize () {
     if [ $# -eq 0 ]; then return 0; fi
     local textopt
@@ -1485,9 +1511,9 @@ strip_colors () {
 #### TEMPORARY FILES #####################################################################
 
 #### get_tempdir_path ( dirname = "LIB_TEMPDIR" )
-##@param dirname The name of the directory to create (default is `tmp/`)
 ## creates a default temporary dir with fallback: first in current dir then in system '/tmp/'
 ## the real temporary directory path is loaded in the global `TEMPDIR`
+##@param dirname The name of the directory to create (default is `tmp/`)
 get_tempdir_path () {
     if [ -n "$TEMPDIR" ]; then return 0; fi
     local tmpdir="${1:-${LIB_TEMPDIR}}"
@@ -1512,9 +1538,9 @@ get_tempdir_path () {
 }
 
 #### get_tempfile_path ( filename , dirname = "LIB_TEMPDIR" )
+## this will echoes a unique new temporary file path
 ##@param filename The temporary filename to use
 ##@param dirname The name of the directory to create (default is `tmp/`)
-## this will echoes a unique new temporary file path
 get_tempfile_path () {
     if [ -z "$1" ]; then return 0; fi
     local tmpfile="$1"
@@ -1535,9 +1561,9 @@ get_tempfile_path () {
 }
 
 #### create_tempdir ( dirname = "LIB_TEMPDIR" )
-##@param dirname The name of the directory to create (default is `tmp/`)
 ## this will create a temporary directory in the working directory with full rights
 ## use this method to over-write an existing temporary directory
+##@param dirname The name of the directory to create (default is `tmp/`)
 create_tempdir () {
     if [ $# -gt 0 ]
         then
@@ -1550,8 +1576,8 @@ create_tempdir () {
 }
 
 #### clear_tempdir ( dirname = "LIB_TEMPDIR" )
-##@param dirname The name of the directory (default is `tmp/`)
 ## this will deletes the temporary directory
+##@param dirname The name of the directory (default is `tmp/`)
 clear_tempdir () {
     if [ $# -gt 0 ]
         then get_tempdir_path "$1"
@@ -1564,8 +1590,8 @@ clear_tempdir () {
 }
 
 #### clear_tempfiles ( dirname = "LIB_TEMPDIR" )
-##@param dirname The name of the directory (default is `tmp/`)
 ## this will deletes the temporary directory contents (not the directory itself)
+##@param dirname The name of the directory (default is `tmp/`)
 clear_tempfiles () {
     if [ $# -gt 0 ]
         then get_tempdir_path "$1"
@@ -1787,23 +1813,32 @@ build_configstring () {
 
 #### SCRIPT OPTIONS / ARGUMENTS #############################################################################
 
-##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)   original list of raw command line arguments
+##@ ORIGINAL_SCRIPT_OPTS="$@" (read-only)
+## Original list of raw command line arguments
 declare -rx ORIGINAL_SCRIPT_OPTS="$@" 2>/dev/null;
-##@ SCRIPT_PARAMS=''    string of re-arranged parameters (options & arguments)
+##@ SCRIPT_PARAMS=''
+## String of re-arranged parameters (options & arguments)
 declare -x SCRIPT_PARAMS=''
-##@ SCRIPT_PIPED_INPUT=''   string of any piped content from previous command
+##@ SCRIPT_PIPED_INPUT=''
+## String of any piped content from previous command
 declare -x SCRIPT_PIPED_INPUT=''
-##@ SCRIPT_OPTS=()  array of options with arguments
+##@ SCRIPT_OPTS=()
+## Array of options with arguments
 declare -xa SCRIPT_OPTS=()
-##@ SCRIPT_ARGS=()  array of script's arguments
+##@ SCRIPT_ARGS=()
+## Array of script's arguments
 declare -xa SCRIPT_ARGS=()
-##@ SCRIPT_PROGRAMS=()  array of program's options
+##@ SCRIPT_PROGRAMS=()
+## Array of program's options
 declare -xa SCRIPT_PROGRAMS=()
-##@ SCRIPT_OPTS_ERRS=()  array of options errors
+##@ SCRIPT_OPTS_ERRS=()
+## Array of options errors
 declare -ax SCRIPT_OPTS_ERRS=()
-##@ ARGIND  integer of current argument index
+##@ ARGIND
+## Integer of current argument index
 declare -xi ARGIND=0
-##@ ARGUMENT    current argument string (see $ARGIND)
+##@ ARGUMENT
+## Current argument string (see `ARGIND`)
 declare -x ARGUMENT=''
 
 #### read_from_pipe ( file=/dev/stdin )
@@ -1937,9 +1972,11 @@ get_long_option_argument () {
 ## alias of 'get_long_option_argument'
 get_long_option_arg () { get_long_option_argument "$*"; return $?; }
 
-##@ LONGOPTNAME=''  : the name of current long option treated
+##@ LONGOPTNAME=''
+## The name of current long option treated
 declare -x LONGOPTNAME=''
-##@ LONGOPTARG=''   : the argument set for current long option
+##@ LONGOPTARG=''
+## The argument set for current long option
 declare -x LONGOPTARG=''
 
 #### parse_long_option ( $OPTARG , ${!OPTIND} )
@@ -2502,26 +2539,26 @@ declare -xa DOCBUILDER_MASKS=()
 declare -x DOCBUILDER_MARKER='##@!@##'
 ##@ DOCBUILDER_RULES = ( ... )
 declare -xa DOCBUILDER_RULES=(
-    '^#### [^#]*$'                          # fct name line     : #### name ( what ever )
     '^#### [^#]* #*$'                       # title line        : #### title # (this will be followed by the line number and a new line)
-    '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
-    '^## .*$'                               # comment line      : ## comment (will NOT match "##! comment")
+    '^#### [^#]*$'                          # fct name line     : #### name ( what ever )
     '^##@ .*$'                              # var line          : ##@ varname ( what ever )
+    '^## .*$'                               # comment line      : ## comment (will NOT match "##! comment")
+    '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
 );
 
 declare -xa DOCBUILDER_TERMINAL_MASKS=(
-    "s|^#### \(.*\)$|\\\n\\\t\1|g"          # fct name line
     "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
-    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
-    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
+    "s|^#### \(.*\)$|\\\n\\\t\1|g"          # fct name line
     "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # var line
+    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
+    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
 );
 declare -xa DOCBUILDER_MARKDOWN_MASKS=(
-    "s|^#### \(.*\)$|\\\n-   \*\*\1\*\*\\\n|g"  # fct name line
-    "s|^#### \(.*\) #*$|\\\n## \1|g"            # title line
-    "s|^##\(@.*\) \(.*\)$|    \1 \2|g"          # tag line
-    "s|^##* \(.*\)$|\\\t\1|g"                   # comment line
-    "s|^##@ \(.*\)$|\\\n-   \1|g"               # var line
+    "s|^#### \(.*\) #*$|\\\n## \1|g"                    # title line
+    "s|^#### \(.*\)$|\\\n-   \*\*\1\*\*\\\n|g"          # fct name line
+    "s|^##@ \(.*\)$|\\\n-   \*\*\1\*\*|g"               # var line
+    "s|^##* \(.*\)$|\\\n\\\t\1|g"                       # comment line
+    "s|^##\(@.*\) \(.*\)$|\\\n\\\t\*\*\1:\*\* \2|g"     # tag line
 );
 
 #### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
@@ -2558,22 +2595,27 @@ generate_documentation () {
     local indoc=false
     local intag=false
     while read line; do
+        if [ "${line:0:2}" != '##' ]; then continue; fi
         if [ "$line" = "$DOCBUILDER_MARKER" ]; then
             if [ "$indoc" = 'true' ]; then indoc=false; break; else indoc=true; fi
             continue;
         fi
-        line_str=''
-        fct_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[0]}" | sed "${DOCBUILDER_MASKS[0]}")"
-        if [ "$indoc" = 'true' ] && [ -n "$fct_line" ]; then
-            line_str="$fct_line"
-            intag=true
-        elif [ "$indoc" = 'true' ]; then
-            title_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[1]}" | sed "${DOCBUILDER_MASKS[1]}")"
+        if [ "$indoc" = 'true' ]; then
+            line_str=''
+            title_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[0]}" | sed "${DOCBUILDER_MASKS[0]}")"
+            fct_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[1]}" | sed "${DOCBUILDER_MASKS[1]}")"
+            var_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[2]}" | sed "${DOCBUILDER_MASKS[2]}")"
             if [ -n "${title_line}" ]; then
                 line_str="${title_line} (line ${i})\n"
+            elif [ -n "$fct_line" ]; then
+                line_str="$fct_line"
+                intag=true
+            elif [ -n "$var_line" ]; then
+                line_str="$var_line"
+                intag=true
             elif [ "$intag" = 'true' ]; then
-                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[2]}" | sed "${DOCBUILDER_MASKS[2]}")"
                 comm_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[3]}" | sed "${DOCBUILDER_MASKS[3]}")"
+                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
                 if [ "$VERBOSE" = 'true' ]; then
                     if [ -n "$arg_line" ]; then
                         line_str="$arg_line"
@@ -2584,15 +2626,11 @@ generate_documentation () {
                         fi
                     fi
                 else
-                    if [ -n "$arg_line" ] && [ -n "$comm_line" ]; then intag=false; fi
+                    if [ -n "$comm_line" ]; then intag=false; fi
                 fi
-            else
-                intag=false;
-                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
-                if [ -n "$arg_line" ]; then line_str="$arg_line"; fi
             fi
+            if [ -n "$line_str" ]; then docstr+="\n${line_str}"; fi
         fi
-        if [ -n "$line_str" ]; then docstr+="\n${line_str}"; fi
         i=$((i+1))
     done < "$sourcefile" ;
     IFS="$old_IFS"
@@ -2607,7 +2645,7 @@ generate_documentation () {
 }
 
 
-#### LIBRARY INFOS #####################################################################
+#### LIBRARY INFO #####################################################################
 
 #### get_library_version_string ( path = $0 )
 ## extract the GIT version string from a file matching line 'LIB_VCSVERSION=...'
@@ -2776,7 +2814,7 @@ clean_library_cachedir () {
 ##@ INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)
 declare -rxa INSTALLATION_VARS="(SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF)" 2>/dev/null;
 
-##@ SCRIPT_REPOSITORY_URL = url of your distant repository
+##@ SCRIPT_REPOSITORY_URL = url of a distant repository
 declare -x SCRIPT_REPOSITORY_URL=''
 ##@ SCRIPT_FILES = array of installable files
 declare -xa SCRIPT_FILES=()
@@ -3024,7 +3062,7 @@ declare -x DOCUMENTATION_INTRO="\
 \t${LIB_COPYRIGHT} - Some rights reserved. \n\
 \t${LIB_LICENSE}.\n\
 \t${LIB_SOURCES}.\n\
-\tBug reports: <http://github.com/atelierspierrot/piwi-bash-library/issues>.\n\
+\tBug reports: <http://github.com/piwi/bash-library/issues>.\n\
 \t${LIB_ADDITIONAL_INFO}";
 
 # internal API methods

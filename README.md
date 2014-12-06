@@ -28,10 +28,10 @@ arguments and help or usage strings.
 Installing the *Piwi Bash Library* is as simple as making a copy of two files in your target
 directory: the **library source itself** and **its Unix manual page**.
 
-You can install the package in many ways explained in the [Global documentation](http://github.com/atelierspierrot/piwi-bash-library/wiki) ;
+You can install the package in many ways explained in the [Global documentation](http://github.com/piwi/bash-library/wiki) ;
 the best practice is to use **the internal interface** as it presents facilities to update the library.
 
-    wget --no-check-certificate https://github.com/atelierspierrot/piwi-bash-library/archive/master.tar.gz
+    wget --no-check-certificate https://github.com/piwi/bash-library/archive/master.tar.gz
     tar -xvf master.tar.gz
     ./piwi-bash-library-master/src/piwi-bash-library.sh help
 
@@ -48,7 +48,7 @@ call of its methods or variables:
     source path/to/piwi-bash-library.sh
     ...
 
-The full documentation of the library is available online at <http://github.com/atelierspierrot/piwi-bash-library/wiki>.
+The full documentation of the library is available online at <http://github.com/piwi/bash-library/wiki>.
 
 ### Developer documentation
 
@@ -82,8 +82,8 @@ The "Piwi Bash library" is open source, licensed under the
 [GNU GPL v.3 license](http://www.gnu.org/licenses/gpl-3.0.html).
 
     Piwi Bash Library - An open source day-to-day bash library
-    Copyright (C) 2013-2014 Les Ateliers Pierrot
-    <http://www.ateliers-pierrot.fr/> - Some rights reserved.
+    Copyright (C) 2013-2014 Pierre Cassat
+    <http://e-piwi.fr/> - Some rights reserved.
     Created & maintained by Pierre Cassat & contributors
 
     This program is free software: you can redistribute it and/or modify
@@ -99,5 +99,5 @@ The "Piwi Bash library" is open source, licensed under the
     You should have received a copy of the GNU General Public License
     along with this program. If not, see <http://www.gnu.org/licenses/>.
 
-    For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
+    For documentation, sources & updates, see <http://github.com/piwi/bash-library>.
     To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.

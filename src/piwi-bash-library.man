@@ -1,4 +1,4 @@
-.\" author: Les Ateliers Pierrot
+.\" author: Pierre Cassat
 
 .TH  "NAME" "3" "2014-11-21" "Version 2.0.4" "piwi-bash-library.sh Manual"
 
@@ -24,7 +24,7 @@ piwi-bash-library - An open source day-to-day bash library.
 
 .PP
 \fBBash\fP, the "\fIBourne-Again-SHell\fP", is a \fIUnix shell\fP written for the GNU Project as a
-free software replacement for the original Bourne shell (sh). The present library is a tool
+free software replacement of the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
 `\fSsource path/to/piwi-bash-library.sh\fP` and call its methods.
 
@@ -33,7 +33,7 @@ The library is NOT a script doing some work itself except dealing with a copy of
 ; it is just a library. This manual explains the library itself, its options and
 usage methods but you MAY keep in mind that the final manual page to read is the one of
 the real script you will call, using the tools of the library to build its own work. See the
-"Interface" section of this manual for informations about the library interface (when calling
+"Interface" section of this manual for information about the library interface (when calling
 it directly).
 
 .PP
@@ -45,26 +45,26 @@ The following features are available using the library:
 some common methods to work with strings and arrays in Bash
 
 .IP \(bu 
-manage information messages like warnings and errors
+a management of information messages like warnings and errors
 
 .IP \(bu 
-manage a simple \fBhelp or usage information\fP for each script (just defining some variables
-in this script)
+a management of a simple \fBhelp or usage information\fP for each script (just defining some variables
+in the script)
 
 .IP \(bu 
-create some \fBcolorized and styled content\fP for terminal output: some methods are designed
-to wrap a string between colored or styled tags, according to the current system running,
+the creation of some \fBcolorized and stylized content\fP for terminal output: some methods are designed
+to wrap a string between colored or styled tags, according to the current system,
 and to build a colorized content using XML-like tags (`\fS<mytag>my content</mytag>\fP`)
 
 .IP \(bu 
-manage a \fBconfiguration dotfile\fP for a script: some methods allows you to read, write,
+a management of a \fBconfiguration dotfile\fP for a script: some methods allow you to read, write,
 update and delete configuration values in a file
 
 .IP \(bu 
-manage \fBtemporary files\fP and \fBlog files\fP
+a management of \fBtemporary files\fP and \fBlog files\fP
 
 .IP \(bu 
-use a set of \fBcommon options\fP (described in next "Options" section) to let the user interact
+a set of \fBcommon options\fP (described in next "Options" section) to let the user interact
 with the script, such as increase or decrease verbosity, make a dry run, ask to force 
 commands or to always prompt for confirmation
 
@@ -122,19 +122,19 @@ uninstall a copy from a system path
 update the library with a newer version if so ; this will update the MINOR version
 .TP
 \fBversion\fP
-get the version informations about the library ; use option `\fSquiet\fP` to get only
+get the version information about the library ; use option `\fSquiet\fP` to get only
 the version number
 .SH OPTIONS
 
 .PP
 Each script depending on the library may define its own options. Report to the script
-manpage or help string for more infos.
+manpage or help string for more information.
 
 .PP
 \fIThe following common options are supported (MAY be used first):\fP
 .TP
 \fB--dry-run\fP
-see commands to run but not run them actually ; this will define the environment variable
+see commands to run but do not run them actually ; this will define the environment variable
 `\fSDRYRUN\fP` on `\fStrue\fP`
 .TP
 \fB-f\fP, \fB--force\fP
@@ -208,7 +208,7 @@ defines the current directory as target directory (alias of `\fS-t=pwd\fP`)
 \fB-p\fP, \fB--preset\fP =type
 defines the preset type to use for an installation ; can be "\fBdefault\fP" (default value),
 "\fBuser\fP", "\fBdev\fP" or "\fBfull\fP" ; the value of this option will be used to define the
-files to install ; see the "Files" section below for more informations
+files to install ; see the "Files" section below for more information
 .TP
 \fB-r\fP, \fB--release\fP =version
 defines the GIT version tag to use from the remote repository ; the release MUST exist in the
@@ -228,14 +228,14 @@ a set of predefined colors
 VERBOSE QUIET DEBUG INTERACTIVE FORCED
 the library flags, activated by script common options (see previous section)
 .TP
-USEROS
-the current user operating system
+USEROS USERSHELL SHELLVERSION
+the current user operating system, binary shell in use and bash version
 .TP
 NAME VERSION DATE DESCRIPTION_USAGE LICENSE_USAGE HOMEPAGE_USAGE SYNOPSIS_USAGE OPTIONS_USAGE
 these are used to build the help information of the scripts ; they may be defined for each script
 .TP
 SYNOPSIS_MANPAGE DESCRIPTION_MANPAGE OPTIONS_MANPAGE EXAMPLES_MANPAGE EXIT_STATUS_MANPAGE FILES_MANPAGE ENVIRONMENT_MANPAGE COPYRIGHT_MANPAGE BUGS_MANPAGE AUTHOR_MANPAGE SEE_ALSO_MANPAGE
-these are used to build man-pages and help informations ; they may be defined for each script
+these are used to build man-pages and help information ; they may be defined for each script
 .TP
 NAME VERSION DATE PRESENTATION COPYRIGHT LICENSE SOURCES ADDITIONAL_INFO
 these are used to build the version string of the scripts ; they may be defined for each script
@@ -245,6 +245,10 @@ these are used for options and arguments ; see the documentation for more inform
 .TP
 LOREMIPSUM LOREMIPSUM_SHORT LOREMIPSUM_MULTILINE
 these are defined for tests with sample strings
+.TP
+CMD_OUT CMD_ERR CMD_STATUS
+these are defined after usage of the `\fSevaluate()\fP` method or derivatives with respectively the STDOUT, STDERR and
+exit STATUS of the evaluated command
 .SH EXIT STATUS
 
 .PP
@@ -279,8 +283,8 @@ is installed by the interface using the "dev" or "full" presets
 .SH LICENSE
 
 .PP
-Copyright (C) 2013-2014 Les Ateliers Pierrot
-<http://www.ateliers-pierrot.fr/> - Some rights reserved.
+Copyright (C) 2013-2014, Pierre Cassat
+<http://e-piwi.fr/> - Some rights reserved.
 
 .PP
 This program is free software: you can redistribute it and/or modify
@@ -299,7 +303,7 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 .PP
-For documentation, sources & updates, see <http://github.com/atelierspierrot/piwi-bash-library>.
+For documentation, sources & updates, see <http://github.com/piwi/bash-library>.
 
 .PP
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
@@ -307,7 +311,7 @@ To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.htm
 .SH BUGS
 
 .PP
-To transmit bugs, see <http://github.com/atelierspierrot/piwi-bash-library/issues>.
+To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
 
 .SH AUTHOR
 
@@ -318,5 +322,5 @@ Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://e-piwi.fr/>)
 .SH SEE ALSO
 
 .PP
-bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopts(1)
+bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopt(1), getopts(1)
 

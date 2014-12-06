@@ -6,4 +6,4 @@
 	url = https://github.com/sstephenson/bats.git
 [submodule "modules/wiki"]
 	path = modules/wiki
-	url = https://github.com/atelierspierrot/piwi-bash-library.wiki.git
+	url = https://github.com/piwi/bash-library.wiki.git

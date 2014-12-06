@@ -1,19 +1,15 @@
 {
-    "name": "atelierspierrot/piwi-bash-library",
+    "name": "piwi/bash-library",
     "type": "library",
     "description": "The Bash library package of Les Ateliers Pierrot",
     "keywords": [ "bash", "library" ],
-    "homepage": "http://github.com/atelierspierrot/piwi-bash-library",
+    "homepage": "http://github.com/piwi/bash-library",
     "license": "GPL-3.0",
     "authors": [{
-        "name": "Les Ateliers Pierrot & contributors",
-        "email": "contact@ateliers-pierrot.fr",
-        "homepage": "http://www.ateliers-pierrot.fr/"
-    },{
         "name": "Pierre Cassat (piwi)",
         "homepage": "http://e-piwi.fr/"
     }],
-    "support": { "issues": "http://github.com/atelierspierrot/piwi-bash-library/issues" },
+    "support": { "issues": "http://github.com/piwi/bash-library/issues" },
     "bin": [ "src/piwi-bash-library.sh", "src/piwi-bash-library.man" ],
     "extra": {
         "branch-alias": {

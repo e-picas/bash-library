@@ -2,6 +2,8 @@
 
 ## 2.1.0 (current dev - alpha)
 
+!! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
+
 - 'piwi/markdown-extended' is now a GIT submodule
 - new 'sstephenson/bats' submodule for unit-testing
 - new test suite with BATS in 'tests/'
