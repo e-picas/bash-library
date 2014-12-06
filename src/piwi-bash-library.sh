@@ -3226,9 +3226,6 @@ intlib_check_uptodate () {
     return 0
 }
 
-# check last updates
-intlib_check_uptodate
-
 # parsing options
 #rearrange_script_options "$@"
 rearrange_script_options_new "$0" "$@"
@@ -3257,6 +3254,9 @@ while getopts ":${OPTIONS_ALLOWED}" OPTION; do
 done
 get_next_argument
 ACTION="$ARGUMENT"
+
+# check last updates
+intlib_check_uptodate
 
 # checking env
 # -> action is required
