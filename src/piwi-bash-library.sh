@@ -560,8 +560,7 @@ fi
 #### _echo ( string )
 ## echoes the string with the true 'echo -e' command
 ## use this for colorization
-##! the 'function' keyword seems mandatory here when sourcing the library
-function _echo () {
+_echo () {
 #    tput sgr0
     case "$ECHOCMD" in
         gnu) $(which echo) -e "$*";;
