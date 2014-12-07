@@ -40,8 +40,8 @@ find_binstaller_file () {
 
 #### get_sources ( url , package_name=url_filename , file_type='' ) : void
 ## Get a package sources form an URL. You can define final local filename with `package_name`
-## and specify a file type for a specific extraction method with `file_type` (file extension only).
-## This will load the final local path into the `SOURCE_PATH` environment variable.
+##+ and specify a file type for a specific extraction method with `file_type` (file extension only).
+##+ This will load the final local path into the `SOURCE_PATH` environment variable.
 ##
 ## Example:
 ##
