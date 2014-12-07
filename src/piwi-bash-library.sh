@@ -1842,6 +1842,10 @@ declare -xi ARGIND=0
 ## Current argument string (see `ARGIND`)
 declare -x ARGUMENT=''
 
+## Options errors messages
+declare -rx UNKNOWN_OPTION_MASK="unknown option '%s'!" 2>/dev/null;
+declare -rx MISSING_OPTION_ARGUMENT_MASK="option '%s' requires an argument!" 2>/dev/null;
+
 #### read_from_pipe ( file=/dev/stdin )
 read_from_pipe () {
     local fpipe="${1:-/dev/stdin}"
@@ -2037,7 +2041,7 @@ rearrange_script_options_new () {
     getopt --test > /dev/null
     local _vers="$?"
     if [ -n "$_vers" ] && [ "$_vers" -ne 4 ]; then
-        verecho "> no newest version of 'getopt' found! Processing old 'rearrange_script_options()'"
+        verecho "> your version of 'getopt' seems to be old! Processing alternative 'rearrange_script_options()' method."
         rearrange_script_options "$@"
         return 0
     fi
@@ -2183,7 +2187,7 @@ parse_common_options_strict () {
         elif [ "${opt:0:2}" = '--' ]
         then
             if [ "$argreq" = 'true' ]; then
-                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$MISSING_OPTION_ARGUMENT_MASK" "$prevopt")")
             fi
             OPTARG="${opt:2}"
             LONGOPT="$(get_long_option "$OPTARG")"
@@ -2194,7 +2198,7 @@ parse_common_options_strict () {
                 ! in_array "${LONGOPT}:" "${long_options[@]}" &&
                 ! in_array "${LONGOPT}::" "${long_options[@]}";
             then
-                SCRIPT_OPTS_ERRS+=("Unknown option '$LONGOPT'!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$UNKNOWN_OPTION_MASK" "$LONGOPT")")
                 argreq=false
             else
                 if in_array "${LONGOPT}:" "${long_options[@]}" && [ -z "$LONGOPTARG" ]; then
@@ -2206,7 +2210,7 @@ parse_common_options_strict () {
         elif [ "${opt:0:1}" = '-' ]
         then
             if [ "$argreq" = 'true' ]; then
-                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$MISSING_OPTION_ARGUMENT_MASK" "$prevopt")")
             fi
             SHORTOPT="${opt:1:1}"
             SHORTOPTARG="$(get_option_arg "${opt:2}")"
@@ -2216,7 +2220,7 @@ parse_common_options_strict () {
                 ! in_array "${SHORTOPT}:" "${short_options[@]}" &&
                 ! in_array "${SHORTOPT}::" "${short_options[@]}";
             then
-                SCRIPT_OPTS_ERRS+=("Unknown option '$SHORTOPT'!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$UNKNOWN_OPTION_MASK" "$SHORTOPT")")
             else
                 if in_array "${SHORTOPT}:" "${short_options[@]}" && [ -z "$SHORTOPTARG" ]; then
                     argreq=true
