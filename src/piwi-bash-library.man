@@ -20,6 +20,21 @@ piwi-bash-library - An open source day-to-day bash library.
     [\fB--logfile\fP \fI=filename\fP] [\fBworking-dir\fP \fI=path\fP]
         [script options ...]  (--)  [arguments ...]
 
+.PP
+\fBpiwi-bash-library-script\fP  [\fIcommon options\fP] 
+    [\fB-t\fP|\fB--target\fP \fI=path\fP]  [\fB--local\fP]
+    [\fB-b\fP|\fB--branch\fP \fI=branch\fP]  [\fB-r\fP|\fB--release\fP \fI=version\fP]
+    [\fB-p\fP|\fB--preset\fP \fI=(default dev user full)\fP]
+    [\fB-e\fP|\fB--exec\fP \fI='string to eval'\fP]
+        help | usage
+        version
+        check
+        install
+        update
+        uninstall
+        documentation
+        clean
+
 .SH DESCRIPTION
 
 .PP
@@ -48,23 +63,23 @@ some common methods to work with strings and arrays in Bash
 a management of information messages like warnings and errors
 
 .IP \(bu 
-a management of a simple \fBhelp or usage information\fP for each script (just defining some variables
+a management of a simple \fIhelp or usage information\fP for each script (just defining some variables
 in the script)
 
 .IP \(bu 
-the creation of some \fBcolorized and stylized content\fP for terminal output: some methods are designed
+the creation of some \fIcolorized and stylized content\fP for terminal output: some methods are designed
 to wrap a string between colored or styled tags, according to the current system,
 and to build a colorized content using XML-like tags (`\fS<mytag>my content</mytag>\fP`)
 
 .IP \(bu 
-a management of a \fBconfiguration dotfile\fP for a script: some methods allow you to read, write,
+a management of a \fIconfiguration dotfile\fP for a script: some methods allow you to read, write,
 update and delete configuration values in a file
 
 .IP \(bu 
-a management of \fBtemporary files\fP and \fBlog files\fP
+a management of \fItemporary files\fP and \fIlog files\fP
 
 .IP \(bu 
-a set of \fBcommon options\fP (described in next "Options" section) to let the user interact
+a set of \fIcommon options\fP (described in next "Options" section) to let the user interact
 with the script, such as increase or decrease verbosity, make a dry run, ask to force 
 commands or to always prompt for confirmation
 
@@ -80,7 +95,7 @@ a known environment ...
 .PP
 When calling the library script itself from command line, a user interface is available to
 deal (install/update/uninstall) with a copy of the library locally or globally in your 
-system. To start with this interface, you can run:
+system (3rd synopsis form). To start with this interface, you can run:
 .RS
 
 .EX
@@ -183,6 +198,9 @@ You can group short options like `\fS-xc\fP`, set an option argument like `\fS-d
 `\fS--long=value\fP` and use `\fS--\fP` to explicitly specify the end of the script options.
 
 .PP
+You can mix short options, long options and script arguments at your convenience.
+
+.PP
 In some cases, you can use an automatic long option named as a program like `\fS--less\fP` for the
 "less" program. If this program is installed in the system, it will be used for certain
 option rendering. For instance, a long "help" output can be loaded via `\fSless\fP` running:
@@ -200,14 +218,18 @@ Calling the library script itself to use its interface, you can use the followin
 .TP
 \fB-b\fP, \fB--branch\fP =name
 defines the GIT branch to use from the remote repository ; the branch MUST exist in the
-repository ; it defaults to "\fBmaster\fP"
+repository ; it defaults to "\fImaster\fP"
+.TP
+\fB-e\fP, \fB--exec\fP ='bash string to evaluate'
+a bash raw script string to evaluate in library's environment ; the execution will stop
+after the `\fSevaluate\fP` process (exclusive action) and exit with its last status
 .TP
 \fB--local\fP
 defines the current directory as target directory (alias of `\fS-t=pwd\fP`)
 .TP
 \fB-p\fP, \fB--preset\fP =type
-defines the preset type to use for an installation ; can be "\fBdefault\fP" (default value),
-"\fBuser\fP", "\fBdev\fP" or "\fBfull\fP" ; the value of this option will be used to define the
+defines the preset type to use for an installation ; can be "\fIdefault\fP" (default value),
+"\fIuser\fP", "\fIdev\fP" or "\fIfull\fP" ; the value of this option will be used to define the
 files to install ; see the "Files" section below for more information
 .TP
 \fB-r\fP, \fB--release\fP =version

@@ -1,6 +1,6 @@
 # Documentation of 'src/piwi-bash-library.sh'
 
-## REFERENCES (line 0)
+## REFERENCES (line 2)
 
 
 -   **Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>**
@@ -11,13 +11,12 @@
 
 -   **GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>**
 
-## ENVIRONMENT (line 5)
+## ENVIRONMENT (line 7)
 
 
 -   **SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)**
 
 	List of variables defined by the caller script used to build all informational strings.
-
 	These are all RECOMMENDED.
 
 -   **USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)**
@@ -72,7 +71,7 @@
 
 	Version number of current shell in use (value of the global `$BASH_VERSION` variable).
 
-## SETTINGS (line 35)
+## SETTINGS (line 37)
 
 
 -   **E_ERROR=90**
@@ -101,7 +100,7 @@
 
 -   **LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/" (read-only)**
 
-## COMMON OPTIONS (line 49)
+## COMMON OPTIONS (line 51)
 
 
 -   **COMMON_OPTIONS_ALLOWED = "fhiqvVx-:"**
@@ -138,19 +137,19 @@
 
 	Concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE
 
-## LOREM IPSUM (line 67)
+## LOREM IPSUM (line 69)
 
 
 -   **LOREMIPSUM (844 chars.) , LOREMIPSUM_SHORT (446 chars.) , LOREMIPSUM_MULTILINE (861 chars. / 5 lines) (read-only)**
 
-## LIBRARY SETUP (line 69)
+## LIBRARY SETUP (line 71)
 
 
 -   **LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL (read-only)**
 
 	Library internal setup
 
-## SYSTEM (line 72)
+## SYSTEM (line 74)
 
 
 -   **get_system_info ()**
@@ -196,7 +195,7 @@
 
 	this will load current IP address in USERIP & USERISP
 
-## FILES (line 90)
+## FILES (line 92)
 
 
 -   **get_extension ( path = $0 )**
@@ -234,31 +233,31 @@
 
 	resolve a system path replacing '~' and '.'
 
-## ARRAY (line 105)
+## ARRAY (line 107)
 
 
 -   **in_array ( item , $array[@] )**
 
 
-	**@return 0 if item is found in:** array
+	**@return:** 0 if item is found in array
 
 -   **array_search ( item , $array[@] )**
 
 
-	**@return the index of an array item, 0:** based
+	**@return:** the index of an array item, 0 based
 
 -   **array_filter ( $array[@] )**
 
 
-	**@return array with cleaned:** values
+	**@return:** array with cleaned values
 
-## STRING (line 112)
+## STRING (line 114)
 
 
 -   **string_length ( string )**
 
 
-	**@return the number of characters in:** string
+	**@return:** the number of characters in string
 
 -   **/ strlen ( string )**
 
@@ -305,7 +304,7 @@
 -   **explode_letters ( str )**
 
 
-## BOOLEAN (line 132)
+## BOOLEAN (line 134)
 
 
 -   **onoff_bit ( bool )**
@@ -313,7 +312,7 @@
 
 	echoes 'on' if bool=true, 'off' if it is false
 
-## UTILS (line 135)
+## UTILS (line 137)
 
 
 -   **ECHOCMD (read-only: 'builtin' or 'gnu')**
@@ -365,9 +364,9 @@
 
 	- final status is loaded in global `$CMD_STATUS`
 
-	**@env CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and:** STATUS
+	**@env:** CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
 
-	**@error will end with any caught error (exit status:** !=0)
+	**@error:** will end with any caught error (exit status !=0)
 
 -   **interactive_evaluate ( command )**
 
@@ -440,6 +439,7 @@
 
 
 	prompt user a string proposing an indexed list of answers for selection
+	and returns a valid result (user is re-prompted while the answer seems not correct)
 
 	NOTE - the 'list' MUST be passed like `list[@]` (no quotes and dollar sign)
 
@@ -460,14 +460,14 @@
 
 	writes the error string on screen and then exit with an error status
 
-	**@error default status is E_ERROR:** (90)
+	**@error:** default status is E_ERROR (90)
 
 -   **get_stack_trace ( first_item = 0 )**
 
 
 	get a formated stack trace
 
--   **get_synopsis_string ()**
+-   **get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )**
 
 
 	builds a synopsis string using script's declared available options
@@ -487,14 +487,14 @@
 
 	writes an error string as a simple message with a synopsis usage info
 
-	**@error default status is E_ERROR:** (90)
+	**@error:** default status is E_ERROR (90)
 
 -   **simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
 
 
 	writes multiple errors strings as a simple message with a synopsis usage info
 
-	**@error default status is E_ERROR:** (90)
+	**@error:** default status is E_ERROR (90)
 
 -   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
 
@@ -506,58 +506,58 @@
 
 	no script option error
 
-	**@error exits with status E_OPTS:** (81)
+	**@error:** exits with status E_OPTS (81)
 
 -   **no_option_simple_error ()**
 
 
 	no script option simple error
 
-	**@error exits with status E_OPTS:** (81)
+	**@error:** exits with status E_OPTS (81)
 
 -   **unknown_option_error ( option )**
 
 
 	invalid script option error
 
-	**@error exits with status E_OPTS:** (81)
+	**@error:** exits with status E_OPTS (81)
 
 -   **unknown_option_simple_error ( option )**
 
 
 	invalid script option simple error
 
-	**@error exits with status E_OPTS:** (81)
+	**@error:** exits with status E_OPTS (81)
 
 -   **command_error ( cmd )**
 
 
 	command not found error
 
-	**@error exits with status E_CMD:** (82)
+	**@error:** exits with status E_CMD (82)
 
 -   **command_simple_error ( cmd )**
 
 
 	command not found simple error
 
-	**@error exits with status E_CMD:** (82)
+	**@error:** exits with status E_CMD (82)
 
 -   **path_error ( path )**
 
 
 	path not found error
 
-	**@error exits with status E_PATH:** (83)
+	**@error:** exits with status E_PATH (83)
 
 -   **path_simple_error ( path )**
 
 
 	path not found simple error
 
-	**@error exits with status E_PATH:** (83)
+	**@error:** exits with status E_PATH (83)
 
-## VCS (line 239)
+## VCS (line 240)
 
 
 -   **VCSVERSION**
@@ -635,23 +635,23 @@
 
 	create a git clone of a distant repository in CURRENT_GIT_CLONE_DIR
 
-	**@env clone directory is loaded in:** CURRENT_GIT_CLONE_DIR
+	**@env:** clone directory is loaded in CURRENT_GIT_CLONE_DIR
 
 -   **git_update_clone ( target_dir )**
 
 
 	update a git clone
 
-	**@param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned:** clone
+	**@param:** target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
 -   **git_change_branch ( target_dir , branch = 'master' )**
 
 
 	change a git clone tracking branch
 
-	**@param target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned:** clone
+	**@param:** target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 276)
+## COLORIZED CONTENTS (line 277)
 
 
 -   **LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)**
@@ -667,43 +667,43 @@
 
 	echoes the terminal tag code for color: " 033[CODEm"
 
-	**@param code must be one of the library colors or text-options:** codes
+	**@param:** code must be one of the library colors or text-options codes
 
 -   **get_color_code ( name , background = false )**
 
 
-	**@param name must be in:** LIBCOLORS
+	**@param:** name must be in LIBCOLORS
 
 -   **get_color_tag ( name , background = false )**
 
 
-	**@param name must be in:** LIBCOLORS
+	**@param:** name must be in LIBCOLORS
 
 -   **get_text_option_code ( name )**
 
 
-	**@param name must be in:** LIBTEXTOPTIONS
+	**@param:** name must be in LIBTEXTOPTIONS
 
 -   **get_text_option_tag ( name )**
 
 
-	**@param name must be in:** LIBTEXTOPTIONS
+	**@param:** name must be in LIBTEXTOPTIONS
 
 -   **get_text_option_tag_close ( name )**
 
 
-	**@param name must be in:** LIBTEXTOPTIONS
+	**@param:** name must be in LIBTEXTOPTIONS
 
 -   **colorize ( string , text_option , foreground , background )**
 
 
 	echoes a colorized string ; all arguments are optional except `string`
 
-	**@param text_option must be in:** LIBTEXTOPTIONS
+	**@param:** text_option must be in LIBTEXTOPTIONS
 
-	**@param foreground must be in:** LIBCOLORS
+	**@param:** foreground must be in LIBCOLORS
 
-	**@param background must be in:** LIBCOLORS
+	**@param:** background must be in LIBCOLORS
 
 -   **parse_color_tags ( "string with <bold>tags</bold>" )**
 
@@ -719,7 +719,7 @@
 -   **strip_colors ( string )**
 
 
-## TEMPORARY FILES (line 305)
+## TEMPORARY FILES (line 306)
 
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
@@ -729,16 +729,16 @@
 
 	the real temporary directory path is loaded in the global `TEMPDIR`
 
-	**@param dirname The name of the directory to create (default is:** `tmp/`)
+	**@param:** dirname The name of the directory to create (default is `tmp/`)
 
 -   **get_tempfile_path ( filename , dirname = "LIB_TEMPDIR" )**
 
 
 	this will echoes a unique new temporary file path
 
-	**@param filename The temporary filename to:** use
+	**@param:** filename The temporary filename to use
 
-	**@param dirname The name of the directory to create (default is:** `tmp/`)
+	**@param:** dirname The name of the directory to create (default is `tmp/`)
 
 -   **create_tempdir ( dirname = "LIB_TEMPDIR" )**
 
@@ -747,23 +747,23 @@
 
 	use this method to over-write an existing temporary directory
 
-	**@param dirname The name of the directory to create (default is:** `tmp/`)
+	**@param:** dirname The name of the directory to create (default is `tmp/`)
 
 -   **clear_tempdir ( dirname = "LIB_TEMPDIR" )**
 
 
 	this will deletes the temporary directory
 
-	**@param dirname The name of the directory (default is:** `tmp/`)
+	**@param:** dirname The name of the directory (default is `tmp/`)
 
 -   **clear_tempfiles ( dirname = "LIB_TEMPDIR" )**
 
 
 	this will deletes the temporary directory contents (not the directory itself)
 
-	**@param dirname The name of the directory (default is:** `tmp/`)
+	**@param:** dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 324)
+## LOG FILES (line 325)
 
 
 -   **get_log_filepath ()**
@@ -783,7 +783,7 @@
 
 	this will read the LOGFILEPATH content
 
-## CONFIGURATION FILES (line 332)
+## CONFIGURATION FILES (line 333)
 
 
 -   **get_global_configfile ( file_name )**
@@ -818,7 +818,7 @@
 
 	params must be passed as "array[@]" (no dollar sign)
 
-## SCRIPT OPTIONS / ARGUMENTS (line 345)
+## SCRIPT OPTIONS / ARGUMENTS (line 346)
 
 
 -   **ORIGINAL_SCRIPT_OPTS="$@" (read-only)**
@@ -857,16 +857,18 @@
 
 	Current argument string (see `ARGIND`)
 
+	Options errors messages
+
 -   **read_from_pipe ( file=/dev/stdin )**
 
 
--   **get_short_options_array ()**
+-   **get_short_options_array ( short_opts=OPTIONS_ALLOWED )**
 
 
--   **get_short_options_string ( delimiter = '|' )**
+-   **get_short_options_string ( delimiter = '|' , short_opts=OPTIONS_ALLOWED )**
 
 
--   **get_option_declaration ( option_name )**
+-   **get_option_declaration ( option_name , short_opts=OPTIONS_ALLOWED )**
 
 
 -   **get_option_argument ( "$x" )**
@@ -879,13 +881,13 @@
 
 	alias of 'get_option_argument'
 
--   **get_long_options_array ()**
+-   **get_long_options_array ( long_opts=LONG_OPTIONS_ALLOWED )**
 
 
--   **get_long_options_string ( delimiter = '|' )**
+-   **get_long_options_string ( delimiter = '|' , long_opts=LONG_OPTIONS_ALLOWED )**
 
 
--   **get_long_option_declaration ( option_name )**
+-   **get_long_option_declaration ( option_name , long_opts=LONG_OPTIONS_ALLOWED )**
 
 
 -   **get_long_option_name ( "$x" )**
@@ -959,7 +961,7 @@
 
 	this will stop options treatment at '--'
 
-## SCRIPT INFO (line 405)
+## SCRIPT INFO (line 407)
 
 
 -   **get_script_version_string ( quiet = false )**
@@ -1005,7 +1007,7 @@
 -   **script_version ( quiet = false )**
 
 
-## DOCBUILDER (line 423)
+## DOCBUILDER (line 425)
 
 
 	Documentation builder rules, tags and masks
@@ -1022,7 +1024,7 @@
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
 
-## LIBRARY INFO (line 430)
+## LIBRARY INFO (line 432)
 
 
 -   **get_library_version_string ( path = $0 )**
@@ -1062,7 +1064,7 @@
 
 	alias of library_debug
 
-## LIBRARY INTERNALS (line 445)
+## LIBRARY INTERNALS (line 447)
 
 
 -   **LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE**
@@ -1082,7 +1084,7 @@
 
 	clean dir '$HOME/.piwi-bash-library/cache' if it exists
 
-## INSTALLATION WIZARD (line 453)
+## INSTALLATION WIZARD (line 455)
 
 
 -   **INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)**
@@ -1121,7 +1123,7 @@
 -   **script_check ( file_name , original = LIBINST_CLONE , target = LIBINST_TARGET )**
 
 
-	**@param file_name: the file to check and compare on both:** sides
+	**@param:** file_name: the file to check and compare on both sides
 
 -   **script_update ( path = $HOME/bin/ )**
 
@@ -1129,9 +1131,11 @@
 -   **script_uninstall ( path = $HOME/bin/ )**
 
 
-## COMPATIBILITY (line 476)
+## COMPATIBILITY (line 478)
 
+
+	stop exporting everything ...
 
 ----
 
-[*Doc generated at 06-12-2014 21:01:42 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 07-12-2014 11:37:02 from path 'src/piwi-bash-library.sh'*]

@@ -20,6 +20,20 @@ piwi-bash-library - An open source day-to-day bash library.
     [**--logfile** *=filename*] [**working-dir** *=path*]
         [script options ...]  (--)  [arguments ...]
 
+**piwi-bash-library-script**  [*common options*] 
+    [**-t**|**--target** *=path*]  [**--local**]
+    [**-b**|**--branch** *=branch*]  [**-r**|**--release** *=version*]
+    [**-p**|**--preset** *=(default dev user full)*]
+    [**-e**|**--exec** *='string to eval'*]
+        help | usage
+        version
+        check
+        install
+        update
+        uninstall
+        documentation
+        clean 
+
 ## DESCRIPTION
 
 **Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
@@ -38,15 +52,15 @@ The following features are available using the library:
 
 -   some common methods to work with strings and arrays in Bash
 -   a management of information messages like warnings and errors
--   a management of a simple **help or usage information** for each script (just defining some variables
+-   a management of a simple *help or usage information* for each script (just defining some variables
     in the script)
--   the creation of some **colorized and stylized content** for terminal output: some methods are designed
+-   the creation of some *colorized and stylized content* for terminal output: some methods are designed
     to wrap a string between colored or styled tags, according to the current system,
     and to build a colorized content using XML-like tags (`<mytag>my content</mytag>`)
--   a management of a **configuration dotfile** for a script: some methods allow you to read, write,
+-   a management of a *configuration dotfile* for a script: some methods allow you to read, write,
     update and delete configuration values in a file
--   a management of **temporary files** and **log files**
--   a set of **common options** (described in next "Options" section) to let the user interact
+-   a management of *temporary files* and *log files*
+-   a set of *common options* (described in next "Options" section) to let the user interact
     with the script, such as increase or decrease verbosity, make a dry run, ask to force 
     commands or to always prompt for confirmation
 
@@ -58,7 +72,7 @@ a known environment ...
 
 When calling the library script itself from command line, a user interface is available to
 deal (install/update/uninstall) with a copy of the library locally or globally in your 
-system. To start with this interface, you can run:
+system (3rd synopsis form). To start with this interface, you can run:
 
     path/to/piwi-bash-library.sh (--less) help
 
@@ -149,6 +163,8 @@ the environment variable `WORKINGDIR`
 You can group short options like `-xc`, set an option argument like `-d(=)value` or
 `--long=value` and use `--` to explicitly specify the end of the script options.
 
+You can mix short options, long options and script arguments at your convenience. 
+
 In some cases, you can use an automatic long option named as a program like `--less` for the
 "less" program. If this program is installed in the system, it will be used for certain
 option rendering. For instance, a long "help" output can be loaded via `less` running:
@@ -161,14 +177,18 @@ Calling the library script itself to use its interface, you can use the followin
 
 **-b**, **--branch** =name
 :    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
-repository ; it defaults to "**master**"
+repository ; it defaults to "*master*"
+
+**-e**, **--exec** ='bash string to evaluate'
+:    a bash raw script string to evaluate in library's environment ; the execution will stop
+after the `evaluate` process (exclusive action) and exit with its last status
 
 **--local**
 :    defines the current directory as target directory (alias of `-t=pwd`)
 
 **-p**, **--preset** =type
-:    defines the preset type to use for an installation ; can be "**default**" (default value),
-"**user**", "**dev**" or "**full**" ; the value of this option will be used to define the
+:    defines the preset type to use for an installation ; can be "*default*" (default value),
+"*user*", "*dev*" or "*full*" ; the value of this option will be used to define the
 files to install ; see the "Files" section below for more information
 
 **-r**, **--release** =version

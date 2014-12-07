@@ -20,6 +20,7 @@
 # 
 ##@!@##
 
+## for dev usage
 #set -u
 #set -e
 
@@ -559,8 +560,7 @@ fi
 #### _echo ( string )
 ## echoes the string with the true 'echo -e' command
 ## use this for colorization
-##! the 'function' keyword seems mandatory here when sourcing the library
-function _echo () {
+_echo () {
 #    tput sgr0
     case "$ECHOCMD" in
         gnu) $(which echo) -e "$*";;
@@ -849,11 +849,13 @@ get_stack_trace () {
     return 0
 }
 
-#### get_synopsis_string ()
+#### get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )
 ## builds a synopsis string using script's declared available options
 get_synopsis_string () {
-    local -a short_options=( $(get_short_options_array) )
-    local -a long_options=( $(get_long_options_array) )
+    local shortopts="${1:-${OPTIONS_ALLOWED}}"
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a short_options=( $(get_short_options_array "$shortopts") )
+    local -a long_options=( $(get_long_options_array "$longopts") )
     local short_options_string=''
     local long_options_string=''
     local i=1
@@ -1840,6 +1842,10 @@ declare -xi ARGIND=0
 ## Current argument string (see `ARGIND`)
 declare -x ARGUMENT=''
 
+## Options errors messages
+declare -rx UNKNOWN_OPTION_MASK="unknown option '%s'!" 2>/dev/null;
+declare -rx MISSING_OPTION_ARGUMENT_MASK="option '%s' requires an argument!" 2>/dev/null;
+
 #### read_from_pipe ( file=/dev/stdin )
 read_from_pipe () {
     local fpipe="${1:-/dev/stdin}"
@@ -1856,10 +1862,11 @@ read_from_pipe () {
     export SCRIPT_PIPED_INPUT
 }
 
-#### get_short_options_array ()
+#### get_short_options_array ( short_opts=OPTIONS_ALLOWED )
 get_short_options_array () {
+    local shortopts="${1:-${OPTIONS_ALLOWED}}"
     local -a short_options=()
-    local shortoptions="${OPTIONS_ALLOWED//-:/}"
+    local shortoptions="${shortopts//-:/}"
     explode_letters "$shortoptions"
     local b=''
     for i in "${EXPLODED_ARRAY[@]}"; do
@@ -1878,18 +1885,20 @@ get_short_options_array () {
     return 0
 }
 
-#### get_short_options_string ( delimiter = '|' )
+#### get_short_options_string ( delimiter = '|' , short_opts=OPTIONS_ALLOWED )
 get_short_options_string () {
     local delimiter="${1:-|}"
-    local -a short_options=( $(get_short_options_array) )
+    local shortopts="${2:-${OPTIONS_ALLOWED}}"
+    local -a short_options=( $(get_short_options_array "$shortopts") )
     implode short_options[@] "${delimiter}"
     return 0
 }
 
-#### get_option_declaration ( option_name )
+#### get_option_declaration ( option_name , short_opts=OPTIONS_ALLOWED )
 get_option_declaration () {
     local _optname="$1"
-    local -a opts_table=( $(get_options_array) )
+    local shortopts="${2:-${OPTIONS_ALLOWED}}"
+    local -a opts_table=( $(get_options_array "$shortopts") )
     local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
@@ -1907,10 +1916,11 @@ get_option_argument () {
 ## alias of 'get_option_argument'
 get_option_arg () { get_option_argument "$*"; return $?; }
 
-#### get_long_options_array ()
+#### get_long_options_array ( long_opts=LONG_OPTIONS_ALLOWED )
 get_long_options_array () {
+    local longopts="${1:-${LONG_OPTIONS_ALLOWED}}"
     local -a long_options=()
-    explode "$LONG_OPTIONS_ALLOWED" ","
+    explode "$longopts" ","
     for i in "${EXPLODED_ARRAY[@]}"; do
         long_options+=( "$i" )
     done
@@ -1918,18 +1928,20 @@ get_long_options_array () {
     return 0
 }
 
-#### get_long_options_string ( delimiter = '|' )
+#### get_long_options_string ( delimiter = '|' , long_opts=LONG_OPTIONS_ALLOWED )
 get_long_options_string () {
     local delimiter="${1:-|}"
-    local -a long_options=( $(get_long_options_array) )
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a long_options=( $(get_long_options_array "$longopts") )
     implode long_options[@] "$delimiter"
     return 0
 }
 
-#### get_long_option_declaration ( option_name )
+#### get_long_option_declaration ( option_name , long_opts=LONG_OPTIONS_ALLOWED )
 get_long_option_declaration () {
     local _optname="$1"
-    local -a opts_table=( $(get_long_options_array) )
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a opts_table=( $(get_long_options_array "$longopts") )
     local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
@@ -2029,7 +2041,7 @@ rearrange_script_options_new () {
     getopt --test > /dev/null
     local _vers="$?"
     if [ -n "$_vers" ] && [ "$_vers" -ne 4 ]; then
-        verecho "> no newest version of 'getopt' found! Processing old 'rearrange_script_options()'"
+        verecho "> your version of 'getopt' seems to be old! Processing alternative 'rearrange_script_options()' method."
         rearrange_script_options "$@"
         return 0
     fi
@@ -2175,7 +2187,7 @@ parse_common_options_strict () {
         elif [ "${opt:0:2}" = '--' ]
         then
             if [ "$argreq" = 'true' ]; then
-                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$MISSING_OPTION_ARGUMENT_MASK" "$prevopt")")
             fi
             OPTARG="${opt:2}"
             LONGOPT="$(get_long_option "$OPTARG")"
@@ -2186,7 +2198,7 @@ parse_common_options_strict () {
                 ! in_array "${LONGOPT}:" "${long_options[@]}" &&
                 ! in_array "${LONGOPT}::" "${long_options[@]}";
             then
-                SCRIPT_OPTS_ERRS+=("Unknown option '$LONGOPT'!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$UNKNOWN_OPTION_MASK" "$LONGOPT")")
                 argreq=false
             else
                 if in_array "${LONGOPT}:" "${long_options[@]}" && [ -z "$LONGOPTARG" ]; then
@@ -2198,7 +2210,7 @@ parse_common_options_strict () {
         elif [ "${opt:0:1}" = '-' ]
         then
             if [ "$argreq" = 'true' ]; then
-                SCRIPT_OPTS_ERRS+=("Option '$prevopt' requires an argument!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$MISSING_OPTION_ARGUMENT_MASK" "$prevopt")")
             fi
             SHORTOPT="${opt:1:1}"
             SHORTOPTARG="$(get_option_arg "${opt:2}")"
@@ -2208,7 +2220,7 @@ parse_common_options_strict () {
                 ! in_array "${SHORTOPT}:" "${short_options[@]}" &&
                 ! in_array "${SHORTOPT}::" "${short_options[@]}";
             then
-                SCRIPT_OPTS_ERRS+=("Unknown option '$SHORTOPT'!")
+                SCRIPT_OPTS_ERRS+=("$(printf "$UNKNOWN_OPTION_MASK" "$SHORTOPT")")
             else
                 if in_array "${SHORTOPT}:" "${short_options[@]}" && [ -z "$SHORTOPTARG" ]; then
                     argreq=true
@@ -2543,22 +2555,25 @@ declare -xa DOCBUILDER_RULES=(
     '^#### [^#]*$'                          # fct name line     : #### name ( what ever )
     '^##@ .*$'                              # var line          : ##@ varname ( what ever )
     '^## .*$'                               # comment line      : ## comment (will NOT match "##! comment")
+    '^##+ .*$'                              # 2nd comment line  : ##+ comment (will NOT match "##! comment")
     '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
 );
 
 declare -xa DOCBUILDER_TERMINAL_MASKS=(
-    "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
-    "s|^#### \(.*\)$|\\\n\\\t\1|g"          # fct name line
-    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # var line
-    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
+    "s|^#### \(.*\) #*$|\\\n# \1 #|g"                   # title line
+    "s|^#### \(.*\)$|\\\n\\\t\1|g"                      # fct name line
+    "s|^##@ \(.*\)$|\\\t\1|g"                           # var line
+    "s|^## \(.*\)$|\\\t\\\t\1|g"                        # comment line
+    "s|^##+ \(.*\)$|\\\t\\\t\1|g"                       # 2nd comment line
+    "s|^##\(@[^ ]*\) \(.*\)$|\\\t\\\t\1 \2|g"           # tag line
 );
 declare -xa DOCBUILDER_MARKDOWN_MASKS=(
     "s|^#### \(.*\) #*$|\\\n## \1|g"                    # title line
     "s|^#### \(.*\)$|\\\n-   \*\*\1\*\*\\\n|g"          # fct name line
     "s|^##@ \(.*\)$|\\\n-   \*\*\1\*\*|g"               # var line
-    "s|^##* \(.*\)$|\\\n\\\t\1|g"                       # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\n\\\t\*\*\1:\*\* \2|g"     # tag line
+    "s|^## \(.*\)$|\\\n\\\t\1|g"                        # comment line
+    "s|^##+ \(.*\)$|\\\t\1|g"                           # 2nd comment line
+    "s|^##\(@[^ ]*\) \(.*\)$|\\\n\\\t\*\*\1:\*\* \2|g"  # tag line
 );
 
 #### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
@@ -2615,18 +2630,18 @@ generate_documentation () {
                 intag=true
             elif [ "$intag" = 'true' ]; then
                 comm_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[3]}" | sed "${DOCBUILDER_MASKS[3]}")"
-                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
+                comm_line_alt="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
+                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[5]}" | sed "${DOCBUILDER_MASKS[5]}")"
                 if [ "$VERBOSE" = 'true' ]; then
                     if [ -n "$arg_line" ]; then
                         line_str="$arg_line"
-                    else
-                        if [ -n "$comm_line" ]
-                        then line_str="$comm_line"
-#                        else intag=false;
-                        fi
+                    elif [ -n "$comm_line" ]; then
+                        line_str="$comm_line"
+                    elif [ -n "$comm_line_alt" ]; then
+                        line_str="$comm_line_alt"
                     fi
                 else
-                    if [ -n "$comm_line" ]; then intag=false; fi
+                    if [ -n "$comm_line" ] && [ -n "$comm_line_alt" ]; then intag=false; fi
                 fi
             fi
             if [ -n "$line_str" ]; then docstr+="\n${line_str}"; fi
@@ -2997,6 +3012,7 @@ declare -x INTLIB_PRESET='default'
 declare -x INTLIB_BRANCH='master'
 declare -x INTLIB_TARGET
 declare -x INTLIB_RELEASE
+declare -x INTLIB_EXEC
 declare -rx INTLIB_RELEASE_MASK="%s.tar.gz" 2>/dev/null;
 declare -rx INTLIB_RELEASE_MASK_URL="${LIB_SOURCES_URL}/archive/%s" 2>/dev/null;
 # days to make automatic version check
@@ -3004,7 +3020,7 @@ declare -x INTLIB_OUTDATED_CHECK=30
 # days to force user update (message is always shown)
 declare -x INTLIB_OUTDATED_FORCE=90
 declare -rxa INTLIB_PRESET_ALLOWED="( default dev user full )" 2>/dev/null;
-declare -rxa INTLIB_ACTION_ALLOWED="( install uninstall check update version help usage documentation mddocumentation clean continue )" 2>/dev/null;
+declare -rxa INTLIB_ACTION_ALLOWED="( install uninstall check update version help usage documentation mddocumentation clean exec )" 2>/dev/null;
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
@@ -3014,8 +3030,8 @@ for section in "${VERSION_VARS[@]}";        do eval "${section}=\$LIB_${section}
 for section in "${USAGE_VARS[@]}";          do eval "${section}=\$LIB_${section}"; done
 for section in "${INSTALLATION_VARS[@]}";   do eval "${section}=\$LIB_${section}"; done
 SCRIPT_REPOSITORY_URL="${LIB_SOURCES_URL}"
-OPTIONS_ALLOWED="b:t:p:r:${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="branch:,target:,preset:,release:,local,${COMMON_LONG_OPTIONS_ALLOWED}"
+OPTIONS_ALLOWED="b:t:p:r:e:${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="exec:,branch:,target:,preset:,release:,local,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=''
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
@@ -3033,6 +3049,7 @@ $(parse_color_tags "<bold><action> in:</bold>")\n\
 \tdocumentation\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
 \tclean\t\t\tclean library cache\n\n\
 $(parse_color_tags "<bold>available options:</bold>")\n\
+\t-e, --exec='string'\ta bash string to evaluate in the library's environment\n\
 \t-t, --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
 \t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\
@@ -3043,7 +3060,8 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
-\thelp | usage\n\
+\t[-e | --exec= 'string to eval' ]  ...\n\
+\thelp | usage\n\
 \tversion\n\
 \tcheck\n\
 \tinstall\n\
@@ -3055,6 +3073,7 @@ SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
+\t[-e | --exec= 'string to eval' ]  ...\n\
 \t[--] <action>";
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*$(library_info)*]"
 declare -x DOCUMENTATION_INTRO="\
@@ -3205,6 +3224,13 @@ intlibaction_help () {
 intlibaction_usage () {
     script_usage; return 0
 }
+intlibaction_evaluate () {
+    verbose_echo "> evaluating: '$INTLIB_EXEC'"
+    evaluate "$INTLIB_EXEC" 1>/dev/null 2>&1;
+    ( [ -n "$CMD_OUT" ] && [ "$QUIET" = 'false' ] ) && echo "$CMD_OUT" >&1;
+    [ -n "$CMD_ERR" ] && echo "$CMD_ERR" >&2;
+    return "$CMD_STATUS";
+}
 intlib_check_uptodate () {
     if [ "$QUIET" = 'true' ]; then return 0; fi
     local now="$(date '+%s')"
@@ -3226,37 +3252,44 @@ intlib_check_uptodate () {
     return 0
 }
 
-# check last updates
-intlib_check_uptodate
-
+# get any piped content
+read_from_pipe
 # parsing options
 #rearrange_script_options "$@"
 rearrange_script_options_new "$0" "$@"
 [ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
-parse_common_options_strict
+parse_common_options_strict "$@"
 OPTIND=1
 while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
-    case ${OPTION} in
+    case "$OPTION" in
         h|f|i|q|v|x|V|d|l) ;;
-        t) export INTLIB_TARGET="$OPTARG";;
-        p) export INTLIB_PRESET="$OPTARG";;
-        b) export LIBINST_BRANCH="$OPTARG";;
-        r) export INTLIB_RELEASE="$OPTARG";;
-        -) LONGOPTARG="$(get_long_option_arg "${OPTARG}")"
-            case ${OPTARG} in
-                target*) export INTLIB_TARGET="$LONGOPTARG";;
-                local) export INTLIB_TARGET="$(pwd)";;
-                preset*) export INTLIB_PRESET="$LONGOPTARG";;
-                branch*) export LIBINST_BRANCH="$LONGOPTARG";;
-                release*) export INTLIB_RELEASE="$LONGOPTARG";;
+        t) INTLIB_TARGET="$OPTARG";;
+        p) INTLIB_PRESET="$OPTARG";;
+        b) LIBINST_BRANCH="$OPTARG";;
+        r) INTLIB_RELEASE="$OPTARG";;
+        e) INTLIB_EXEC="${OPTARG:-${SCRIPT_PIPED_INPUT}}"; ACTION='exec';;
+        -)  parse_long_option "$OPTARG" "${!OPTIND}"
+            case "$LONGOPTNAME" in
+                target) INTLIB_TARGET="$LONGOPTARG";;
+                local)  INTLIB_TARGET="$(pwd)";;
+                preset) INTLIB_PRESET="$LONGOPTARG";;
+                branch) LIBINST_BRANCH="$LONGOPTARG";;
+                release)INTLIB_RELEASE="$LONGOPTARG";;
+                exec)   INTLIB_EXEC="${LONGOPTARG:-${SCRIPT_PIPED_INPUT}}"; ACTION='exec';;
                 ?) ;;
             esac ;;
         ?) ;;
     esac
 done
-get_next_argument
-ACTION="$ARGUMENT"
+export INTLIB_TARGET INTLIB_PRESET LIBINST_BRANCH INTLIB_RELEASE
+if [ -z "$ACTION" ]; then
+    get_next_argument
+    ACTION="$ARGUMENT"
+fi
+
+# check last updates
+intlib_check_uptodate
 
 # checking env
 # -> action is required
@@ -3280,6 +3313,7 @@ case "$ACTION" in
     version) intlibaction_version; exit 0;;
     documentation) intlibaction_documentation; exit 0;;
     mddocumentation) intlibaction_documentation_tomd; exit 0;;
+    exec) intlibaction_evaluate; exit $?;;
 esac
 
 # Endfile

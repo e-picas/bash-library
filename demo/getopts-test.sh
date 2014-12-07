@@ -16,105 +16,179 @@ if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
 fi
 ######## !Inclusion of the lib
 
-NAME="Bash-Lib script options & arguments test"
+NAME="Bash-Lib-Test-Getopts"
 VERSION="0.1.0"
-SYNOPSIS="${COMMON_SYNOPSIS}"
-SCRIPT_VCS='git'
-
-DESCRIPTION_USAGE="A script to test custom script options & arguments usage ...\n\
-To test it, run:\n\n\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- myaction3 -x";
-DESCRIPTION_MANPAGE="A script to test custom script options & arguments usage ...\n\
-\tTo test it, run:\n\
-\t\t~\$ path/to/getopts-test.sh myaction1 -vi -t \"two words\" -a -f --test=\"three wor ds\" myaction2 -- myaction3 -x\n\
-\tResult is:\n\
-\t\t- the first common options 'v' and 'i' are parsed and considered by the library,\n\
-\t\t- the third common option 'q' is parsed but NOT considered by the library as it is after a custom option,\n\
-\t\t- the custom 't' and 'test' options are parsed and considered by this script and their multi-words arguments are red,\n\
-\t\t- the custom 'a' option is parsed and considered by this script,\n\
-\t\t- the last common option 'x' is NOT parsed at all as it is after '--'.";
-
-# for custom options, write an info string about usage
-# you can use the common library options string with $COMMON_OPTIONS_FULLINFO
-OPTIONS_MANPAGE="<bold>-t, --test=ARG</bold>\ttest a short and long option with argument\n\
-\t<bold>-a</bold>\t\ta single short option to test options order\n\n\
-\t<underline>Common options</underline> (to use first):\n\
-\t${COMMON_OPTIONS_FULLINFO_MANPAGE}";
+DATE="2014-12-01"
+DESCRIPTION="A dev test script for options handling"
 OPTIONS_USAGE="\n\
-\t-t, --test=ARG\t\ttest a short and long option with argument\n\
-\t-a\t\t\ta single short option to test options order${COMMON_OPTIONS_USAGE}";
+This file is a development test for options, arguments and piped content handling.\n\
+To test it, use one of the followings:\n\n\
+- full test with a large set of options with arguments and some 'actions' mixed:\n\
+\t$0 myaction1 -v --interactive -t 'two -- words' -u=qsdf -a --force --test1 'three wor ds' --test2='three wor ds' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+- same test with a piped content from a previous command:\n\
+\techo 'this is my piped contet' | $0 myaction1 -v --interactive -t 'two -- words' -u=qsdf -a --force --test1 'three wor ds' --test2='three wor ds' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+- same test with options errors:\n\
+\t$0 myaction1 -v --interactive -z -t -u=qsdf -a --force --test1 --test2='three wor ds' --test3='mlkj' --log=myfile.txt myaction2 -- myaction3 -x\n\n\
+";
+# definitions of short and long options
+OPTIONS_ALLOWED="t:u::a${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="test1:,test2::,${COMMON_LONG_OPTIONS_ALLOWED}"
 
-OPTIONS_ALLOWED="t:a${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="test:,${COMMON_LONG_OPTIONS_ALLOWED}"
-SYNOPSIS_ERROR="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}]\n\t[-a]  [-t [=value]]  [--test [=value]]  --  <arguments>";
+# methods override
+simple_usage () {
+    _echo "$(simple_synopsis)"
+    exit 0
+}
+script_long_usage () {
+    local TMP_USAGE="$(parse_color_tags  "<bold>$(script_short_title)</bold>")"
+    if [ -n "$DESCRIPTION_USAGE" ]; then
+        TMP_USAGE+="\n${DESCRIPTION_USAGE}";
+    elif [ -n "$DESCRIPTION" ]; then
+        TMP_USAGE+="\n${DESCRIPTION}";
+    fi
+    local SYNOPSIS_STR="$(get_synopsis_string)"
+    local OPTIONS_STR=''
+    if [ $# -gt 0 ]; then
+        if [ "$1" = 'lib' ]; then
+            OPTIONS_STR="$COMMON_OPTIONS_USAGE"
+        else
+            OPTIONS_STR="$1"
+        fi
+    elif [ -n "$OPTIONS_USAGE" ]; then
+        OPTIONS_STR="$OPTIONS_USAGE"
+    elif [ -n "$OPTIONS" ]; then
+        OPTIONS_STR="$OPTIONS"
+    fi
+    printf "$(parse_color_tags "\n%s\n\n<bold>usage:</bold> %s\n%s\n\n<${COLOR_COMMENT}>%s</${COLOR_COMMENT}>")" \
+        "$(_echo "$TMP_USAGE")" "$(_echo "$SYNOPSIS_STR")" "$(_echo "$OPTIONS_STR")" \
+        "$(library_info)";
+    echo
+    return 0
+}
+
+# let's go
+parse_common_options "$@"
 
 quietecho "_ go"
-
-rearrange_script_options "$@"
-echo "- 'SCRIPT_OPTS' is now '${SCRIPT_OPTS[*]}'"
-echo "- 'SCRIPT_ARGS' is now '${SCRIPT_ARGS[*]}'"
-[ "${#SCRIPT_OPTS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}";
-[ "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_ARGS[@]}";
-[ "${#SCRIPT_OPTS[@]}" -gt 0 -a "${#SCRIPT_ARGS[@]}" -gt 0 ] && set -- "${SCRIPT_OPTS[@]}" -- "${SCRIPT_ARGS[@]}";
-parse_common_options_strict
-
-echo
-echo "# command line analysis:"
-echo "- allowed short options: '${OPTIONS_ALLOWED}'";
-echo "- allowed long options: '${LONG_OPTIONS_ALLOWED}'";
-echo "- received arguments: '${ORIGINAL_SCRIPT_OPTS}'";
-echo
-echo "# re-arranging options and arguments:"
-echo "- rearranged arguments: '$*'";
 echo
 
-echo "# first loop for the 't' or 'test' option"
-echo "# to test it, run:"
-echo "#      ~\$ $0 -t \"two words\" --test=\"three wor ds\" -- -x"
-OPTIND=1
-while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
-    OPTARG="${OPTARG#=}"
-    case "$OPTION" in
-        t) _echo " - option 't': receiving argument \"${OPTARG}\"";;
-        -)  # for long options with argument, use fct 'get_long_option_arg ( $arg )'
-            LONGOPTARG=$(get_long_option_arg "$OPTARG")
-            case "$OPTARG" in
-                test*) _echo " - option 'test': receiving argument \"${LONGOPTARG}\"";;
-                ?) echo " - unknown long option '$OPTARG'";;
-            esac ;;
-        ?) echo " - unknown option '$OPTION'";;
-    esac
-done
+# command line "as is"
+echo "> original script's arguments are: $*"
 echo
 
-echo "# second loop for the 'a' option"
-echo "# to test it, run:"
-echo "#      ~\$ $0 -via -- -x OR ~\$ $0 -vi -a -- -x"
-OPTIND=1
-while getopts ":at:${OPTIONS_ALLOWED}" OPTION; do
-    case "$OPTION" in
-        a) echo " - test option A";;
-        ?) echo " - unknown option '$OPTION'";;
-    esac
-done
+# check
+echo "> script settings:"
+echo " - short options are:         ${OPTIONS_ALLOWED}"
+shortopts_table=( $(get_short_options_array) )
+echo " - short options table is:    ${shortopts_table[*]}"
+echo " - long options are:          ${LONG_OPTIONS_ALLOWED}"
+longopts_table=( $(get_long_options_array) )
+echo " - long options table is:     ${longopts_table[*]}"
 echo
 
-echo "# test for the last 'action' argument";
-echo "# to test it, run:"
-echo "#      ~\$ $0 ... action -x"
-lastarg=$(get_last_argument)
-echo " - last argument is '${lastarg}'"
+# parse common options BEFORE re-arrangement for eventual errors
+echo "> parsing common options ..."
+parse_common_options_strict "$@"
 echo
 
-echo "# test for the 'action' arguments";
-echo "# to test it, run:"
-echo "#      ~\$ $0 action1 action2 ... -x"
-get_next_argument
-echo " - first argument is '$ARGUMENT'"
-get_next_argument
-echo " - next argument is '$ARGUMENT'"
+# rearrangement of options & arguments using 'getopt'
+rearrange_script_options_new "$0" "$@"
+#rearrange_script_options "$@"
+echo "> re-arranging options & arguments:"
+echo " - SCRIPT_PARAMS are: $SCRIPT_PARAMS"
+echo " - SCRIPT_OPTS are:   ${SCRIPT_OPTS[*]}"
+echo " - SCRIPT_ARGS are:   ${SCRIPT_ARGS[*]}"
+[ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
 echo
-echo "# finally:"
-echo " - 'ARGIND' is: $ARGIND"
+
+# check of new script arguments
+echo "> script's arguments are now: $*"
+echo
+
+# parse common options after re-arrangement
+echo "> parsing common options ..."
+parse_common_options_strict "$@"
+echo
+
+# loop over options
+echo "> options loop:"
+if [ $# -gt 0 ]
+then
+    OPTIND=1
+    while getopts ":${OPTIONS_ALLOWED}" OPTION; do
+
+        # OPTIND is the current option index
+
+        # OPTNAME should be the one letter name of short option
+        OPTNAME="$OPTION"
+
+        # OPTARG should be the optional argument of the option
+        OPTARG="$(get_option_arg "${OPTARG:-}")"
+
+    #    echo "> for option index '${OPTIND}' option is '${OPTNAME}' with argument '${OPTARG}'"
+        case "$OPTION" in
+
+            # case of long options
+            -)
+
+                # full self-handling
+#                # LONGOPTIND should be the same as OPTIND
+#
+#                # LONGOPTNAME should be the name of the long option
+#                LONGOPTNAME="$(get_long_option "$OPTARG")"
+#
+#                # LONGOPTARG should be the optional argument of the option
+#                LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+#
+#                # special load of arg if it is required (no mandatory equal sign)
+#                optiondef=$(get_long_option_declaration "$LONGOPTNAME")
+##                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ] && [ "${optiondef: -2}" != '::' ]; then
+#                if [ -z "$LONGOPTARG" ] && [ "${optiondef: -1}" = ':' ]; then
+#                    LONGOPTARG="${!OPTIND}"
+#                    OPTIND=$((OPTIND + 1))
+#                fi
+
+                # all-in-one facility
+                parse_long_option "$OPTARG" "${!OPTIND}"
+
+                case "$LONGOPTNAME" in
+                    *) echo " - [${OPTIND}] long option '${LONGOPTNAME}' with arg '${LONGOPTARG}'";;
+                    \?) echo " - [${OPTIND}] unknown long option '${LONGOPTNAME}'";;
+                esac
+                ;;
+
+            # case of short options
+            *) echo " - [${OPTIND}] option '$OPTION' with arg '$OPTARG'";;
+            \?) echo " - [${OPTIND}] unknown option '$OPTION'";;
+
+        esac
+    done
+else
+    echo " - none"
+fi
+echo
+
+# loop over arguments
+echo "> arguments loop:"
+if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
+    while [[ "$ARGIND" -lt "${#SCRIPT_ARGS[@]}" ]]; do
+        get_next_argument
+        echo " - [${ARGIND}] argument is '$ARGUMENT'"
+    done
+else
+    echo " - none"
+fi
+echo
+
+# read any piped content via '/dev/stdin'
+#read_from_pipe '/dev/stdin'
+read_from_pipe
+echo "> caught piped content:"
+if [ -n "$SCRIPT_PIPED_INPUT" ]; then
+    echo " - $SCRIPT_PIPED_INPUT"
+else
+    echo " - none"
+fi
 echo
 
 quietecho "_ ok"
