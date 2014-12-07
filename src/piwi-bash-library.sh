@@ -20,6 +20,7 @@
 # 
 ##@!@##
 
+## for dev usage
 #set -u
 #set -e
 
@@ -849,11 +850,13 @@ get_stack_trace () {
     return 0
 }
 
-#### get_synopsis_string ()
+#### get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )
 ## builds a synopsis string using script's declared available options
 get_synopsis_string () {
-    local -a short_options=( $(get_short_options_array) )
-    local -a long_options=( $(get_long_options_array) )
+    local shortopts="${1:-${OPTIONS_ALLOWED}}"
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a short_options=( $(get_short_options_array "$shortopts") )
+    local -a long_options=( $(get_long_options_array "$longopts") )
     local short_options_string=''
     local long_options_string=''
     local i=1
@@ -1856,10 +1859,11 @@ read_from_pipe () {
     export SCRIPT_PIPED_INPUT
 }
 
-#### get_short_options_array ()
+#### get_short_options_array ( short_opts=OPTIONS_ALLOWED )
 get_short_options_array () {
+    local shortopts="${1:-${OPTIONS_ALLOWED}}"
     local -a short_options=()
-    local shortoptions="${OPTIONS_ALLOWED//-:/}"
+    local shortoptions="${shortopts//-:/}"
     explode_letters "$shortoptions"
     local b=''
     for i in "${EXPLODED_ARRAY[@]}"; do
@@ -1878,18 +1882,20 @@ get_short_options_array () {
     return 0
 }
 
-#### get_short_options_string ( delimiter = '|' )
+#### get_short_options_string ( delimiter = '|' , short_opts=OPTIONS_ALLOWED )
 get_short_options_string () {
     local delimiter="${1:-|}"
-    local -a short_options=( $(get_short_options_array) )
+    local shortopts="${2:-${OPTIONS_ALLOWED}}"
+    local -a short_options=( $(get_short_options_array "$shortopts") )
     implode short_options[@] "${delimiter}"
     return 0
 }
 
-#### get_option_declaration ( option_name )
+#### get_option_declaration ( option_name , short_opts=OPTIONS_ALLOWED )
 get_option_declaration () {
     local _optname="$1"
-    local -a opts_table=( $(get_options_array) )
+    local shortopts="${2:-${OPTIONS_ALLOWED}}"
+    local -a opts_table=( $(get_options_array "$shortopts") )
     local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
@@ -1907,10 +1913,11 @@ get_option_argument () {
 ## alias of 'get_option_argument'
 get_option_arg () { get_option_argument "$*"; return $?; }
 
-#### get_long_options_array ()
+#### get_long_options_array ( long_opts=LONG_OPTIONS_ALLOWED )
 get_long_options_array () {
+    local longopts="${1:-${LONG_OPTIONS_ALLOWED}}"
     local -a long_options=()
-    explode "$LONG_OPTIONS_ALLOWED" ","
+    explode "$longopts" ","
     for i in "${EXPLODED_ARRAY[@]}"; do
         long_options+=( "$i" )
     done
@@ -1918,18 +1925,20 @@ get_long_options_array () {
     return 0
 }
 
-#### get_long_options_string ( delimiter = '|' )
+#### get_long_options_string ( delimiter = '|' , long_opts=LONG_OPTIONS_ALLOWED )
 get_long_options_string () {
     local delimiter="${1:-|}"
-    local -a long_options=( $(get_long_options_array) )
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a long_options=( $(get_long_options_array "$longopts") )
     implode long_options[@] "$delimiter"
     return 0
 }
 
-#### get_long_option_declaration ( option_name )
+#### get_long_option_declaration ( option_name , long_opts=LONG_OPTIONS_ALLOWED )
 get_long_option_declaration () {
     local _optname="$1"
-    local -a opts_table=( $(get_long_options_array) )
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a opts_table=( $(get_long_options_array "$longopts") )
     local optiondef_ind=$(array_search "$_optname" "${opts_table[@]}")
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}:" "${opts_table[@]}");
     [ -z "$optiondef_ind" ] && optiondef_ind=$(array_search "${_optname}::" "${opts_table[@]}");
