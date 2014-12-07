@@ -3012,6 +3012,7 @@ declare -x INTLIB_PRESET='default'
 declare -x INTLIB_BRANCH='master'
 declare -x INTLIB_TARGET
 declare -x INTLIB_RELEASE
+declare -x INTLIB_EXEC
 declare -rx INTLIB_RELEASE_MASK="%s.tar.gz" 2>/dev/null;
 declare -rx INTLIB_RELEASE_MASK_URL="${LIB_SOURCES_URL}/archive/%s" 2>/dev/null;
 # days to make automatic version check
@@ -3019,7 +3020,7 @@ declare -x INTLIB_OUTDATED_CHECK=30
 # days to force user update (message is always shown)
 declare -x INTLIB_OUTDATED_FORCE=90
 declare -rxa INTLIB_PRESET_ALLOWED="( default dev user full )" 2>/dev/null;
-declare -rxa INTLIB_ACTION_ALLOWED="( install uninstall check update version help usage documentation mddocumentation clean continue )" 2>/dev/null;
+declare -rxa INTLIB_ACTION_ALLOWED="( install uninstall check update version help usage documentation mddocumentation clean exec )" 2>/dev/null;
 
 # script man infos
 MANPAGE_NODEPEDENCY=true
@@ -3029,8 +3030,8 @@ for section in "${VERSION_VARS[@]}";        do eval "${section}=\$LIB_${section}
 for section in "${USAGE_VARS[@]}";          do eval "${section}=\$LIB_${section}"; done
 for section in "${INSTALLATION_VARS[@]}";   do eval "${section}=\$LIB_${section}"; done
 SCRIPT_REPOSITORY_URL="${LIB_SOURCES_URL}"
-OPTIONS_ALLOWED="b:t:p:r:${COMMON_OPTIONS_ALLOWED}"
-LONG_OPTIONS_ALLOWED="branch:,target:,preset:,release:,local,${COMMON_LONG_OPTIONS_ALLOWED}"
+OPTIONS_ALLOWED="b:t:p:r:e:${COMMON_OPTIONS_ALLOWED}"
+LONG_OPTIONS_ALLOWED="exec:,branch:,target:,preset:,release:,local,${COMMON_LONG_OPTIONS_ALLOWED}"
 INTLIB_PRESET_INFO=''
 for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
@@ -3048,6 +3049,7 @@ $(parse_color_tags "<bold><action> in:</bold>")\n\
 \tdocumentation\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
 \tclean\t\t\tclean library cache\n\n\
 $(parse_color_tags "<bold>available options:</bold>")\n\
+\t-e, --exec='string'\ta bash string to evaluate in the library's environment\n\
 \t-t, --target=PATH\tdefine the target directory ('PATH' must exist - default is '\$HOME/bin/')\n\
 \t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\
@@ -3058,7 +3060,8 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
-\thelp | usage\n\
+\t[-e | --exec= 'string to eval' ]  ...\n\
+\thelp | usage\n\
 \tversion\n\
 \tcheck\n\
 \tinstall\n\
@@ -3070,6 +3073,7 @@ SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \t[-t | --target=path]  [--local]  ...\n\
 \t[-b | --branch=branch]  [-r | --release=version]  ...\n\
 \t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
+\t[-e | --exec= 'string to eval' ]  ...\n\
 \t[--] <action>";
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*$(library_info)*]"
 declare -x DOCUMENTATION_INTRO="\
@@ -3220,6 +3224,13 @@ intlibaction_help () {
 intlibaction_usage () {
     script_usage; return 0
 }
+intlibaction_evaluate () {
+    verbose_echo "> evaluating: '$INTLIB_EXEC'"
+    evaluate "$INTLIB_EXEC" 1>/dev/null 2>&1;
+    ( [ -n "$CMD_OUT" ] && [ "$QUIET" = 'false' ] ) && echo "$CMD_OUT" >&1;
+    [ -n "$CMD_ERR" ] && echo "$CMD_ERR" >&2;
+    return "$CMD_STATUS";
+}
 intlib_check_uptodate () {
     if [ "$QUIET" = 'true' ]; then return 0; fi
     local now="$(date '+%s')"
@@ -3241,34 +3252,41 @@ intlib_check_uptodate () {
     return 0
 }
 
+# get any piped content
+read_from_pipe
 # parsing options
 #rearrange_script_options "$@"
 rearrange_script_options_new "$0" "$@"
 [ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
-parse_common_options_strict
+parse_common_options_strict "$@"
 OPTIND=1
 while getopts ":${OPTIONS_ALLOWED}" OPTION; do
     OPTARG="${OPTARG#=}"
-    case ${OPTION} in
+    case "$OPTION" in
         h|f|i|q|v|x|V|d|l) ;;
-        t) export INTLIB_TARGET="$OPTARG";;
-        p) export INTLIB_PRESET="$OPTARG";;
-        b) export LIBINST_BRANCH="$OPTARG";;
-        r) export INTLIB_RELEASE="$OPTARG";;
-        -) LONGOPTARG="$(get_long_option_arg "${OPTARG}")"
-            case ${OPTARG} in
-                target*) export INTLIB_TARGET="$LONGOPTARG";;
-                local) export INTLIB_TARGET="$(pwd)";;
-                preset*) export INTLIB_PRESET="$LONGOPTARG";;
-                branch*) export LIBINST_BRANCH="$LONGOPTARG";;
-                release*) export INTLIB_RELEASE="$LONGOPTARG";;
+        t) INTLIB_TARGET="$OPTARG";;
+        p) INTLIB_PRESET="$OPTARG";;
+        b) LIBINST_BRANCH="$OPTARG";;
+        r) INTLIB_RELEASE="$OPTARG";;
+        e) INTLIB_EXEC="${OPTARG:-${SCRIPT_PIPED_INPUT}}"; ACTION='exec';;
+        -)  parse_long_option "$OPTARG" "${!OPTIND}"
+            case "$LONGOPTNAME" in
+                target) INTLIB_TARGET="$LONGOPTARG";;
+                local)  INTLIB_TARGET="$(pwd)";;
+                preset) INTLIB_PRESET="$LONGOPTARG";;
+                branch) LIBINST_BRANCH="$LONGOPTARG";;
+                release)INTLIB_RELEASE="$LONGOPTARG";;
+                exec)   INTLIB_EXEC="${LONGOPTARG:-${SCRIPT_PIPED_INPUT}}"; ACTION='exec';;
                 ?) ;;
             esac ;;
         ?) ;;
     esac
 done
-get_next_argument
-ACTION="$ARGUMENT"
+export INTLIB_TARGET INTLIB_PRESET LIBINST_BRANCH INTLIB_RELEASE
+if [ -z "$ACTION" ]; then
+    get_next_argument
+    ACTION="$ARGUMENT"
+fi
 
 # check last updates
 intlib_check_uptodate
@@ -3295,6 +3313,7 @@ case "$ACTION" in
     version) intlibaction_version; exit 0;;
     documentation) intlibaction_documentation; exit 0;;
     mddocumentation) intlibaction_documentation_tomd; exit 0;;
+    exec) intlibaction_evaluate; exit $?;;
 esac
 
 # Endfile
