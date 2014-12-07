@@ -2555,22 +2555,25 @@ declare -xa DOCBUILDER_RULES=(
     '^#### [^#]*$'                          # fct name line     : #### name ( what ever )
     '^##@ .*$'                              # var line          : ##@ varname ( what ever )
     '^## .*$'                               # comment line      : ## comment (will NOT match "##! comment")
+    '^##+ .*$'                              # 2nd comment line  : ##+ comment (will NOT match "##! comment")
     '^##@[^ ]* .*$'                         # tag line          : ##@tagname string
 );
 
 declare -xa DOCBUILDER_TERMINAL_MASKS=(
-    "s|^#### \(.*\) #*$|\\\n# \1 #|g"       # title line
-    "s|^#### \(.*\)$|\\\n\\\t\1|g"          # fct name line
-    "s|^##\(@.*\) \(.*\)$|\\\t\1 \2|g"      # var line
-    "s|^##* \(.*\)$|\\\t\\\t\1|g"           # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\t\\\t\1 \2|g"  # tag line
+    "s|^#### \(.*\) #*$|\\\n# \1 #|g"                   # title line
+    "s|^#### \(.*\)$|\\\n\\\t\1|g"                      # fct name line
+    "s|^##@ \(.*\)$|\\\t\1|g"                           # var line
+    "s|^## \(.*\)$|\\\t\\\t\1|g"                        # comment line
+    "s|^##+ \(.*\)$|\\\t\\\t\1|g"                       # 2nd comment line
+    "s|^##\(@[^ ]*\) \(.*\)$|\\\t\\\t\1 \2|g"           # tag line
 );
 declare -xa DOCBUILDER_MARKDOWN_MASKS=(
     "s|^#### \(.*\) #*$|\\\n## \1|g"                    # title line
     "s|^#### \(.*\)$|\\\n-   \*\*\1\*\*\\\n|g"          # fct name line
     "s|^##@ \(.*\)$|\\\n-   \*\*\1\*\*|g"               # var line
-    "s|^##* \(.*\)$|\\\n\\\t\1|g"                       # comment line
-    "s|^##\(@.*\) \(.*\)$|\\\n\\\t\*\*\1:\*\* \2|g"     # tag line
+    "s|^## \(.*\)$|\\\n\\\t\1|g"                        # comment line
+    "s|^##+ \(.*\)$|\\\t\1|g"                           # 2nd comment line
+    "s|^##\(@[^ ]*\) \(.*\)$|\\\n\\\t\*\*\1:\*\* \2|g"  # tag line
 );
 
 #### build_documentation ( type = TERMINAL , output = null , source = BASH_SOURCE[0] )
@@ -2627,18 +2630,18 @@ generate_documentation () {
                 intag=true
             elif [ "$intag" = 'true' ]; then
                 comm_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[3]}" | sed "${DOCBUILDER_MASKS[3]}")"
-                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
+                comm_line_alt="$(echo "$line" | grep -o "${DOCBUILDER_RULES[4]}" | sed "${DOCBUILDER_MASKS[4]}")"
+                arg_line="$(echo "$line" | grep -o "${DOCBUILDER_RULES[5]}" | sed "${DOCBUILDER_MASKS[5]}")"
                 if [ "$VERBOSE" = 'true' ]; then
                     if [ -n "$arg_line" ]; then
                         line_str="$arg_line"
-                    else
-                        if [ -n "$comm_line" ]
-                        then line_str="$comm_line"
-#                        else intag=false;
-                        fi
+                    elif [ -n "$comm_line" ]; then
+                        line_str="$comm_line"
+                    elif [ -n "$comm_line_alt" ]; then
+                        line_str="$comm_line_alt"
                     fi
                 else
-                    if [ -n "$comm_line" ]; then intag=false; fi
+                    if [ -n "$comm_line" ] && [ -n "$comm_line_alt" ]; then intag=false; fi
                 fi
             fi
             if [ -n "$line_str" ]; then docstr+="\n${line_str}"; fi
