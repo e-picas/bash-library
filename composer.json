@@ -13,7 +13,7 @@
     "bin": [ "src/piwi-bash-library.sh", "src/piwi-bash-library.man" ],
     "extra": {
         "branch-alias": {
-            "dev-master": "2.0-dev"
+            "dev-master": "2.1-dev"
         }
     }
 }
