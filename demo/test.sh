@@ -84,8 +84,8 @@ echo "## test of fct 'git_is_clone' on current dir:"
 if git_is_clone; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
 echo "## test of fct 'git_is_clone' on current dir for remote '${LIB_SOURCES_URL}':"
 if git_is_clone "$(pwd)" "$LIB_SOURCES_URL"; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
-echo "## test of fct 'git_is_clone' on current dir for remote 'https://github.com/atelierspierrot/dev-tools':"
-if git_is_clone "$(pwd)" "https://github.com/atelierspierrot/dev-tools"; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
+echo "## test of fct 'git_is_clone' on current dir for remote 'https://github.com/piwi/dev-tools':"
+if git_is_clone "$(pwd)" "https://github.com/piwi/dev-tools"; then echo "=> IS git clone"; else echo "=> is NOT git clone"; fi
 echo
 
 # colorize
