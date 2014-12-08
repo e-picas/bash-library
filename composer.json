@@ -1,7 +1,7 @@
 {
     "name": "piwi/bash-library",
     "type": "library",
-    "description": "The Bash library package of Les Ateliers Pierrot",
+    "description": "An open source day-to-day bash library",
     "keywords": [ "bash", "library" ],
     "homepage": "http://github.com/piwi/bash-library",
     "license": "GPL-3.0",
