@@ -1082,8 +1082,13 @@ vcs_is_clone () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_is_clone "$*" && return 0 || return 1; fi
-    return 1
+    local _path="${1:-$(pwd)}"
+    local _remote_url="${2:-}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_is_clone "$_path" "$_remote_url"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_get_branch ( path = pwd )
@@ -1091,8 +1096,12 @@ vcs_get_branch () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_get_branch "$*" && return 0 || return 1; fi
-    return 1
+    local _path="${1:-$(pwd)}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_get_branch "$_path"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_get_commit ( path = pwd )
@@ -1100,8 +1109,12 @@ vcs_get_commit () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_get_commit "$*" && return 0 || return 1; fi
-    return 1
+    local _path="${1:-$(pwd)}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_get_commit "$_path"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_get_version ( path = pwd )
@@ -1109,8 +1122,12 @@ vcs_get_version () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_get_version "$*" && return 0 || return 1; fi
-    return 1
+    local _path="${1:-$(pwd)}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_get_version "$_path"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_get_remote_version ( path = pwd , branch = HEAD )
@@ -1118,8 +1135,13 @@ vcs_get_remote_version () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_get_remote_version "$*" && return 0 || return 1; fi
-    return 1
+    local _path="${1:-$(pwd)}"
+    local _branch="${2:-HEAD}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_get_remote_version "$_path" "$_branch"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
@@ -1127,8 +1149,13 @@ vcs_make_clone () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_make_clone "$*" && return 0 || return 1; fi
-    return 1
+    local _repo_url="${1:-}"
+    local _target_dir="${2:-${LIB_SYSCACHEDIR}}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_make_clone "$_repo_url" "$_target_dir"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_update_clone ( target_dir )
@@ -1136,8 +1163,12 @@ vcs_update_clone () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_update_clone "$*" && return 0 || return 1; fi
-    return 1
+    local _target_dir="${1:-}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_update_clone "$_target_dir"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 #### vcs_change_branch ( target_dir , branch = 'master' )
@@ -1145,8 +1176,13 @@ vcs_change_branch () {
     if [ "$SCRIPT_VCS" = '' ]; then 
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
-    if [ "$SCRIPT_VCS" = 'git' ]; then git_change_branch "$*" && return 0 || return 1; fi
-    return 1
+    local _target_dir="${1:-}"
+    local _branch="${2:-master}"
+    local _status=1
+    case "$SCRIPT_VCS" in
+        git) git_change_branch "$_target_dir" "$_branch"; _status="$?";;
+    esac
+    return "$_status"
 }
 
 ##@ CURRENT_GIT_CLONE_DIR
