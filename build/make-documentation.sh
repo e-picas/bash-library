@@ -18,3 +18,14 @@ export VERBOSE=true
 build_documentation "$_type" "$_output" "$_source" \
     && echo "documentation generated in '$_output'" \
     || echo "an error occurred!" ;
+
+exit 0
+
+# generate a manpage from the doc ...
+_source="$_output"
+_output=src/piwi-bash-library.7.man
+_mde=${_here}/../modules/markdown-extended/bin/markdown-extended
+
+${_mde} -f man -o "$_output" "${_source}" \
+    && echo "manpage generated in '$_output'" \
+    || echo "an error occurred!" ;
