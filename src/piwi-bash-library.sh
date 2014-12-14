@@ -1508,6 +1508,134 @@ build_configstring () {
 
 #### LIBRARY VARS #############################################################################
 
+#### verbose_mode ( 1/0 )
+## This enables or disables the "verbose" mode.
+## If it is enabled, the "quiet" mode is disabled.
+##@env VERBOSE
+verbose_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        quiet_mode 0
+        export VERBOSE=true
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export VERBOSE=false
+        return 0
+    fi
+    return 1
+}
+
+#### quiet_mode ( 1/0 )
+## This enables or disables the "quiet" mode.
+## If it is enabled, the "verbose" mode is disabled.
+##@env QUIET
+quiet_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        debug_mode 0
+        verbose_mode 0
+        export QUIET=true
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export QUIET=false
+        return 0
+    fi
+    return 1
+}
+
+#### debug_mode ( 1/0 )
+## This enables or disables the "debug" mode.
+## If it is enabled, the "verbose" mode is enabled too and the "quiet" mode is disabled.
+##@env DEBUG
+debug_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        verbose_mode 1
+        export DEBUG=true
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export DEBUG=false
+        return 0
+    fi
+    return 1
+}
+
+#### interactive_mode ( 1/0 )
+## This enables or disables the "interactive" mode.
+## If it is enabled, the "forced" mode is disabled.
+##@env INTERACTIVE
+interactive_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        forcing_mode 0
+        export INTERACTIVE=true
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export INTERACTIVE=false
+        return 0
+    fi
+    return 1
+}
+
+#### forcing_mode ( 1/0 )
+## This enables or disables the "forced" mode.
+## If it is enabled, the "interactive" mode is disabled.
+##@env INTERACTIVE
+forcing_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        interactive_mode 0
+        export FORCED=true
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export FORCED=false
+        return 0
+    fi
+    return 1
+}
+
+#### dryrun_mode ( 1/0 )
+## This enables or disables the "dry-run" mode.
+## If it is enabled, the "interactive" and "forced" modes are disabled.
+##@env DRYRUN
+dryrun_mode () {
+    if [ -n "$1" ] && ( [ "$1" = '1' ]||[ "$1" = 'true' ] ); then
+        forcing_mode 0
+        interactive_mode 0
+        export DRYRUN=true
+        verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed"
+        return 0
+    elif [ -n "$1" ] && ( [ "$1" = '0' ]||[ "$1" = 'false' ] ); then
+        export DRYRUN=false
+        return 0
+    fi
+    return 1
+}
+
+#### set_working_directory ( path )
+## handles the '-d' option for instance
+## throws an error if 'path' does not exist
+set_working_directory () {
+    if [ -n "$1" ]
+    then
+        local _wd="$(resolve "$1")"
+        if [ -d "$1" ]
+            then export WORKINGDIR="$_wd"
+            else path_error "$1"
+        fi
+        cd "$WORKINGDIR"
+        return 0
+    else
+        echo "set_working_directory: empty argument!" >&2; return 1;
+    fi
+}
+
+#### set_log_filename ( path )
+## handles the '-l' option for instance
+set_log_filename () {
+    if [ -n "$1" ]
+    then
+        export LOGFILE="$1"; return 0;
+    else
+        echo "set_log_filename: empty argument!" >&2; return 1;
+    fi
+}
+
 ##@ ECHOCMD (read-only: 'builtin' or 'gnu')
 ## Test if 'echo' is shell builtin or program
 if [ "$($(which echo) --version)" = '--version' ]
@@ -1584,34 +1712,34 @@ selector_prompt () {
 }
 
 #### verbose_echo ( string )
-## echoes the string if "verbose" is "on"
+## Echoes the string(s) in "verbose" mode.
 verbose_echo () {
     if [ "$VERBOSE" = 'true' ]; then _echo "$*"; fi; return 0;
 }
 
 #### / verecho ( string )
 ## alias of 'verbose_echo'
-verecho () { verbose_echo "$*"; return $?; }
+verecho () { verbose_echo $*; return "$?"; }
 
 #### quiet_echo ( string )
-## echoes the string if "quiet" is "off"
+## Echoes the string(s) in not-"quiet" mode.
 quiet_echo () {
     if [ "$QUIET" != 'true' ]; then _echo "$*"; fi; return 0;
 }
 
 #### / quietecho ( string )
 ## alias of 'quiet_echo'
-quietecho () { quiet_echo "$*"; return $?; }
+quietecho () { quiet_echo $*; return "$?"; }
 
 #### debug_echo ( string )
-## echoes the string if "debug" is "on"
+## Echoes the string(s) in "debug" mode.
 debug_echo () {
     if [ "$DEBUG" = 'true' ]; then _echo "$*"; fi; return 0;
 }
 
 #### / debecho ( string )
 ## alias of 'debug_echo'
-debecho () { debug_echo "$*"; return $?; }
+debecho () { debug_echo $*; return "$?"; }
 
 #### evaluate ( command )
 ## evaluates the command catching events:
@@ -1644,6 +1772,7 @@ debug_evaluate () {
         _echo "$(colorize 'dry-run >>' bold) \"$*\""
         local status=0
     else
+        debug_echo "$(colorize '>>' bold) \"$*\""
         unset CMD_OUT CMD_ERR CMD_STATUS
         evaluate "$@" 1>/dev/null 2>&1
         [ ! -z "$CMD_OUT" ] && echo "$CMD_OUT" >&1
@@ -1655,11 +1784,11 @@ debug_evaluate () {
 
 #### / debevaluate ( command )
 ## alias of 'debug_evaluate'
-debevaluate () { debug_evaluate "$*"; return $?; }
+debevaluate () { debug_evaluate "$1"; return "$?"; }
 
 #### / debeval ( command )
 ## alias of 'debug_evaluate'
-debeval () { debug_evaluate "$*"; return $?; }
+debeval () { debug_evaluate "$1"; return "$?"; }
 
 #### interactive_evaluate ( command )
 ## evaluates the command after user confirmation if "interactive" is "on"
@@ -1685,11 +1814,11 @@ interactive_evaluate () {
 
 #### / ievaluate ( command )
 ## alias of 'interactive_evaluate'
-ievaluate () { interactive_evaluate "$*"; return $?; }
+ievaluate () { interactive_evaluate "$1" "${2:-true}"; return "$?"; }
 
 #### / ieval ( command )
 ## alias of 'interactive_evaluate'
-ieval () { interactive_evaluate "$*"; return $?; }
+ieval () { interactive_evaluate "$1" "${2:-true}"; return "$?"; }
 
 #### interactive_exec ( command , debug_exec = true )
 ## executes the command after user confirmation if "interactive" is "on"
@@ -2085,7 +2214,7 @@ get_option_argument () {
 
 #### / get_option_arg ( "$x" )
 ## alias of 'get_option_argument'
-get_option_arg () { get_option_argument "$*"; return $?; }
+get_option_arg () { get_option_argument $*; return "$?"; }
 
 #### get_long_options_array ( long_opts=LONG_OPTIONS_ALLOWED )
 get_long_options_array () {
@@ -2134,7 +2263,7 @@ get_long_option_name () {
 
 #### / get_long_option ( "$x" )
 ## alias of 'get_long_option_name()'
-get_long_option () { get_long_option_name "$*"; return $?; }
+get_long_option () { get_long_option_name $*; return "$?"; }
 
 #### get_long_option_argument ( "$x" )
 ## echoes the argument of a long option
@@ -2152,7 +2281,7 @@ get_long_option_argument () {
 
 #### / get_long_option_arg ( "$x" )
 ## alias of 'get_long_option_argument'
-get_long_option_arg () { get_long_option_argument "$*"; return $?; }
+get_long_option_arg () { get_long_option_argument $*; return "$?"; }
 
 ##@ LONGOPTNAME=''
 ## The name of current long option treated
@@ -2440,42 +2569,40 @@ parse_common_options () {
         OPTARG="$(get_option_arg "${OPTARG:-}")"
         case "$OPTION" in
         # common options
-            h) if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
-            i) INTERACTIVE=true; FORCED=false;;
-            v) VERBOSE=true; QUIET=false;;
-            f) FORCED=true;INTERACTIVE=false;;
-            x) DEBUG=true;;
-            q) VERBOSE=false; QUIET=true;;
-            V) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
-            -) LONGOPTARG="$(get_long_option_arg "$OPTARG")"
+            f)  forcing_mode 1;;
+            h)  if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
+            i)  interactive_mode 1;;
+            q)  quiet_mode 1;;
+            v)  verbose_mode 1;;
+            V)  if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
+            x)  debug_mode 1;;
+            -)  LONGOPTARG="$(get_long_option_arg "$OPTARG")"
                 case "$OPTARG" in
         # common options
-                    help) if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
-                    usage) if [ -z "$actiontodo" ]; then actiontodo='usage'; fi;;
-                    man*) if [ -z "$actiontodo" ]; then actiontodo='man'; fi;;
-                    version) if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
-                    interactive) INTERACTIVE=true; FORCED=false;;
-                    verbose) VERBOSE=true; QUIET=false;;
-                    force) FORCED=true; INTERACTIVE=false;;
-                    debug) DEBUG=true;;
-                    dry-run) DRYRUN=true; verecho "- dry-run option enabled: commands shown as 'debug >> \"cmd\"' are not executed";;
-                    quiet) VERBOSE=false; QUIET=true;;
-                    working-dir*) set_working_directory "$LONGOPTARG";;
-                    log*) set_log_filename "$LONGOPTARG";;
+                    debug)      debug_mode 1;;
+                    dry-run)    dryrun_mode 1;;
+                    force)      forcing_mode 1;;
+                    help)       if [ -z "$actiontodo" ]; then actiontodo='help'; fi;;
+                    interactive) interactive_mode 1;;
+                    man*)       if [ -z "$actiontodo" ]; then actiontodo='man'; fi;;
+                    quiet)      quiet_mode 1;;
+                    usage)      if [ -z "$actiontodo" ]; then actiontodo='usage'; fi;;
+                    verbose)    verbose_mode 1;;
+                    version)    if [ -z "$actiontodo" ]; then actiontodo='version'; fi;;
         # library options
-                    libvers*) if [ -z "$actiontodo" ]; then actiontodo='libversion'; fi;;
+                    libvers*)   if [ -z "$actiontodo" ]; then actiontodo='libversion'; fi;;
+                    log*)       set_log_filename "$LONGOPTARG";;
+                    working-dir*) set_working_directory "$LONGOPTARG";;
         # no error for others
-                    *) 
-                        if [ -n "$LONGOPTARG" ] && [ "$(which "$OPTARG")" ]; then
+                    *)  if [ -n "$LONGOPTARG" ] && [ "$(which "$OPTARG")" ]; then
                             SCRIPT_PROGRAMS+=( "$OPTARG" )
-                        fi
-                        ;;
+                        fi;;
                 esac ;;
             *) continue;;
         esac
     done
     OPTIND="$oldoptind"
-    export OPTIND INTERACTIVE FORCED VERBOSE QUIET DEBUG DRYRUN SCRIPT_PROGRAMS
+    export OPTIND SCRIPT_PROGRAMS
     if [ ! -z "$actiontodo" ]; then
         case "$actiontodo" in
             help) script_long_usage; exit 0;;
