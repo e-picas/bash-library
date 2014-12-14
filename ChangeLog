@@ -2,6 +2,10 @@
 
 ## 2.1.0 (current dev)
 
+- new management of library's environment flags
+- review of the 'job control' and 'output control' methods according to current env flags
+- reorganization of library sections
+
 ## 2.1.0-alpha (current master)
 
 !! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
