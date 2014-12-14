@@ -266,28 +266,33 @@ declare -rx LIB_DEPEDENCY_MANPAGE_INFO="This script is based on the <bold>${LIB_
 #### get_system_info ()
 get_system_info () {
     if in_array "${USEROS}" "${LINUX_OS[@]}"
-        then uname -osr
-        else uname -vsr
+    then uname -osr
+    else uname -vsr
     fi
-    return $?
+    return "$?"
 }
 
 #### get_machine_name ()
 get_machine_name () {
     uname -n
-    return $?
-}
-
-#### add_path ( path )
-## add a path to global environment PATH
-add_path () {
-    if [ -n "$1" ]; then export PATH="${PATH}:${1}"; fi; return 0;
+    return "$?"
 }
 
 #### get_path ()
 ## read current PATH values as human readable string
 get_path () {
     echo -e "$PATH" | tr : \\n; return 0;
+}
+
+#### add_path ( path )
+## add a path to global environment PATH
+add_path () {
+    if [ -n "$1" ]
+    then
+        export PATH="${PATH}:${1}"; return 0;
+    else
+        echo "add_path: empty argument!" >&2; return 1;
+    fi
 }
 
 #### get_script_path ( script = $0 )
@@ -382,7 +387,7 @@ get_absolute_path () {
 
 #### / realpath ( string )
 ## alias of 'get_absolute_path'
-realpath () { get_absolute_path "$*"; }
+realpath () { get_absolute_path $*; }
 
 #### resolve ( path )
 ## resolve a system path replacing '~' and '.'
