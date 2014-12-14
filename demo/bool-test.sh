@@ -36,6 +36,7 @@ if [ "$TRUEVAL" = 'false' ]; then echo "TRUEVAL is false"; else echo "TRUEVAL is
 if [ "$FALSEVAL" = 'false' ]; then echo "FALSEVAL is false"; else echo "FALSEVAL is true"; fi
 echo
 
+# manipulation
 export TRUEVAL=false
 export FALSEVAL=true
 
@@ -63,3 +64,4 @@ if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile
+# vim: autoindent tabstop=4 shiftwidth=4 expandtab softtabstop=4 filetype=sh

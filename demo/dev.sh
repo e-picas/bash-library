@@ -1,8 +1,15 @@
 #!/usr/bin/env bash
+#
 # dev - use this script as a model for yours
+# For a full documemntation, see <http://github.com/piwi/bash-library/wiki/>
+#
 
-######## Inclusion of the lib
+######## Inclusion of the lib #####################################################################
+##@doc see <http://github.com/piwi/bash-library/wiki/Installation-Usage.md#usage>
+
+# you MUST (re-)define here the path of the library
 LIBFILE="$(dirname "$0")/../src/piwi-bash-library.sh"
+
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \
@@ -11,9 +18,9 @@ if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
         0 "$(tput cols)" "$PADDER";
     exit 1
 fi
-######## !Inclusion of the lib
 
-# script information
+######## Script information #######################################################################
+##@doc see <http://github.com/piwi/bash-library/wiki/Scripts-informational-strings.md>
 NAME="Bash-Lib-dev"
 VERSION="x.y.z-dev"
 DATE="1970-01-01"
@@ -28,13 +35,21 @@ SYNOPSIS="${COMMON_SYNOPSIS}"
 SYNOPSIS_ERROR="${COMMON_SYNOPSIS}"
 SCRIPT_VCS='git'
 
-# re-arrangement of command lines arguments
+######## Custom overrides #########################################################################
+##@doc see <http://github.com/piwi/bash-library/wiki/Installation-Usage.md#usage>
+
+
+
+######## Re-arrangement of command lines arguments ################################################
+##@doc see <http://github.com/piwi/bash-library/wiki/Scripts-Usage.md>
 rearrange_script_options_new "$0" "$@"
 #rearrange_script_options "$@"
 [ -n "$SCRIPT_PARAMS" ] && eval set -- "$SCRIPT_PARAMS"
 parse_common_options "$@"
+#parse_common_options_strict "$@"
 
-# you script comes here ...
+######## Your script comes here ... ###############################################################
+##@doc see <http://github.com/piwi/bash-library/wiki/Global-documentation.md>
 
 #simple_error "this is the classic usage error"
 
@@ -44,6 +59,12 @@ parse_common_options "$@"
 
 
 
+
+
+
+
+######## Debug & exit #############################################################################
+
 # a debug info in 'debug' mode
 if [ "$DEBUG" = 'true' ]; then libdebug "$*"; fi
 
@@ -51,3 +72,4 @@ if [ "$DEBUG" = 'true' ]; then libdebug "$*"; fi
 exit 0
 
 # Endfile
+# vim: autoindent tabstop=4 shiftwidth=4 expandtab softtabstop=4 filetype=sh

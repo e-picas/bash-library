@@ -161,3 +161,4 @@ fi
 if [ "$QUIET" != 'true' ]; then libdebug "$*"; fi
 exit 0
 # Endfile
+# vim: autoindent tabstop=4 shiftwidth=4 expandtab softtabstop=4 filetype=sh
