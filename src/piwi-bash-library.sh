@@ -2829,7 +2829,7 @@ ${TOP_STR}\n\
 #### / libdebug ( "$*" )
 ## alias of library_debug
 libdebug () {
-    library_debug "$*"
+    library_debug $*
 }
 
 #### LIBRARY INTERNALS ###################################################################
