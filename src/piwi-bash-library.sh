@@ -608,6 +608,77 @@ onoff_bit () {
 
 #### UTILS #############################################################################
 
+#### is_numeric ( value )
+is_numeric () {
+    local var="$1"
+    echo -e "$var" | grep "[^0-9]" > /dev/null
+    local _status="$?"
+    [ "$_status" = '1' ] && return 0;
+    [ "$_status" = '0' ] && return 1;
+}
+
+#### is_numeric_by_variable_name ( variable_name )
+is_numeric_by_variable_name () {
+    export tmpvar="${!1}"
+    is_numeric "$tmpvar"
+    return "$?"
+}
+
+#### is_array ( $array[*] )
+## this will (only for now) test if there 1 or more arguments passed
+##+ and will therfore return '1' (false) for a single item array
+is_array () {
+    [ $# -gt 1 ] && return 0;
+    return 1;
+#    export tmpvar=${!1}
+##    echo "${tmpvar[*]}"
+#    is_array_by_variable_name tmpvar
+#    return "$?"
+}
+
+#### is_array_by_variable_name ( variable_name )
+is_array_by_variable_name () {
+    local var="$1"
+    declare -p "$var" 2> /dev/null | grep -q 'declare \-a'
+    return "$?"
+}
+
+#### is_boolean ( value )
+is_boolean () {
+    local var="$1"
+    if [ "$var" = 'true' ]||[ "$var" = 'false' ]||[ "$var" = '1' ]||[ "$var" = '0' ]
+    then return 0
+    else return 1
+    fi
+}
+
+#### is_boolean_by_variable_name ( variable_name )
+is_boolean_by_variable_name () {
+    export tmpvar="${!1}"
+    is_boolean "$tmpvar"
+    return "$?"
+}
+
+#### is_string ( value )
+is_string () {
+    local tmpvar=$1
+    if
+        [ $# -eq 1 ] &&
+        ! is_numeric "$tmpvar" &&
+        ! is_boolean "$tmpvar" ;
+    then
+        return 0
+    fi
+    return 1
+}
+
+#### is_string_by_variable_name ( variable_name )
+is_string_by_variable_name () {
+    export tmpvar="${!1}"
+    is_string "$tmpvar"
+    return "$?"
+}
+
 ##@ ECHOCMD (read-only: 'builtin' or 'gnu')
 ## Test if 'echo' is shell builtin or program
 if [ "$($(which echo) --version)" = '--version' ]
