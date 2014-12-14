@@ -2,8 +2,8 @@
 #
 # Piwi Bash Library - An open source day-to-day bash library
 # Copyright (C) 2013-2014, Pierre Cassat & contributors
-# <http://e-piwi.fr/> - <me [at] e-piwi.fr>
-# 
+# <http://e-piwi.fr/> - Some rights reserved.
+#
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
 # the Free Software Foundation, either version 3 of the License, or
