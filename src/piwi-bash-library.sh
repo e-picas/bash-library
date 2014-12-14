@@ -679,477 +679,6 @@ is_string_by_variable_name () {
     return "$?"
 }
 
-##@ ECHOCMD (read-only: 'builtin' or 'gnu')
-## Test if 'echo' is shell builtin or program
-if [ "$($(which echo) --version)" = '--version' ]
-then declare -rx ECHOCMD='builtin' 2>/dev/null;
-else declare -rx ECHOCMD='gnu' 2>/dev/null;
-fi
-
-#### _echo ( string )
-## echoes the string with the true 'echo -e' command
-## use this for colorization
-_echo () {
-#    tput sgr0
-    case "$ECHOCMD" in
-        gnu) $(which echo) -e "$*";;
-        builtin) echo "$*";;
-    esac
-    return 0
-}
-
-#### _necho ( string )
-## echoes the string with the true 'echo -en' command
-## use this for colorization and no new line
-_necho () {
-#    tput sgr0
-    case "$ECHOCMD" in
-        gnu) $(which echo) -en "$*";;
-        builtin) echo -n "$*" >&2;;
-    esac
-    return 0
-}
-
-#### verbose_echo ( string )
-## echoes the string if "verbose" is "on"
-verbose_echo () {
-    if [ "$VERBOSE" = 'true' ]; then _echo "$*"; fi; return 0;
-}
-
-#### / verecho ( string )
-## alias of 'verbose_echo'
-verecho () { verbose_echo "$*"; return $?; }
-
-#### quiet_echo ( string )
-## echoes the string if "quiet" is "off"
-quiet_echo () {
-    if [ "$QUIET" != 'true' ]; then _echo "$*"; fi; return 0;
-}
-
-#### / quietecho ( string )
-## alias of 'quiet_echo'
-quietecho () { quiet_echo "$*"; return $?; }
-
-#### evaluate ( command )
-## evaluates the command catching events:
-## - stdout is loaded in global `$CMD_OUT`
-## - stderr is loaded in global `$CMD_ERR`
-## - final status is loaded in global `$CMD_STATUS`
-##@env CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
-##@error will end with any caught error (exit status !=0)
-evaluate () {
-    unset CMD_OUT CMD_ERR CMD_STATUS
-    local f_out=$(mktemp);
-    local f_err=$(mktemp);
-    eval "($*) 1>$f_out 2>$f_err;";
-    CMD_STATUS="$?";
-    CMD_OUT="$(cat "$f_out")" && rm -f "$f_out";
-    CMD_ERR="$(cat "$f_err")" && rm -f "$f_err";
-    echo "$CMD_OUT" >&1;
-    echo "$CMD_ERR" >&2;
-    export CMD_OUT CMD_ERR CMD_STATUS
-    return "$CMD_STATUS"
-}
-
-#### interactive_evaluate ( command )
-## evaluates the command after user confirmation if "interactive" is "on"
-interactive_evaluate () {
-    if [ $# -eq 0 ]; then return 0; fi
-    if [ "$INTERACTIVE" = 'true' ]; then
-        prompt "Run command: \"$1\"" "y" "Y/n"
-        while true; do
-            case "$USERRESPONSE" in
-                [yY]* ) break;;
-                * ) _echo "_ no"; return 0; break;;
-            esac
-        done
-    fi
-    cmd_fct="${FUNCNAME[2]}"
-    cmd_line="${BASH_LINENO[1]}"
-    debug_evaluate "$*"
-    if [ "$CMD_STATUS" -ne 0 ]; then
-        error "error on execution: ${CMD_ERR}" "$CMD_STATUS" "$cmd_fct" "$cmd_line"
-    fi
-    return "${CMD_STATUS:-0}"
-}
-
-#### / ievaluate ( command )
-## alias of 'interactive_evaluate'
-ievaluate () { interactive_evaluate "$*"; return $?; }
-
-#### / ieval ( command )
-## alias of 'interactive_evaluate'
-ieval () { interactive_evaluate "$*"; return $?; }
-
-#### debug_evaluate ( command )
-## evaluates the command if "dryrun" is "off", just write it on screen otherwise
-debug_evaluate () {
-    if [ $# -eq 0 ]; then return 0; fi
-    unset CMD_OUT CMD_ERR CMD_STATUS
-    if [ "$DRYRUN" = 'true' ]
-    then
-        _echo "$(colorize 'dry-run >>' bold) \"$*\""
-        local status=0
-    else
-        unset CMD_OUT CMD_ERR CMD_STATUS
-        evaluate "$@" 1>/dev/null 2>&1
-        [ ! -z "$CMD_OUT" ] && echo "$CMD_OUT" >&1
-        [ ! -z "$CMD_ERR" ] && echo "$CMD_ERR" >&2
-        local status="$CMD_STATUS"
-    fi
-    return "$status"
-}
-
-#### / debevaluate ( command )
-## alias of 'debug_evaluate'
-debevaluate () { debug_evaluate "$*"; return $?; }
-
-#### / debeval ( command )
-## alias of 'debug_evaluate'
-debeval () { debug_evaluate "$*"; return $?; }
-
-#### interactive_exec ( command , debug_exec = true )
-## executes the command after user confirmation if "interactive" is "on"
-interactive_exec () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local DEBEXECUTION=${2:-true}
-    if [ "$INTERACTIVE" = 'true' ]; then
-        prompt "Run command: \"$1\"" "y" "Y/n"
-        while true; do
-            case "$USERRESPONSE" in
-                [yY]* ) break;;
-                * ) _echo "_ no"; return 0; break;;
-            esac
-        done
-    fi
-    if [ "$DEBEXECUTION" = 'true' ]
-    then
-        debug_exec "$1"
-    else
-        cmd_fct="${FUNCNAME[1]}"
-        cmd_line="${BASH_LINENO[1]}"
-        cmd_out="$( eval "$1" 2>&1 )"
-        cmd_status="$?"
-        if [ "$command_rc" -ne 0 ]; then
-            echo "$cmd_out"
-        else
-            error "error on execution: ${cmd_out}" "$cmd_status" "$cmd_fct" "$cmd_line"
-        fi
-    fi
-    return 0
-}
-
-#### / iexec ( command , debug_exec = true )
-## alias of 'interactive_exec'
-iexec () { interactive_exec "$*"; return $?; }
-
-#### debug_echo ( string )
-## echoes the string if "debug" is "on"
-debug_echo () {
-    if [ "$DEBUG" = 'true' ]; then _echo "$*"; fi; return 0;
-}
-
-#### / debecho ( string )
-## alias of 'debug_echo'
-debecho () { debug_echo "$*"; return $?; }
-
-#### debug_exec ( command )
-## execute the command if "dryrun" is "off", just write it on screen otherwise
-debug_exec () {
-    if [ $# -eq 0 ]; then return 0; fi
-    if [ "$DRYRUN" = 'true' ]
-        then _echo "$(colorize 'dry-run >>' bold) \"$1\""
-        else eval "$1"
-    fi
-    return 0
-}
-
-#### / debexec ( command )
-## alias of 'debug_exec'
-debexec () { debug_exec "$*"; return $?; }
-
-#### prompt ( string , default = y , options = Y/n )
-## prompt user a string proposing different response options and selecting a default one
-## final user fill is loaded in USERRESPONSE
-prompt () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local add=''
-    if [ -n "$3" ]; then add+="[${3}] "; fi
-    colored=$(colorize "?  >> ${1} ?" bold)
-    _necho "${colored} ${add}" >&2 
-    read answer
-    export USERRESPONSE="${answer:-${2}}"
-    return 0
-}
-
-#### selector_prompt ( list[@] , string , list_string , default = 1 )
-## prompt user a string proposing an indexed list of answers for selection
-##+ and returns a valid result (user is re-prompted while the answer seems not correct)
-## NOTE - the 'list' MUST be passed like `list[@]` (no quotes and dollar sign)
-## final user choice is loaded in USERRESPONSE
-selector_prompt () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local list=( "${!1}" )
-    local list_count="${#list[@]}"
-    local string="$2"
-    local list_string="$3"
-    local selected=0
-    local first_time=1
-    while [ "$selected" -lt 1 ]||[ "$selected" -gt "$list_count" ]; do
-        if [ "$first_time" -eq 0 ]
-        then
-            echo "! - Unknown index '${selected}'"
-            prompt "Please select a value in the list (use indexes between brackets)" "${3:-1}"
-        else
-            first_time=0
-            if [ ! -z "$string" ]; then echo "> ${list_string}:"; fi
-            for i in "${!list[@]}"; do echo "    - [$((i + 1))] ${list[$i]}"; done
-            prompt "$string" "${3:-1}"
-        fi
-        selected="$USERRESPONSE"
-    done
-    export USERRESPONSE="${list[$((selected - 1))]}"
-    return 0
-}
-
-#### info ( string, bold = true )
-## writes the string on screen and return
-info () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local USEBOLD="${2:-true}"
-    if [ "$USEBOLD" = 'true' ]
-        then _echo "$(colorize "   >> ${1}" bold "${COLOR_INFO}")"
-        else _echo "$(colorize '   >>' bold) ${1}"
-    fi
-    return 0
-}
-
-#### warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )
-## writes the error string on screen and return
-warning () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local TAG="${4:-    }"
-    local PADDER=$(printf '%0.1s' " "{1..1000})
-    local LINELENGTH="$(tput cols)"
-    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}]"
-    local SECONDLINE="$(colorize "${TAG}!! >> ${1:-unknown warning}" bold)"
-    printf -v TMPSTR \
-        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
-        0 "$LINELENGTH" "$PADDER" \
-        $((LINELENGTH - $(string_length "$FIRSTLINE"))) "$FIRSTLINE" \
-        $((LINELENGTH - $(string_length "$SECONDLINE"))) "${SECONDLINE}<${COLOR_WARNING}>";
-    parse_color_tags "\n<${COLOR_WARNING}>${TMPSTR}</${COLOR_WARNING}>\n"
-    return 0
-}
-
-#### error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )
-## writes the error string on screen and then exit with an error status
-##@error default status is E_ERROR (90)
-error () {
-    local TAG="${5:-    }"
-    local PADDER=$(printf '%0.1s' " "{1..1000})
-    local LINELENGTH=$(tput cols)
-    local ERRSTRING="${1:-unknown error}"
-    local ERRSTATUS="${2:-${E_ERROR}}"
-    if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
-    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '--help')"
-    local SECONDLINE="$(colorize "${TAG}!! >> ${ERRSTRING}" bold)"
-    printf -v TMPSTR \
-        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
-        0 "$LINELENGTH" "$PADDER" \
-        "$((LINELENGTH - $(string_length "$FIRSTLINE")))" "$FIRSTLINE" \
-        "$((LINELENGTH - $(string_length "$SECONDLINE")))" "${SECONDLINE}<${COLOR_ERROR}>";
-    parse_color_tags "\n<${COLOR_ERROR}>${TMPSTR}</${COLOR_ERROR}>\n" >&2
-    exit "$ERRSTATUS"
-}
-
-#### get_stack_trace ( first_item = 0 )
-## get a formated stack trace
-get_stack_trace () {
-    echo "Stack trace:"
-    local i="${1:-0}"
-    for t in "${BASH_SOURCE[@]}"; do
-        if [ "$i" -lt "$(("${#BASH_SOURCE[@]}" - 1))" ]
-        then echo "#${i} '${FUNCNAME[${i}]} ()' : called in '${BASH_SOURCE[$((i+1))]}' at line ${BASH_LINENO[${i}]}"
-        else echo "#${i} ${BASH_SOURCE[${i}]} : ${FUNCNAME[${i}]}"
-        fi
-        i=$((i + 1))
-    done
-    return 0
-}
-
-#### get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )
-## builds a synopsis string using script's declared available options
-get_synopsis_string () {
-    local shortopts="${1:-${OPTIONS_ALLOWED}}"
-    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
-    local -a short_options=( $(get_short_options_array "$shortopts") )
-    local -a long_options=( $(get_long_options_array "$longopts") )
-    local short_options_string=''
-    local long_options_string=''
-    local i=1
-    for o in "${short_options[@]}"; do
-        short_options_string+="${o//:/}"
-        if [ "$i" -lt "${#short_options[@]}" ]; then
-            short_options_string+='|'
-        fi
-        i=$((i + 1))
-    done
-    i=1
-    for o in "${long_options[@]}"; do
-        long_options_string+="${o//:/}"
-        if [ "$i" -lt "${#long_options[@]}" ]; then
-            long_options_string+='|'
-        fi
-        i=$((i + 1))
-    done
-    synopsis="${0}  [-${short_options_string}]\n\t[--${long_options_string}]\n\t[--]  <arguments>";
-    echo "$synopsis"
-    return 0
-}
-
-#### simple_synopsis ()
-## writes a synopsis string using script's declared available options
-simple_synopsis () {
-    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$(get_synopsis_string)";
-    echo
-    return 0
-}
-
-#### simple_usage ( synopsis = SYNOPSIS_ERROR )
-## writes a synopsis usage info
-simple_usage () {
-    local USAGESTR=''
-    if [ ! -z "${1:-}" ]; then
-        if [ "$1" = 'lib' ]; then
-            USAGESTR="$(_echo "$COMMON_SYNOPSIS")"
-        elif [ "$1" = 'action' ]; then
-            USAGESTR="$(_echo "$COMMON_SYNOPSIS_ACTION")"
-        else
-            USAGESTR="$(_echo "$1")"
-        fi
-    elif [ -n "$SYNOPSIS_ERROR" ]; then
-        USAGESTR="$(_echo "$SYNOPSIS_ERROR")"
-    else
-        USAGESTR="$(_echo "$COMMON_SYNOPSIS_ERROR")"
-    fi
-    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$USAGESTR";
-    echo
-    return 0
-}
-
-#### simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
-## writes an error string as a simple message with a synopsis usage info
-##@error default status is E_ERROR (90)
-simple_error () {
-    local ERRSTRING="${1:-unknown error}"
-    local ERRSTATUS="${2:-${E_ERROR}}"
-    if [ "$DEBUG" = 'true' ]; then
-        ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
-    fi
-    if [ -n "$LOGFILEPATH" ]; then log "$ERRSTRING" "error:${ERRSTATUS}"; fi
-    printf "$(parse_color_tags "<bold>error:</bold> %s")" "$ERRSTRING" >&2;
-    echo >&2
-    simple_usage "${3:-}" >&2
-    exit "$ERRSTATUS"
-}
-
-#### simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
-## writes multiple errors strings as a simple message with a synopsis usage info
-##@error default status is E_ERROR (90)
-simple_error_multi () {
-    local -a ERRSTACK=( "${!1:-unknown error}" )
-    local ERRSTATUS="${2:-${E_ERROR}}"
-    for ERRSTRING in "${ERRSTACK[@]}"; do
-        if [ "$DEBUG" = 'true' ]; then
-            ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
-        fi
-        if [ -n "$LOGFILEPATH" ]; then log "$ERRSTRING" "error:${ERRSTATUS}"; fi
-        printf "$(parse_color_tags "<bold>error:</bold> %s")" "$ERRSTRING" >&2;
-        echo >&2
-    done
-    simple_usage "${3:-}" >&2
-    exit "$ERRSTATUS"
-}
-
-#### gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
-## must echoes something like 'sourcefile:lineno: message'
-gnu_error_string () {
-    local errorstr=''
-    local _source="${2:-${BASH_SOURCE[2]}}"
-    if [ -n "$_source" ]; then errorstr+="${_source}:"; fi
-    local _func="${3:-${FUNCNAME[2]}}"
-    if [ -n "$_func" ]; then errorstr+="${_func}:"; fi
-    local _line="${4:-${BASH_LINENO[2]}}"
-    if [ -n "$_line" ]; then errorstr+="${_line}:"; fi
-    echo "${errorstr} ${1}"
-    return 0
-}
-
-#### no_option_error ()
-## no script option error
-##@error exits with status E_OPTS (81)
-no_option_error () {
-    error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### no_option_simple_error ()
-## no script option simple error
-##@error exits with status E_OPTS (81)
-no_option_simple_error () {
-    simple_error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### unknown_option_error ( option )
-## invalid script option error
-##@error exits with status E_OPTS (81)
-unknown_option_error () {
-    error "Unknown option '${1:-?}'" "${E_OPTS}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### unknown_option_simple_error ( option )
-## invalid script option simple error
-##@error exits with status E_OPTS (81)
-unknown_option_simple_error () {
-    simple_error "Unknown option '${1:-?}'" "${E_OPTS}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### command_error ( cmd )
-## command not found error
-##@error exits with status E_CMD (82)
-command_error () {
-    error "'$1' command seems not installed on your machine ... The process can't be done !" \
-        "${E_CMD}" "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### command_simple_error ( cmd )
-## command not found simple error
-##@error exits with status E_CMD (82)
-command_simple_error () {
-    simple_error "'$1' command seems not installed on your machine ... The process can't be done !" \
-        "${E_CMD}" "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### path_error ( path )
-## path not found error
-##@error exits with status E_PATH (83)
-path_error () {
-    error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
-#### path_simple_error ( path )
-## path not found simple error
-##@error exits with status E_PATH (83)
-path_simple_error () {
-    simple_error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
-        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
-}
-
 
 #### VCS #############################################################################
 
@@ -1974,6 +1503,483 @@ build_configstring () {
     done
     _echo "$CONFIG_STR"
     return 0
+}
+
+
+#### LIBRARY VARS #############################################################################
+
+##@ ECHOCMD (read-only: 'builtin' or 'gnu')
+## Test if 'echo' is shell builtin or program
+if [ "$($(which echo) --version)" = '--version' ]
+then declare -rx ECHOCMD='builtin' 2>/dev/null;
+else declare -rx ECHOCMD='gnu' 2>/dev/null;
+fi
+
+#### _echo ( string )
+## echoes the string with the true 'echo -e' command
+## use this for colorization
+_echo () {
+#    tput sgr0
+    case "$ECHOCMD" in
+        gnu) $(which echo) -e "$*";;
+        builtin) echo "$*";;
+    esac
+    return 0
+}
+
+#### _necho ( string )
+## echoes the string with the true 'echo -en' command
+## use this for colorization and no new line
+_necho () {
+#    tput sgr0
+    case "$ECHOCMD" in
+        gnu) $(which echo) -en "$*";;
+        builtin) echo -n "$*" >&2;;
+    esac
+    return 0
+}
+
+#### prompt ( string , default = y , options = Y/n )
+## prompt user a string proposing different response options and selecting a default one
+## final user fill is loaded in USERRESPONSE
+prompt () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local add=''
+    if [ -n "$3" ]; then add+="[${3}] "; fi
+    colored=$(colorize "?  >> ${1} ?" bold)
+    _necho "${colored} ${add}" >&2
+    read answer
+    export USERRESPONSE="${answer:-${2}}"
+    return 0
+}
+
+#### selector_prompt ( list[@] , string , list_string , default = 1 )
+## prompt user a string proposing an indexed list of answers for selection
+##+ and returns a valid result (user is re-prompted while the answer seems not correct)
+## NOTE - the 'list' MUST be passed like `list[@]` (no quotes and dollar sign)
+## final user choice is loaded in USERRESPONSE
+selector_prompt () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local list=( "${!1}" )
+    local list_count="${#list[@]}"
+    local string="$2"
+    local list_string="$3"
+    local selected=0
+    local first_time=1
+    while [ "$selected" -lt 1 ]||[ "$selected" -gt "$list_count" ]; do
+        if [ "$first_time" -eq 0 ]
+        then
+            echo "! - Unknown index '${selected}'"
+            prompt "Please select a value in the list (use indexes between brackets)" "${3:-1}"
+        else
+            first_time=0
+            if [ ! -z "$string" ]; then echo "> ${list_string}:"; fi
+            for i in "${!list[@]}"; do echo "    - [$((i + 1))] ${list[$i]}"; done
+            prompt "$string" "${3:-1}"
+        fi
+        selected="$USERRESPONSE"
+    done
+    export USERRESPONSE="${list[$((selected - 1))]}"
+    return 0
+}
+
+#### verbose_echo ( string )
+## echoes the string if "verbose" is "on"
+verbose_echo () {
+    if [ "$VERBOSE" = 'true' ]; then _echo "$*"; fi; return 0;
+}
+
+#### / verecho ( string )
+## alias of 'verbose_echo'
+verecho () { verbose_echo "$*"; return $?; }
+
+#### quiet_echo ( string )
+## echoes the string if "quiet" is "off"
+quiet_echo () {
+    if [ "$QUIET" != 'true' ]; then _echo "$*"; fi; return 0;
+}
+
+#### / quietecho ( string )
+## alias of 'quiet_echo'
+quietecho () { quiet_echo "$*"; return $?; }
+
+#### debug_echo ( string )
+## echoes the string if "debug" is "on"
+debug_echo () {
+    if [ "$DEBUG" = 'true' ]; then _echo "$*"; fi; return 0;
+}
+
+#### / debecho ( string )
+## alias of 'debug_echo'
+debecho () { debug_echo "$*"; return $?; }
+
+#### evaluate ( command )
+## evaluates the command catching events:
+## - stdout is loaded in global `$CMD_OUT`
+## - stderr is loaded in global `$CMD_ERR`
+## - final status is loaded in global `$CMD_STATUS`
+##@env CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
+##@error will end with any caught error (exit status !=0)
+evaluate () {
+    unset CMD_OUT CMD_ERR CMD_STATUS
+    local f_out=$(mktemp);
+    local f_err=$(mktemp);
+    eval "($*) 1>$f_out 2>$f_err;";
+    CMD_STATUS="$?";
+    CMD_OUT="$(cat "$f_out")" && rm -f "$f_out";
+    CMD_ERR="$(cat "$f_err")" && rm -f "$f_err";
+    echo "$CMD_OUT" >&1;
+    echo "$CMD_ERR" >&2;
+    export CMD_OUT CMD_ERR CMD_STATUS
+    return "$CMD_STATUS"
+}
+
+#### debug_evaluate ( command )
+## evaluates the command if "dryrun" is "off", just write it on screen otherwise
+debug_evaluate () {
+    if [ $# -eq 0 ]; then return 0; fi
+    unset CMD_OUT CMD_ERR CMD_STATUS
+    if [ "$DRYRUN" = 'true' ]
+    then
+        _echo "$(colorize 'dry-run >>' bold) \"$*\""
+        local status=0
+    else
+        unset CMD_OUT CMD_ERR CMD_STATUS
+        evaluate "$@" 1>/dev/null 2>&1
+        [ ! -z "$CMD_OUT" ] && echo "$CMD_OUT" >&1
+        [ ! -z "$CMD_ERR" ] && echo "$CMD_ERR" >&2
+        local status="$CMD_STATUS"
+    fi
+    return "$status"
+}
+
+#### / debevaluate ( command )
+## alias of 'debug_evaluate'
+debevaluate () { debug_evaluate "$*"; return $?; }
+
+#### / debeval ( command )
+## alias of 'debug_evaluate'
+debeval () { debug_evaluate "$*"; return $?; }
+
+#### interactive_evaluate ( command )
+## evaluates the command after user confirmation if "interactive" is "on"
+interactive_evaluate () {
+    if [ $# -eq 0 ]; then return 0; fi
+    if [ "$INTERACTIVE" = 'true' ]; then
+        prompt "Run command: \"$1\"" "y" "Y/n"
+        while true; do
+            case "$USERRESPONSE" in
+                [yY]* ) break;;
+                * ) _echo "_ no"; return 0; break;;
+            esac
+        done
+    fi
+    cmd_fct="${FUNCNAME[2]}"
+    cmd_line="${BASH_LINENO[1]}"
+    debug_evaluate "$*"
+    if [ "$CMD_STATUS" -ne 0 ]; then
+        error "error on execution: ${CMD_ERR}" "$CMD_STATUS" "$cmd_fct" "$cmd_line"
+    fi
+    return "${CMD_STATUS:-0}"
+}
+
+#### / ievaluate ( command )
+## alias of 'interactive_evaluate'
+ievaluate () { interactive_evaluate "$*"; return $?; }
+
+#### / ieval ( command )
+## alias of 'interactive_evaluate'
+ieval () { interactive_evaluate "$*"; return $?; }
+
+#### interactive_exec ( command , debug_exec = true )
+## executes the command after user confirmation if "interactive" is "on"
+interactive_exec () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local DEBEXECUTION=${2:-true}
+    if [ "$INTERACTIVE" = 'true' ]; then
+        prompt "Run command: \"$1\"" "y" "Y/n"
+        while true; do
+            case "$USERRESPONSE" in
+                [yY]* ) break;;
+                * ) _echo "_ no"; return 0; break;;
+            esac
+        done
+    fi
+    if [ "$DEBEXECUTION" = 'true' ]
+    then
+        debug_exec "$1"
+    else
+        cmd_fct="${FUNCNAME[1]}"
+        cmd_line="${BASH_LINENO[1]}"
+        cmd_out="$( eval "$1" 2>&1 )"
+        cmd_status="$?"
+        if [ "$command_rc" -ne 0 ]; then
+            echo "$cmd_out"
+        else
+            error "error on execution: ${cmd_out}" "$cmd_status" "$cmd_fct" "$cmd_line"
+        fi
+    fi
+    return 0
+}
+
+#### / iexec ( command , debug_exec = true )
+## alias of 'interactive_exec'
+iexec () { interactive_exec "$*"; return $?; }
+
+#### debug_exec ( command )
+## execute the command if "dryrun" is "off", just write it on screen otherwise
+debug_exec () {
+    if [ $# -eq 0 ]; then return 0; fi
+    if [ "$DRYRUN" = 'true' ]
+        then _echo "$(colorize 'dry-run >>' bold) \"$1\""
+        else eval "$1"
+    fi
+    return 0
+}
+
+#### / debexec ( command )
+## alias of 'debug_exec'
+debexec () { debug_exec "$*"; return $?; }
+
+
+#### MESSAGES / ERRORS #############################################################################
+
+#### info ( string, bold = true )
+## writes the string on screen and return
+info () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local USEBOLD="${2:-true}"
+    if [ "$USEBOLD" = 'true' ]
+        then _echo "$(colorize "   >> ${1}" bold "${COLOR_INFO}")"
+        else _echo "$(colorize '   >>' bold) ${1}"
+    fi
+    return 0
+}
+
+#### warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )
+## writes the error string on screen and return
+warning () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local TAG="${4:-    }"
+    local PADDER=$(printf '%0.1s' " "{1..1000})
+    local LINELENGTH="$(tput cols)"
+    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}]"
+    local SECONDLINE="$(colorize "${TAG}!! >> ${1:-unknown warning}" bold)"
+    printf -v TMPSTR \
+        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
+        0 "$LINELENGTH" "$PADDER" \
+        $((LINELENGTH - $(string_length "$FIRSTLINE"))) "$FIRSTLINE" \
+        $((LINELENGTH - $(string_length "$SECONDLINE"))) "${SECONDLINE}<${COLOR_WARNING}>";
+    parse_color_tags "\n<${COLOR_WARNING}>${TMPSTR}</${COLOR_WARNING}>\n"
+    return 0
+}
+
+#### error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )
+## writes the error string on screen and then exit with an error status
+##@error default status is E_ERROR (90)
+error () {
+    local TAG="${5:-    }"
+    local PADDER=$(printf '%0.1s' " "{1..1000})
+    local LINELENGTH=$(tput cols)
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    if [ -n "$LOGFILEPATH" ]; then log "${ERRSTRING}" "error:${ERRSTATUS}"; fi
+    local FIRSTLINE="${TAG}[at ${3:-${FUNCNAME[1]}} line ${4:-${BASH_LINENO[1]}}] (to get help, try option '--help')"
+    local SECONDLINE="$(colorize "${TAG}!! >> ${ERRSTRING}" bold)"
+    printf -v TMPSTR \
+        "%*.*s\\\n%-*s\\\n%-*s\\\n%*.*s" \
+        0 "$LINELENGTH" "$PADDER" \
+        "$((LINELENGTH - $(string_length "$FIRSTLINE")))" "$FIRSTLINE" \
+        "$((LINELENGTH - $(string_length "$SECONDLINE")))" "${SECONDLINE}<${COLOR_ERROR}>";
+    parse_color_tags "\n<${COLOR_ERROR}>${TMPSTR}</${COLOR_ERROR}>\n" >&2
+    exit "$ERRSTATUS"
+}
+
+#### get_stack_trace ( first_item = 0 )
+## get a formated stack trace
+get_stack_trace () {
+    echo "Stack trace:"
+    local i="${1:-0}"
+    for t in "${BASH_SOURCE[@]}"; do
+        if [ "$i" -lt "$(("${#BASH_SOURCE[@]}" - 1))" ]
+        then echo "#${i} '${FUNCNAME[${i}]} ()' : called in '${BASH_SOURCE[$((i+1))]}' at line ${BASH_LINENO[${i}]}"
+        else echo "#${i} ${BASH_SOURCE[${i}]} : ${FUNCNAME[${i}]}"
+        fi
+        i=$((i + 1))
+    done
+    return 0
+}
+
+#### get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )
+## builds a synopsis string using script's declared available options
+get_synopsis_string () {
+    local shortopts="${1:-${OPTIONS_ALLOWED}}"
+    local longopts="${2:-${LONG_OPTIONS_ALLOWED}}"
+    local -a short_options=( $(get_short_options_array "$shortopts") )
+    local -a long_options=( $(get_long_options_array "$longopts") )
+    local short_options_string=''
+    local long_options_string=''
+    local i=1
+    for o in "${short_options[@]}"; do
+        short_options_string+="${o//:/}"
+        if [ "$i" -lt "${#short_options[@]}" ]; then
+            short_options_string+='|'
+        fi
+        i=$((i + 1))
+    done
+    i=1
+    for o in "${long_options[@]}"; do
+        long_options_string+="${o//:/}"
+        if [ "$i" -lt "${#long_options[@]}" ]; then
+            long_options_string+='|'
+        fi
+        i=$((i + 1))
+    done
+    synopsis="${0}  [-${short_options_string}]\n\t[--${long_options_string}]\n\t[--]  <arguments>";
+    echo "$synopsis"
+    return 0
+}
+
+#### simple_synopsis ()
+## writes a synopsis string using script's declared available options
+simple_synopsis () {
+    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$(get_synopsis_string)";
+    echo
+    return 0
+}
+
+#### simple_usage ( synopsis = SYNOPSIS_ERROR )
+## writes a synopsis usage info
+simple_usage () {
+    local USAGESTR=''
+    if [ ! -z "${1:-}" ]; then
+        if [ "$1" = 'lib' ]; then
+            USAGESTR="$(_echo "$COMMON_SYNOPSIS")"
+        elif [ "$1" = 'action' ]; then
+            USAGESTR="$(_echo "$COMMON_SYNOPSIS_ACTION")"
+        else
+            USAGESTR="$(_echo "$1")"
+        fi
+    elif [ -n "$SYNOPSIS_ERROR" ]; then
+        USAGESTR="$(_echo "$SYNOPSIS_ERROR")"
+    else
+        USAGESTR="$(_echo "$COMMON_SYNOPSIS_ERROR")"
+    fi
+    printf "$(parse_color_tags "<bold>usage:</bold> %s \nRun option '--help' for help.")" "$USAGESTR";
+    echo
+    return 0
+}
+
+#### simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+## writes an error string as a simple message with a synopsis usage info
+##@error default status is E_ERROR (90)
+simple_error () {
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    if [ "$DEBUG" = 'true' ]; then
+        ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
+    fi
+    if [ -n "$LOGFILEPATH" ]; then log "$ERRSTRING" "error:${ERRSTATUS}"; fi
+    printf "$(parse_color_tags "<bold>error:</bold> %s")" "$ERRSTRING" >&2;
+    echo >&2
+    simple_usage "${3:-}" >&2
+    exit "$ERRSTATUS"
+}
+
+#### simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )
+## writes multiple errors strings as a simple message with a synopsis usage info
+##@error default status is E_ERROR (90)
+simple_error_multi () {
+    local -a ERRSTACK=( "${!1:-unknown error}" )
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    for ERRSTRING in "${ERRSTACK[@]}"; do
+        if [ "$DEBUG" = 'true' ]; then
+            ERRSTRING=$(gnu_error_string "${ERRSTRING}" '' "${3}" "${4}")
+        fi
+        if [ -n "$LOGFILEPATH" ]; then log "$ERRSTRING" "error:${ERRSTATUS}"; fi
+        printf "$(parse_color_tags "<bold>error:</bold> %s")" "$ERRSTRING" >&2;
+        echo >&2
+    done
+    simple_usage "${3:-}" >&2
+    exit "$ERRSTATUS"
+}
+
+#### gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
+## must echoes something like 'sourcefile:lineno: message'
+gnu_error_string () {
+    local errorstr=''
+    local _source="${2:-${BASH_SOURCE[2]}}"
+    if [ -n "$_source" ]; then errorstr+="${_source}:"; fi
+    local _func="${3:-${FUNCNAME[2]}}"
+    if [ -n "$_func" ]; then errorstr+="${_func}:"; fi
+    local _line="${4:-${BASH_LINENO[2]}}"
+    if [ -n "$_line" ]; then errorstr+="${_line}:"; fi
+    echo "${errorstr} ${1}"
+    return 0
+}
+
+#### no_option_error ()
+## no script option error
+##@error exits with status E_OPTS (81)
+no_option_error () {
+    error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### no_option_simple_error ()
+## no script option simple error
+##@error exits with status E_OPTS (81)
+no_option_simple_error () {
+    simple_error "No option or argument not understood ! Nothing to do ..." "${E_OPTS}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### unknown_option_error ( option )
+## invalid script option error
+##@error exits with status E_OPTS (81)
+unknown_option_error () {
+    error "Unknown option '${1:-?}'" "${E_OPTS}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### unknown_option_simple_error ( option )
+## invalid script option simple error
+##@error exits with status E_OPTS (81)
+unknown_option_simple_error () {
+    simple_error "Unknown option '${1:-?}'" "${E_OPTS}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### command_error ( cmd )
+## command not found error
+##@error exits with status E_CMD (82)
+command_error () {
+    error "'$1' command seems not installed on your machine ... The process can't be done !" \
+        "${E_CMD}" "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### command_simple_error ( cmd )
+## command not found simple error
+##@error exits with status E_CMD (82)
+command_simple_error () {
+    simple_error "'$1' command seems not installed on your machine ... The process can't be done !" \
+        "${E_CMD}" "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### path_error ( path )
+## path not found error
+##@error exits with status E_PATH (83)
+path_error () {
+    error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
+}
+
+#### path_simple_error ( path )
+## path not found simple error
+##@error exits with status E_PATH (83)
+path_simple_error () {
+    simple_error "Path '$1' (file or dir) can't be found ..." "${E_PATH}" \
+        "${FUNCNAME[1]}" "${BASH_LINENO[0]}";
 }
 
 
