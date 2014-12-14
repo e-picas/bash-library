@@ -16,7 +16,7 @@ piwi-bash-library - An open source day-to-day bash library.
 **piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
     [**--help**|**--usage**|**--man**]
     [**--force**|**--help**|**--interactive**|**--quiet**|**--verbose**|**--debug**|**--dry-run**]
-    [**--version**|**--libvers**]
+    [**--version**|**--libversion**]
     [**--logfile** *=filename*] [**working-dir** *=path*]
         [script options ...]  (--)  [arguments ...]
 
@@ -115,22 +115,22 @@ manpage or help string for more information.
 *The following common options are supported (MAY be used first):*
 
 **--dry-run**
-:    see commands to run but do not run them actually ; this will define the environment variable
-`DRYRUN` on `true`
+:    see commands to run but do not run them actually ; this will define the environment variables
+`DRYRUN` on `true` and `INTERACTIVE` and `FORCED` on `false`
 
 **-f**, **--force**
 :    force some commands to not prompt confirmation ; this will define the environment
-variable `FORCED` on `true`
+variables `FORCED` on `true` and `VERBOSE` and `DEBUG` on `false`
 
 **-h**, **--help**
 :    show an information message 
 
 **-i**, **--interactive**
-:    ask for confirmation before any action ; this will define the environment variable
-`INTERACTIVE` on `true` and `QUIET` on `false`
+:    ask for confirmation before any action ; this will define the environment variables
+`INTERACTIVE` on `true` and `FORCED` on `false`
 
-**--libvers**
-:    see the library version ; use option `quiet` to only have the version number
+**--libversion**
+:    see the library version ; use option `--quiet` to only have the version number
 
 **--log** =filename
 :    define the log filename to use (default is `pwibashlib.log`) ; this will update
@@ -141,27 +141,29 @@ the environment variable `LOGFILE`
 
 **-q**, **--quiet**
 :    decrease script verbosity, nothing will be written unless errors ; this will define
-the environment variables `VERBOSE` and `INTERACTIVE` on `false` and `QUIET` on `true`
+the environment variables `VERBOSE` on `false` and `QUIET` on `true`
 
 **-v**, **--verbose**
 :    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
 and `QUIET` on `false`
 
 **-V**, **--version**
-:    see the script version when available ; use option `quiet` to only have the version number
+:    see the script version when available ; use option `--quiet` to only have the version number
 
 **--working-dir** =path
 :    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
 the environment variable `WORKINGDIR`
 
 **-x**, **--debug**
-:    enable debug mode ; this will define the environment variable `DEBUG` on `true`
+:    enable debug mode ; this will define the environment variables `DEBUG` and `VERBOSE` on `true`
+and `QUIET` on `false`
 
 **--usage**
 :    show a quick usage information
 
 You can group short options like `-xc`, set an option argument like `-d(=)value` or
 `--long=value` and use `--` to explicitly specify the end of the script options.
+Options are treated in the command line order (`-vq` will finally retain `-q`).
 
 You can mix short options, long options and script arguments at your convenience. 
 
@@ -293,10 +295,9 @@ To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
 
 ## AUTHOR
 
-Created and maintained by **Pierre Cassat** (*piwi* - <http://e-piwi.fr/>)
+Created and maintained by **Pierre Cassat** (*piwi* - <http://e-piwi.fr/> - <me [at] e-piwi.fr>)
 & contributors.
 
 ## SEE ALSO
 
 bash(1), sed(1), grep(1), printf(1), echo(1), tput(1), uname(1), getopt(1), getopts(1)
-
