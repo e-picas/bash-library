@@ -347,6 +347,60 @@ get_ip () {
 
 #### FILES #############################################################################
 
+#### file_exists ( file_path )
+## test if a file, link or directory exists in the file-system
+file_exists () {
+    local tmpvar="$1"
+    if [ -n "$tmpvar" ] && [ -e "$tmpvar" ]; then
+        return 0
+    fi
+    return 1
+}
+
+#### is_file ( file_path )
+## test if a file exists in the file-system and is a 'true' file
+is_file () {
+    local tmpvar="$1"
+    if [ -n "$tmpvar" ] && file_exists "$tmpvar" && [ -f "$tmpvar" ]; then
+        return 0
+    fi
+    return 1
+}
+
+#### is_dir ( file_path )
+## test if a file exists in the file-system and is a directory
+is_dir () {
+    local tmpvar="$1"
+    if [ -n "$tmpvar" ] && file_exists "$tmpvar" && [ -d "$tmpvar" ]; then
+        return 0
+    fi
+    return 1
+}
+
+#### is_link ( file_path )
+## test if a file exists in the file-system and is a symbolic link
+is_link () {
+    local tmpvar="$1"
+    if [ -n "$tmpvar" ] && file_exists "$tmpvar" && [ -L "$tmpvar" ]; then
+        return 0
+    fi
+    return 1
+}
+
+#### is_executable ( file_path )
+## test if a file or link exists in the file-system and has executable rights
+is_executable () {
+    local tmpvar="$1"
+    if
+        [ -n "$tmpvar" ] && file_exists "$tmpvar" &&
+        ( is_file "$tmpvar" || ( is_link "$tmpvar" && is_file "$(readlink "$tmpvar")" ) ) &&
+        [ -x "$tmpvar" ];
+    then
+        return 0
+    fi
+    return 1
+}
+
 #### get_extension ( path = $0 )
 ## retrieve a file extension
 get_extension () {
