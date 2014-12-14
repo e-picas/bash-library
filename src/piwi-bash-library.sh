@@ -189,9 +189,9 @@ declare -rx COMMON_OPTIONS_MANPAGE="<bold>-h | --help</bold>\t\t\tshow this info
 \t<bold>-f | --force</bold>\t\t\tforce some commands to not prompt confirmation \n\
 \t<bold>-i | --interactive</bold>\t\task for confirmation before any action \n\
 \t<bold>-x | --debug</bold>\t\t\tenable debug mode \n\
-\t<bold>-V | --version</bold>\t\t\tsee the script version when available ; use option '-q' to get the version number only\n\
+\t<bold>-V | --version</bold>\t\t\tsee the script version when available ; use option '--quiet' to get the version number only\n\
 \t<bold>--working-dir=PATH</bold>\t\tredefine the working directory (default is 'pwd' - 'PATH' must exist)\n\
-\t<bold>--log=FILENAME</bold>\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
+\t<bold>--log=FILENAME</bold>\t\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t<bold>--usage</bold>\t\t\t\tshow quick usage information \n\
 \t<bold>--man</bold>\t\t\t\tsee the current script manpage if available \n\
 \t<bold>--dry-run</bold>\t\t\tsee commands to run but not run them actually \n\
@@ -209,7 +209,7 @@ declare -rx COMMON_OPTIONS_USAGE="\n\
 \t--log=FILENAME\t\tdefine the log filename to use (default is '${LIB_LOGFILE}')\n\
 \t--dry-run\t\tsee commands to run but not run them actually \n\n\
 \t-V, --version\t\tsee the script version when available\n\
-\t\t\t\tuse option '-q' to get the version number only\n\
+\t\t\t\tuse option '--quiet' to get the version number only\n\
 \t-h, --help\t\tshow this information message \n\
 \t--usage\t\t\tshow quick usage information \n\
 \t--man\t\t\tsee the current script manpage if available \n\
@@ -3081,8 +3081,8 @@ $(parse_color_tags "<bold><action> in:</bold>")\n\
 \tcheck\t\t\tcheck if a copy is up-to-date\n\
 \tupdate\t\t\tupdate a copy with newer version if so\n\
 \tuninstall\t\tuninstall a copy from a system path\n\
-\tversion\t\t\tget a copy version infos ; use option '-q' to get only the version number\n\
-\tdocumentation\t\tsee the library documentation ; use option '-v' to increase verbosity\n\
+\tversion\t\t\tget a copy version infos ; use option '--quiet' to get only the version number\n\
+\tdocumentation\t\tsee the library documentation ; use option '--verbose' to increase verbosity\n\
 \tclean\t\t\tclean library cache\n\n\
 $(parse_color_tags "<bold>available options:</bold>")\n\
 \t-e, --exec='string'\ta bash string to evaluate in the library's environment\n\
@@ -3090,13 +3090,13 @@ $(parse_color_tags "<bold>available options:</bold>")\n\
 \t-p, --preset=TYPE\tdefine a preset for an installation ; can be ${INTLIB_PRESET_INFO}\n\
 \t-b, --branch=NAME\tdefine the GIT branch to use from the library remote repository (default is '${INTLIB_BRANCH}')\n\
 \t-r, --release=VERSION\tdefine the GIT release tag to use from the library remote repository (default is empty)\n\
-\t--local\t\t\tlocal installation in current directory (alias of '-t \$(pwd)')\
+\t--local\t\t\tlocal installation in current directory (alias of '--target=\$(pwd)')\
 ${COMMON_OPTIONS_USAGE}";
-SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
-\t[-t | --target=path]  [--local]  ...\n\
-\t[-b | --branch=branch]  [-r | --release=version]  ...\n\
-\t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
-\t[-e | --exec= 'string to eval' ]  ...\n\
+SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] \n\
+\t[-t | --target=<path>]  [--local] \n\
+\t[-b | --branch=<branch>]  [-r | --release=<version>] \n\
+\t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ] \n\
+\t[-e | --exec=<'string to eval'>] \n\
 \thelp | usage\n\
 \tversion\n\
 \tcheck\n\
@@ -3105,11 +3105,11 @@ SYNOPSIS_ERROR=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
 \tuninstall\n\
 \tdocumentation\n\
 \tclean\n";
-SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] ... \n\
-\t[-t | --target=path]  [--local]  ...\n\
-\t[-b | --branch=branch]  [-r | --release=version]  ...\n\
-\t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ]  ...\n\
-\t[-e | --exec= 'string to eval' ]  ...\n\
+SYNOPSIS_USAGE=" ${0}  [-${COMMON_OPTIONS_ALLOWED_MASK}] \n\
+\t[-t | --target=<path>]  [--local] \n\
+\t[-b | --branch=<branch>]  [-r | --release=<version>] \n\
+\t[-p | --preset= (${INTLIB_PRESET_ALLOWED[@]}) ] \n\
+\t[-e | --exec=<'string to eval'>] \n\
 \t[--] <action>";
 declare -x DOCUMENTATION_TITLE="Piwi Bash Library documentation\n\n[*$(library_info)*]"
 declare -x DOCUMENTATION_INTRO="\
