@@ -176,10 +176,9 @@ declare -rx COMMON_SYNOPSIS_ERROR_MANPAGE="${0}  [-${COMMON_OPTIONS_ALLOWED_MASK
 
 ##@ OPTIONS_ADDITIONAL_INFOS_MANPAGE (read-only)
 ## Information string about command line options how-to
-declare -rx OPTIONS_ADDITIONAL_INFOS_MANPAGE="\tYou can group short options like '<bold>-xc</bold>', \
-set an option argument like '<bold>-d(=)value</bold>' \n\
-\tor '<bold>--long=value</bold>' and use '<bold>--</bold>' \
-to explicitly specify the end of the script options." 2>/dev/null;
+declare -rx OPTIONS_ADDITIONAL_INFOS_MANPAGE="\tYou can group short options like '<bold>-xc</bold>', set an option argument like '<bold>-d(=)value</bold>' \n\
+\tor '<bold>--long=value</bold>' and use '<bold>--</bold>' to explicitly specify the end of the script options.\n \
+\tOptions are treated in the command line order." 2>/dev/null;
 
 ##@ COMMON_OPTIONS_MANPAGE (read-only)
 ## Information string about common script options
@@ -3353,4 +3352,4 @@ case "$ACTION" in
 esac
 
 # Endfile
-# vim: autoindent tabstop=2 shiftwidth=2 expandtab softtabstop=2 filetype=sh
+# vim: autoindent tabstop=4 shiftwidth=4 expandtab softtabstop=4 filetype=sh
