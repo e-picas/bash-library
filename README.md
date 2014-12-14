@@ -3,6 +3,16 @@ Piwi-Bash-Library
 
 An open source day-to-day bash library.
 
+Key features:
+
+-   manage strings, files, integers and arrays easily
+-   build colorized contents with text effect, foreground and background colors
+-   execute sub-jobs with a large control upon outputs, errors and status
+-   build some scripts with command line options and arguments easily
+-   the library is well-documented and unit-tested 
+
+To begin, have a look at [the wiki](http://github.com/piwi/bash-library/wiki).
+
 
 Installation
 ------------
