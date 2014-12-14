@@ -306,27 +306,6 @@ get_script_path () {
     return 0
 }
 
-#### set_working_directory ( path )
-## handles the '-d' option for instance
-## throws an error if 'path' does not exist
-set_working_directory () {
-    if [ $# -eq 0 ]; then return 0; fi
-    local _wd="$(resolve "$1")"
-    if [ -d "$1" ]
-        then export WORKINGDIR="$_wd"
-        else path_error "$1"
-    fi
-    cd "$WORKINGDIR"
-    return 0
-}
-
-#### set_log_filename ( path )
-## handles the '-l' option for instance
-set_log_filename () {
-    if [ -n "$1" ]; then export LOGFILE="$1"; fi
-    return 0
-}
-
 #### get_date ( timestamp = NOW )
 ## cf. <http://www.admin-linux.fr/?p=1965>
 get_date () {
@@ -737,7 +716,7 @@ get_version_branch () {
 
 #### vcs_is_clone ( path = pwd , remote_url = null )
 vcs_is_clone () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _path="${1:-$(pwd)}"
@@ -751,7 +730,7 @@ vcs_is_clone () {
 
 #### vcs_get_branch ( path = pwd )
 vcs_get_branch () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _path="${1:-$(pwd)}"
@@ -764,7 +743,7 @@ vcs_get_branch () {
 
 #### vcs_get_commit ( path = pwd )
 vcs_get_commit () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _path="${1:-$(pwd)}"
@@ -777,7 +756,7 @@ vcs_get_commit () {
 
 #### vcs_get_version ( path = pwd )
 vcs_get_version () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _path="${1:-$(pwd)}"
@@ -790,7 +769,7 @@ vcs_get_version () {
 
 #### vcs_get_remote_version ( path = pwd , branch = HEAD )
 vcs_get_remote_version () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _path="${1:-$(pwd)}"
@@ -804,7 +783,7 @@ vcs_get_remote_version () {
 
 #### vcs_make_clone ( repository_url , target_dir = LIB_SYSCACHEDIR )
 vcs_make_clone () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _repo_url="${1:-}"
@@ -818,7 +797,7 @@ vcs_make_clone () {
 
 #### vcs_update_clone ( target_dir )
 vcs_update_clone () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _target_dir="${1:-}"
@@ -831,7 +810,7 @@ vcs_update_clone () {
 
 #### vcs_change_branch ( target_dir , branch = 'master' )
 vcs_change_branch () {
-    if [ "$SCRIPT_VCS" = '' ]; then 
+    if [ "$SCRIPT_VCS" = '' ]; then
         error "You must define the 'SCRIPT_VCS' variable to use vcs methods!"
     fi
     local _target_dir="${1:-}"
@@ -1790,10 +1769,11 @@ debevaluate () { debug_evaluate "$1"; return "$?"; }
 ## alias of 'debug_evaluate'
 debeval () { debug_evaluate "$1"; return "$?"; }
 
-#### interactive_evaluate ( command )
+#### interactive_evaluate ( command , debug_exec = true )
 ## evaluates the command after user confirmation if "interactive" is "on"
 interactive_evaluate () {
     if [ $# -eq 0 ]; then return 0; fi
+    local DEBEXECUTION="${2:-true}"
     if [ "$INTERACTIVE" = 'true' ]; then
         prompt "Run command: \"$1\"" "y" "Y/n"
         while true; do
@@ -1805,7 +1785,12 @@ interactive_evaluate () {
     fi
     cmd_fct="${FUNCNAME[2]}"
     cmd_line="${BASH_LINENO[1]}"
-    debug_evaluate "$*"
+    if [ "$DEBEXECUTION" = 'true' ]
+    then
+        debug_evaluate "$1"
+    else
+        evaluate "$1"
+    fi
     if [ "$CMD_STATUS" -ne 0 ]; then
         error "error on execution: ${CMD_ERR}" "$CMD_STATUS" "$cmd_fct" "$cmd_line"
     fi
@@ -1820,55 +1805,78 @@ ievaluate () { interactive_evaluate "$1" "${2:-true}"; return "$?"; }
 ## alias of 'interactive_evaluate'
 ieval () { interactive_evaluate "$1" "${2:-true}"; return "$?"; }
 
-#### interactive_exec ( command , debug_exec = true )
-## executes the command after user confirmation if "interactive" is "on"
-interactive_exec () {
+#### execute ( command )
+## executes the command with outputs and status handling
+execute () {
     if [ $# -eq 0 ]; then return 0; fi
-    local DEBEXECUTION=${2:-true}
+    cmd_fct="${FUNCNAME[1]}"
+    cmd_line="${BASH_LINENO[1]}"
+    cmd_out="$( eval "$1" 2>&1 )"
+    cmd_status="$?"
+    if [ -n "$cmd_status" ] && [ "$cmd_status" -eq '0' ]; then
+        echo "$cmd_out"
+        return "$cmd_status"
+    else
+        error "error on execution: ${cmd_out}" "$cmd_status" "$cmd_fct" "$cmd_line"
+        return "$?"
+    fi
+}
+
+#### debug_execute ( command )
+## execute the command if "dryrun" is "off", just write it on screen otherwise
+debug_execute () {
+    if [ $# -eq 0 ]; then return 0; fi
+    if [ "$DRYRUN" = 'true' ]
+    then
+        _echo "$(colorize 'dry-run >>' bold) \"$1\""
+        return 0
+    else
+        debug_echo "$(colorize '>>' bold) \"$1\""
+        execute "$1"
+        return "$?"
+    fi
+}
+
+#### / debug_exec ( command )
+## alias of 'debug_execute'
+debug_exec () { debug_execute "$1"; return "$?"; }
+
+#### / debexec ( command )
+## alias of 'debug_execute'
+debexec () { debug_execute "$1"; return "$?"; }
+
+#### interactive_execute ( command , debug_exec = true )
+## executes the command after user confirmation if "interactive" is "on"
+##@return
+interactive_execute () {
+    if [ $# -eq 0 ]; then return 0; fi
+    local DEBEXECUTION="${2:-true}"
     if [ "$INTERACTIVE" = 'true' ]; then
         prompt "Run command: \"$1\"" "y" "Y/n"
         while true; do
             case "$USERRESPONSE" in
                 [yY]* ) break;;
-                * ) _echo "_ no"; return 0; break;;
+                * ) _echo "_ no"; return 1; break;;
             esac
         done
     fi
     if [ "$DEBEXECUTION" = 'true' ]
     then
-        debug_exec "$1"
+        debug_execute "$1"
+        return "$?"
     else
-        cmd_fct="${FUNCNAME[1]}"
-        cmd_line="${BASH_LINENO[1]}"
-        cmd_out="$( eval "$1" 2>&1 )"
-        cmd_status="$?"
-        if [ "$command_rc" -ne 0 ]; then
-            echo "$cmd_out"
-        else
-            error "error on execution: ${cmd_out}" "$cmd_status" "$cmd_fct" "$cmd_line"
-        fi
+        execute "$1"
+        return "$?"
     fi
-    return 0
 }
+
+#### / interactive_exec ( command , debug_exec = true )
+## alias of 'interactive_execute'
+interactive_exec () { interactive_execute "$1" "${2:-true}"; return "$?"; }
 
 #### / iexec ( command , debug_exec = true )
-## alias of 'interactive_exec'
-iexec () { interactive_exec "$*"; return $?; }
-
-#### debug_exec ( command )
-## execute the command if "dryrun" is "off", just write it on screen otherwise
-debug_exec () {
-    if [ $# -eq 0 ]; then return 0; fi
-    if [ "$DRYRUN" = 'true' ]
-        then _echo "$(colorize 'dry-run >>' bold) \"$1\""
-        else eval "$1"
-    fi
-    return 0
-}
-
-#### / debexec ( command )
-## alias of 'debug_exec'
-debexec () { debug_exec "$*"; return $?; }
+## alias of 'interactive_execute'
+iexec () { interactive_execute "$1" "${2:-true}"; return "$?"; }
 
 
 #### MESSAGES / ERRORS #############################################################################
@@ -1922,21 +1930,6 @@ error () {
         "$((LINELENGTH - $(string_length "$SECONDLINE")))" "${SECONDLINE}<${COLOR_ERROR}>";
     parse_color_tags "\n<${COLOR_ERROR}>${TMPSTR}</${COLOR_ERROR}>\n" >&2
     exit "$ERRSTATUS"
-}
-
-#### get_stack_trace ( first_item = 0 )
-## get a formated stack trace
-get_stack_trace () {
-    echo "Stack trace:"
-    local i="${1:-0}"
-    for t in "${BASH_SOURCE[@]}"; do
-        if [ "$i" -lt "$(("${#BASH_SOURCE[@]}" - 1))" ]
-        then echo "#${i} '${FUNCNAME[${i}]} ()' : called in '${BASH_SOURCE[$((i+1))]}' at line ${BASH_LINENO[${i}]}"
-        else echo "#${i} ${BASH_SOURCE[${i}]} : ${FUNCNAME[${i}]}"
-        fi
-        i=$((i + 1))
-    done
-    return 0
 }
 
 #### get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )
@@ -2031,6 +2024,41 @@ simple_error_multi () {
     done
     simple_usage "${3:-}" >&2
     exit "$ERRSTATUS"
+}
+
+#### dev_error ( string , status = 90 , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
+## print a formated error string with dev info using the 'caller' stack trace and exit
+## print a full back trace it `VERBOSE=true`
+dev_error () {
+    local ERRSTRING="${1:-unknown error}"
+    local ERRSTATUS="${2:-${E_ERROR}}"
+    echo
+    gnu_error_string "$ERRSTRING" "${3:-${BASH_SOURCE[2]}}" "${4:-${FUNCNAME[2]}}" "${5:-${BASH_LINENO[2]}}" >&2
+    echo
+    if [ "$VERBOSE" = 'true' ]
+    then
+        get_stack_trace
+        echo "this is [${SHELL} ${BASH_VERSION}]"
+    else
+        echo "use option '--verbose' to get a stack trace."
+    fi
+    echo "use option '--help' to get help."
+    exit "$ERRSTATUS"
+}
+
+#### get_stack_trace ( first_item = 0 )
+## get a formated stack trace
+get_stack_trace () {
+    echo "Stack trace:"
+    local i="${1:-0}"
+    for t in "${BASH_SOURCE[@]}"; do
+        if [ "$i" -lt "$(("${#BASH_SOURCE[@]}" - 1))" ]
+        then echo "#${i} '${FUNCNAME[${i}]} ()' : called in '${BASH_SOURCE[$((i+1))]}' at line ${BASH_LINENO[${i}]}"
+        else echo "#${i} ${BASH_SOURCE[${i}]} : ${FUNCNAME[${i}]}"
+        fi
+        i=$((i + 1))
+    done
+    return 0
 }
 
 #### gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )
