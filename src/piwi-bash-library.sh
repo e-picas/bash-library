@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 #
 # Piwi Bash Library - An open source day-to-day bash library
-# <http://github.com/piwi/bash-library>
 # Copyright (C) 2013-2014, Pierre Cassat & contributors
 # <http://e-piwi.fr/> - <me [at] e-piwi.fr>
 # 
@@ -18,6 +17,14 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 # 
+# For sources & updates, see <http://github.com/piwi/bash-library>.
+#
+# For documentation, see <http://github.com/piwi/bash-library/wiki/>.
+#
+# To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
+#
+# To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
+#
 ##@!@##
 
 ## for dev usage
