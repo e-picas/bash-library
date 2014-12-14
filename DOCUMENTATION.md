@@ -1,6 +1,6 @@
 # Documentation of 'src/piwi-bash-library.sh'
 
-## REFERENCES (line 2)
+## REFERENCES (line 1)
 
 
 -   **Bash Reference Manual: <http://www.gnu.org/software/bash/manual/bashref.html>**
@@ -11,12 +11,13 @@
 
 -   **GNU coding standards: <http://www.gnu.org/prep/standards/standards.html>**
 
-## ENVIRONMENT (line 7)
+## ENVIRONMENT (line 6)
 
 
 -   **SCRIPT_VARS = ( NAME VERSION DATE DESCRIPTION LICENSE HOMEPAGE SYNOPSIS OPTIONS ) (read-only)**
 
 	List of variables defined by the caller script used to build all informational strings.
+
 	These are all RECOMMENDED.
 
 -   **USAGE_VARS = ( NAME VERSION DATE DESCRIPTION_USAGE SYNOPSIS_USAGE OPTIONS_USAGE ) (read-only)**
@@ -71,7 +72,7 @@
 
 	Version number of current shell in use (value of the global `$BASH_VERSION` variable).
 
-## SETTINGS (line 37)
+## SETTINGS (line 36)
 
 
 -   **E_ERROR=90**
@@ -100,7 +101,7 @@
 
 -   **LIB_SYSCACHEDIR = "${LIB_SYSHOMEDIR}/cache/" (read-only)**
 
-## COMMON OPTIONS (line 51)
+## COMMON OPTIONS (line 50)
 
 
 -   **COMMON_OPTIONS_ALLOWED = "fhiqvVx-:"**
@@ -137,19 +138,19 @@
 
 	Concatenation of COMMON_OPTIONS_MANPAGE & OPTIONS_ADDITIONAL_INFOS_MANPAGE
 
-## LOREM IPSUM (line 69)
+## LOREM IPSUM (line 68)
 
 
 -   **LOREMIPSUM (844 chars.) , LOREMIPSUM_SHORT (446 chars.) , LOREMIPSUM_MULTILINE (861 chars. / 5 lines) (read-only)**
 
-## LIBRARY SETUP (line 71)
+## LIBRARY SETUP (line 70)
 
 
 -   **LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL (read-only)**
 
 	Library internal setup
 
-## SYSTEM (line 74)
+## SYSTEM (line 73)
 
 
 -   **get_system_info ()**
@@ -158,32 +159,20 @@
 -   **get_machine_name ()**
 
 
--   **add_path ( path )**
-
-
-	add a path to global environment PATH
-
 -   **get_path ()**
 
 
 	read current PATH values as human readable string
 
+-   **add_path ( path )**
+
+
+	add a path to global environment PATH
+
 -   **get_script_path ( script = $0 )**
 
 
 	get the full real path of a script directory (passed as argument) or from current executed script
-
--   **set_working_directory ( path )**
-
-
-	handles the '-d' option for instance
-
-	throws an error if 'path' does not exist
-
--   **set_log_filename ( path )**
-
-
-	handles the '-l' option for instance
 
 -   **get_date ( timestamp = NOW )**
 
@@ -195,8 +184,33 @@
 
 	this will load current IP address in USERIP & USERISP
 
-## FILES (line 92)
+## FILES (line 86)
 
+
+-   **file_exists ( file_path )**
+
+
+	test if a file, link or directory exists in the file-system
+
+-   **is_file ( file_path )**
+
+
+	test if a file exists in the file-system and is a 'true' file
+
+-   **is_dir ( file_path )**
+
+
+	test if a file exists in the file-system and is a directory
+
+-   **is_link ( file_path )**
+
+
+	test if a file exists in the file-system and is a symbolic link
+
+-   **is_executable ( file_path )**
+
+
+	test if a file or link exists in the file-system and has executable rights
 
 -   **get_extension ( path = $0 )**
 
@@ -233,7 +247,7 @@
 
 	resolve a system path replacing '~' and '.'
 
-## ARRAY (line 107)
+## ARRAY (line 111)
 
 
 -   **in_array ( item , $array[@] )**
@@ -251,7 +265,7 @@
 
 	**@return:** array with cleaned values
 
-## STRING (line 114)
+## STRING (line 118)
 
 
 -   **string_length ( string )**
@@ -304,7 +318,7 @@
 -   **explode_letters ( str )**
 
 
-## BOOLEAN (line 134)
+## BOOLEAN (line 138)
 
 
 -   **onoff_bit ( bool )**
@@ -312,252 +326,39 @@
 
 	echoes 'on' if bool=true, 'off' if it is false
 
-## UTILS (line 137)
+## UTILS (line 141)
 
 
--   **ECHOCMD (read-only: 'builtin' or 'gnu')**
+-   **is_numeric ( value )**
 
-	Test if 'echo' is shell builtin or program
 
--   **_echo ( string )**
+-   **is_numeric_by_variable_name ( variable_name )**
 
 
-	echoes the string with the true 'echo -e' command
+-   **is_array ( $array[*] )**
 
-	use this for colorization
 
--   **_necho ( string )**
+	this will (only for now) test if there 1 or more arguments passed
+	and will therfore return '1' (false) for a single item array
 
+	   echo "${tmpvar[*]}"
 
-	echoes the string with the true 'echo -en' command
+-   **is_array_by_variable_name ( variable_name )**
 
-	use this for colorization and no new line
 
--   **verbose_echo ( string )**
+-   **is_boolean ( value )**
 
 
-	echoes the string if "verbose" is "on"
+-   **is_boolean_by_variable_name ( variable_name )**
 
--   **/ verecho ( string )**
 
+-   **is_string ( value )**
 
-	alias of 'verbose_echo'
 
--   **quiet_echo ( string )**
+-   **is_string_by_variable_name ( variable_name )**
 
 
-	echoes the string if "quiet" is "off"
-
--   **/ quietecho ( string )**
-
-
-	alias of 'quiet_echo'
-
--   **evaluate ( command )**
-
-
-	evaluates the command catching events:
-
-	- stdout is loaded in global `$CMD_OUT`
-
-	- stderr is loaded in global `$CMD_ERR`
-
-	- final status is loaded in global `$CMD_STATUS`
-
-	**@env:** CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
-
-	**@error:** will end with any caught error (exit status !=0)
-
--   **interactive_evaluate ( command )**
-
-
-	evaluates the command after user confirmation if "interactive" is "on"
-
--   **/ ievaluate ( command )**
-
-
-	alias of 'interactive_evaluate'
-
--   **/ ieval ( command )**
-
-
-	alias of 'interactive_evaluate'
-
--   **debug_evaluate ( command )**
-
-
-	evaluates the command if "dryrun" is "off", just write it on screen otherwise
-
--   **/ debevaluate ( command )**
-
-
-	alias of 'debug_evaluate'
-
--   **/ debeval ( command )**
-
-
-	alias of 'debug_evaluate'
-
--   **interactive_exec ( command , debug_exec = true )**
-
-
-	executes the command after user confirmation if "interactive" is "on"
-
--   **/ iexec ( command , debug_exec = true )**
-
-
-	alias of 'interactive_exec'
-
--   **debug_echo ( string )**
-
-
-	echoes the string if "debug" is "on"
-
--   **/ debecho ( string )**
-
-
-	alias of 'debug_echo'
-
--   **debug_exec ( command )**
-
-
-	execute the command if "dryrun" is "off", just write it on screen otherwise
-
--   **/ debexec ( command )**
-
-
-	alias of 'debug_exec'
-
--   **prompt ( string , default = y , options = Y/n )**
-
-
-	prompt user a string proposing different response options and selecting a default one
-
-	final user fill is loaded in USERRESPONSE
-
--   **selector_prompt ( list[@] , string , list_string , default = 1 )**
-
-
-	prompt user a string proposing an indexed list of answers for selection
-	and returns a valid result (user is re-prompted while the answer seems not correct)
-
-	NOTE - the 'list' MUST be passed like `list[@]` (no quotes and dollar sign)
-
-	final user choice is loaded in USERRESPONSE
-
--   **info ( string, bold = true )**
-
-
-	writes the string on screen and return
-
--   **warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )**
-
-
-	writes the error string on screen and return
-
--   **error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )**
-
-
-	writes the error string on screen and then exit with an error status
-
-	**@error:** default status is E_ERROR (90)
-
--   **get_stack_trace ( first_item = 0 )**
-
-
-	get a formated stack trace
-
--   **get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )**
-
-
-	builds a synopsis string using script's declared available options
-
--   **simple_synopsis ()**
-
-
-	writes a synopsis string using script's declared available options
-
--   **simple_usage ( synopsis = SYNOPSIS_ERROR )**
-
-
-	writes a synopsis usage info
-
--   **simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
-
-
-	writes an error string as a simple message with a synopsis usage info
-
-	**@error:** default status is E_ERROR (90)
-
--   **simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
-
-
-	writes multiple errors strings as a simple message with a synopsis usage info
-
-	**@error:** default status is E_ERROR (90)
-
--   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
-
-
-	must echoes something like 'sourcefile:lineno: message'
-
--   **no_option_error ()**
-
-
-	no script option error
-
-	**@error:** exits with status E_OPTS (81)
-
--   **no_option_simple_error ()**
-
-
-	no script option simple error
-
-	**@error:** exits with status E_OPTS (81)
-
--   **unknown_option_error ( option )**
-
-
-	invalid script option error
-
-	**@error:** exits with status E_OPTS (81)
-
--   **unknown_option_simple_error ( option )**
-
-
-	invalid script option simple error
-
-	**@error:** exits with status E_OPTS (81)
-
--   **command_error ( cmd )**
-
-
-	command not found error
-
-	**@error:** exits with status E_CMD (82)
-
--   **command_simple_error ( cmd )**
-
-
-	command not found simple error
-
-	**@error:** exits with status E_CMD (82)
-
--   **path_error ( path )**
-
-
-	path not found error
-
-	**@error:** exits with status E_PATH (83)
-
--   **path_simple_error ( path )**
-
-
-	path not found simple error
-
-	**@error:** exits with status E_PATH (83)
-
-## VCS (line 240)
+## VCS (line 153)
 
 
 -   **VCSVERSION**
@@ -651,7 +452,7 @@
 
 	**@param:** target_dir: name of the clone in LIB_SYSCACHEDIR or full path of concerned clone
 
-## COLORIZED CONTENTS (line 277)
+## COLORIZED CONTENTS (line 190)
 
 
 -   **LIBCOLORS = ( default black red green yellow blue magenta cyan grey white lightred lightgreen lightyellow lightblue lightmagenta lightcyan lightgrey ) (read-only)**
@@ -719,7 +520,7 @@
 -   **strip_colors ( string )**
 
 
-## TEMPORARY FILES (line 306)
+## TEMPORARY FILES (line 219)
 
 
 -   **get_tempdir_path ( dirname = "LIB_TEMPDIR" )**
@@ -763,7 +564,7 @@
 
 	**@param:** dirname The name of the directory (default is `tmp/`)
 
-## LOG FILES (line 325)
+## LOG FILES (line 238)
 
 
 -   **get_log_filepath ()**
@@ -783,7 +584,7 @@
 
 	this will read the LOGFILEPATH content
 
-## CONFIGURATION FILES (line 333)
+## CONFIGURATION FILES (line 246)
 
 
 -   **get_global_configfile ( file_name )**
@@ -818,7 +619,343 @@
 
 	params must be passed as "array[@]" (no dollar sign)
 
-## SCRIPT OPTIONS / ARGUMENTS (line 346)
+## LIBRARY VARS (line 259)
+
+
+-   **verbose_mode ( 1/0 )**
+
+
+	This enables or disables the "verbose" mode.
+
+	If it is enabled, the "quiet" mode is disabled.
+
+	**@env:** VERBOSE
+
+-   **quiet_mode ( 1/0 )**
+
+
+	This enables or disables the "quiet" mode.
+
+	If it is enabled, the "verbose" mode is disabled.
+
+	**@env:** QUIET
+
+-   **debug_mode ( 1/0 )**
+
+
+	This enables or disables the "debug" mode.
+
+	If it is enabled, the "verbose" mode is enabled too and the "quiet" mode is disabled.
+
+	**@env:** DEBUG
+
+-   **interactive_mode ( 1/0 )**
+
+
+	This enables or disables the "interactive" mode.
+
+	If it is enabled, the "forced" mode is disabled.
+
+	**@env:** INTERACTIVE
+
+-   **forcing_mode ( 1/0 )**
+
+
+	This enables or disables the "forced" mode.
+
+	If it is enabled, the "interactive" mode is disabled.
+
+	**@env:** INTERACTIVE
+
+-   **dryrun_mode ( 1/0 )**
+
+
+	This enables or disables the "dry-run" mode.
+
+	If it is enabled, the "interactive" and "forced" modes are disabled.
+
+	**@env:** DRYRUN
+
+-   **set_working_directory ( path )**
+
+
+	handles the '-d' option for instance
+
+	throws an error if 'path' does not exist
+
+-   **set_log_filename ( path )**
+
+
+	handles the '-l' option for instance
+
+-   **ECHOCMD (read-only: 'builtin' or 'gnu')**
+
+	Test if 'echo' is shell builtin or program
+
+-   **_echo ( string )**
+
+
+	echoes the string with the true 'echo -e' command
+
+	use this for colorization
+
+-   **_necho ( string )**
+
+
+	echoes the string with the true 'echo -en' command
+
+	use this for colorization and no new line
+
+-   **prompt ( string , default = y , options = Y/n )**
+
+
+	prompt user a string proposing different response options and selecting a default one
+
+	final user fill is loaded in USERRESPONSE
+
+-   **selector_prompt ( list[@] , string , list_string , default = 1 )**
+
+
+	prompt user a string proposing an indexed list of answers for selection
+	and returns a valid result (user is re-prompted while the answer seems not correct)
+
+	NOTE - the 'list' MUST be passed like `list[@]` (no quotes and dollar sign)
+
+	final user choice is loaded in USERRESPONSE
+
+-   **verbose_echo ( string )**
+
+
+	Echoes the string(s) in "verbose" mode.
+
+-   **/ verecho ( string )**
+
+
+	alias of 'verbose_echo'
+
+-   **quiet_echo ( string )**
+
+
+	Echoes the string(s) in not-"quiet" mode.
+
+-   **/ quietecho ( string )**
+
+
+	alias of 'quiet_echo'
+
+-   **debug_echo ( string )**
+
+
+	Echoes the string(s) in "debug" mode.
+
+-   **/ debecho ( string )**
+
+
+	alias of 'debug_echo'
+
+-   **evaluate ( command )**
+
+
+	evaluates the command catching events:
+
+	- stdout is loaded in global `$CMD_OUT`
+
+	- stderr is loaded in global `$CMD_ERR`
+
+	- final status is loaded in global `$CMD_STATUS`
+
+	**@env:** CMD_OUT CMD_ERR CMD_STATUS : loaded with evaluated command's STDOUT, STDERR and STATUS
+
+	**@error:** will end with any caught error (exit status !=0)
+
+-   **debug_evaluate ( command )**
+
+
+	evaluates the command if "dryrun" is "off", just write it on screen otherwise
+
+-   **/ debevaluate ( command )**
+
+
+	alias of 'debug_evaluate'
+
+-   **/ debeval ( command )**
+
+
+	alias of 'debug_evaluate'
+
+-   **interactive_evaluate ( command , debug_exec = true )**
+
+
+	evaluates the command after user confirmation if "interactive" is "on"
+
+-   **/ ievaluate ( command )**
+
+
+	alias of 'interactive_evaluate'
+
+-   **/ ieval ( command )**
+
+
+	alias of 'interactive_evaluate'
+
+-   **execute ( command )**
+
+
+	executes the command with outputs and status handling
+
+-   **debug_execute ( command )**
+
+
+	execute the command if "dryrun" is "off", just write it on screen otherwise
+
+-   **/ debug_exec ( command )**
+
+
+	alias of 'debug_execute'
+
+-   **/ debexec ( command )**
+
+
+	alias of 'debug_execute'
+
+-   **interactive_execute ( command , debug_exec = true )**
+
+
+	executes the command after user confirmation if "interactive" is "on"
+
+-   **/ interactive_exec ( command , debug_exec = true )**
+
+
+	alias of 'interactive_execute'
+
+-   **/ iexec ( command , debug_exec = true )**
+
+
+	alias of 'interactive_execute'
+
+## MESSAGES / ERRORS (line 351)
+
+
+-   **info ( string, bold = true )**
+
+
+	writes the string on screen and return
+
+-   **warning ( string , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='    ' )**
+
+
+	writes the error string on screen and return
+
+-   **error ( string , status = 90 , funcname = FUNCNAME[1] , line = BASH_LINENO[1] , tab='   ' )**
+
+
+	writes the error string on screen and then exit with an error status
+
+	**@error:** default status is E_ERROR (90)
+
+-   **get_synopsis_string ( short_opts=OPTIONS_ALLOWED , long_opts=LONG_OPTIONS_ALLOWED )**
+
+
+	builds a synopsis string using script's declared available options
+
+-   **simple_synopsis ()**
+
+
+	writes a synopsis string using script's declared available options
+
+-   **simple_usage ( synopsis = SYNOPSIS_ERROR )**
+
+
+	writes a synopsis usage info
+
+-   **simple_error ( string , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
+
+
+	writes an error string as a simple message with a synopsis usage info
+
+	**@error:** default status is E_ERROR (90)
+
+-   **simple_error_multi ( array[@] , status = 90 , synopsis = SYNOPSIS_ERROR , funcname = FUNCNAME[1] , line = BASH_LINENO[1] )**
+
+
+	writes multiple errors strings as a simple message with a synopsis usage info
+
+	**@error:** default status is E_ERROR (90)
+
+-   **dev_error ( string , status = 90 , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
+
+
+	print a formated error string with dev info using the 'caller' stack trace and exit
+
+	print a full back trace it `VERBOSE=true`
+
+-   **get_stack_trace ( first_item = 0 )**
+
+
+	get a formated stack trace
+
+-   **gnu_error_string ( string , filename = BASH_SOURCE[2] , funcname = FUNCNAME[2] , line = BASH_LINENO[2] )**
+
+
+	must echoes something like 'sourcefile:lineno: message'
+
+-   **no_option_error ()**
+
+
+	no script option error
+
+	**@error:** exits with status E_OPTS (81)
+
+-   **no_option_simple_error ()**
+
+
+	no script option simple error
+
+	**@error:** exits with status E_OPTS (81)
+
+-   **unknown_option_error ( option )**
+
+
+	invalid script option error
+
+	**@error:** exits with status E_OPTS (81)
+
+-   **unknown_option_simple_error ( option )**
+
+
+	invalid script option simple error
+
+	**@error:** exits with status E_OPTS (81)
+
+-   **command_error ( cmd )**
+
+
+	command not found error
+
+	**@error:** exits with status E_CMD (82)
+
+-   **command_simple_error ( cmd )**
+
+
+	command not found simple error
+
+	**@error:** exits with status E_CMD (82)
+
+-   **path_error ( path )**
+
+
+	path not found error
+
+	**@error:** exits with status E_PATH (83)
+
+-   **path_simple_error ( path )**
+
+
+	path not found simple error
+
+	**@error:** exits with status E_PATH (83)
+
+## SCRIPT OPTIONS / ARGUMENTS (line 402)
 
 
 -   **ORIGINAL_SCRIPT_OPTS="$@" (read-only)**
@@ -961,7 +1098,7 @@
 
 	this will stop options treatment at '--'
 
-## SCRIPT INFO (line 407)
+## SCRIPT INFO (line 463)
 
 
 -   **get_script_version_string ( quiet = false )**
@@ -1007,7 +1144,7 @@
 -   **script_version ( quiet = false )**
 
 
-## DOCBUILDER (line 425)
+## DOCBUILDER (line 481)
 
 
 	Documentation builder rules, tags and masks
@@ -1024,7 +1161,7 @@
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
 
-## LIBRARY INFO (line 432)
+## LIBRARY INFO (line 488)
 
 
 -   **get_library_version_string ( path = $0 )**
@@ -1064,7 +1201,7 @@
 
 	alias of library_debug
 
-## LIBRARY INTERNALS (line 447)
+## LIBRARY INTERNALS (line 503)
 
 
 -   **LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE**
@@ -1084,7 +1221,7 @@
 
 	clean dir '$HOME/.piwi-bash-library/cache' if it exists
 
-## INSTALLATION WIZARD (line 455)
+## INSTALLATION WIZARD (line 511)
 
 
 -   **INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)**
@@ -1131,11 +1268,9 @@
 -   **script_uninstall ( path = $HOME/bin/ )**
 
 
-## COMPATIBILITY (line 478)
+## COMPATIBILITY (line 534)
 
-
-	stop exporting everything ...
 
 ----
 
-[*Doc generated at 07-12-2014 11:37:02 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 14-12-2014 19:34:08 from path 'src/piwi-bash-library.sh'*]

@@ -16,7 +16,7 @@ piwi-bash-library - An open source day-to-day bash library.
 \fBpiwi-bash-library-script\fP  [\fB-h\fP|\fB-V\fP]  [\fB-x\fP|\fB-v\fP|\fB-i\fP|\fB-q\fP|\fB-f\fP]
     [\fB--help\fP|\fB--usage\fP|\fB--man\fP]
     [\fB--force\fP|\fB--help\fP|\fB--interactive\fP|\fB--quiet\fP|\fB--verbose\fP|\fB--debug\fP|\fB--dry-run\fP]
-    [\fB--version\fP|\fB--libvers\fP]
+    [\fB--version\fP|\fB--libversion\fP]
     [\fB--logfile\fP \fI=filename\fP] [\fBworking-dir\fP \fI=path\fP]
         [script options ...]  (--)  [arguments ...]
 
@@ -149,22 +149,22 @@ manpage or help string for more information.
 \fIThe following common options are supported (MAY be used first):\fP
 .TP
 \fB--dry-run\fP
-see commands to run but do not run them actually ; this will define the environment variable
-`\fSDRYRUN\fP` on `\fStrue\fP`
+see commands to run but do not run them actually ; this will define the environment variables
+`\fSDRYRUN\fP` on `\fStrue\fP` and `\fSINTERACTIVE\fP` and `\fSFORCED\fP` on `\fSfalse\fP`
 .TP
 \fB-f\fP, \fB--force\fP
 force some commands to not prompt confirmation ; this will define the environment
-variable `\fSFORCED\fP` on `\fStrue\fP`
+variables `\fSFORCED\fP` on `\fStrue\fP` and `\fSVERBOSE\fP` and `\fSDEBUG\fP` on `\fSfalse\fP`
 .TP
 \fB-h\fP, \fB--help\fP
 show an information message 
 .TP
 \fB-i\fP, \fB--interactive\fP
-ask for confirmation before any action ; this will define the environment variable
-`\fSINTERACTIVE\fP` on `\fStrue\fP` and `\fSQUIET\fP` on `\fSfalse\fP`
+ask for confirmation before any action ; this will define the environment variables
+`\fSINTERACTIVE\fP` on `\fStrue\fP` and `\fSFORCED\fP` on `\fSfalse\fP`
 .TP
-\fB--libvers\fP
-see the library version ; use option `\fSquiet\fP` to only have the version number
+\fB--libversion\fP
+see the library version ; use option `\fS--quiet\fP` to only have the version number
 .TP
 \fB--log\fP =filename
 define the log filename to use (default is `\fSpwibashlib.log\fP`) ; this will update
@@ -175,27 +175,29 @@ try to open a manpage for current script if available, or show the help string o
 .TP
 \fB-q\fP, \fB--quiet\fP
 decrease script verbosity, nothing will be written unless errors ; this will define
-the environment variables `\fSVERBOSE\fP` and `\fSINTERACTIVE\fP` on `\fSfalse\fP` and `\fSQUIET\fP` on `\fStrue\fP`
+the environment variables `\fSVERBOSE\fP` on `\fSfalse\fP` and `\fSQUIET\fP` on `\fStrue\fP`
 .TP
 \fB-v\fP, \fB--verbose\fP
 increase script verbosity ; this will define the environment variables `\fSVERBOSE\fP` on `\fStrue\fP`
 and `\fSQUIET\fP` on `\fSfalse\fP`
 .TP
 \fB-V\fP, \fB--version\fP
-see the script version when available ; use option `\fSquiet\fP` to only have the version number
+see the script version when available ; use option `\fS--quiet\fP` to only have the version number
 .TP
 \fB--working-dir\fP =path
 redefine the working directory (default is `\fSpwd\fP` - `\fSpath\fP` must exist) ; this will update
 the environment variable `\fSWORKINGDIR\fP`
 .TP
 \fB-x\fP, \fB--debug\fP
-enable debug mode ; this will define the environment variable `\fSDEBUG\fP` on `\fStrue\fP`
+enable debug mode ; this will define the environment variables `\fSDEBUG\fP` and `\fSVERBOSE\fP` on `\fStrue\fP`
+and `\fSQUIET\fP` on `\fSfalse\fP`
 .TP
 \fB--usage\fP
 show a quick usage information
 .PP
 You can group short options like `\fS-xc\fP`, set an option argument like `\fS-d(=)value\fP` or
 `\fS--long=value\fP` and use `\fS--\fP` to explicitly specify the end of the script options.
+Options are treated in the command line order (`\fS-vq\fP` will finally retain `\fS-q\fP`).
 
 .PP
 You can mix short options, long options and script arguments at your convenience.
@@ -338,7 +340,7 @@ To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
 .SH AUTHOR
 
 .PP
-Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://e-piwi.fr/>)
+Created and maintained by \fBPierre Cassat\fP (\fIpiwi\fP - <http://e-piwi.fr/> - <me [at] e-piwi.fr>)
 & contributors.
 
 .SH SEE ALSO
