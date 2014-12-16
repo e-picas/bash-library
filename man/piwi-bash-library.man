@@ -1,6 +1,6 @@
 .\" author: Pierre Cassat
 
-.TH  "NAME" "3" "2014-12-14" "Version 2.1.0-beta" "piwi-bash-library.sh Manual"
+.TH  "NAME" "3" "2014-12-14" "Version 0.0.1" "piwi-bash-library.sh Manual"
 
 .SH NAME
 
@@ -327,7 +327,10 @@ You should have received a copy of the GNU General Public License
 along with this program. If not, see <http://www.gnu.org/licenses/>.
 
 .PP
-For documentation, sources & updates, see <http://github.com/piwi/bash-library>.
+For sources & updates, see <http://github.com/piwi/bash-library>.
+
+.PP
+For documentation, see <http://github.com/piwi/bash-library/wiki/>.
 
 .PP
 To read GPL-3.0 license conditions, see <http://www.gnu.org/licenses/gpl-3.0.html>.
