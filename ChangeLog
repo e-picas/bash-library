@@ -1,16 +1,15 @@
 # ChangeLog
 
-## 2.1.0 (current dev)
+## 0.0.3 (current dev)
 
-## 2.1.0-beta (current master)
+
+## 0.0.2 (current master)
 
 - new management of library's environment flags
 - review of the 'job control' and 'output control' methods according to current env flags
 - reorganization of library sections
 
-## 2.1.0-alpha
-
-!! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
+## 0.0.1
 
 - 'piwi/markdown-extended' is now a GIT submodule
 - new 'sstephenson/bats' submodule for unit-testing
@@ -23,19 +22,25 @@
 - the whole library has been verified with <http://www.shellcheck.net/>
 - new stack trace method
 
-## 2.0.4
+
+--
+!! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
+NOTE - The "old-" tags referred to <http://github.com/atelierspierrot/piwi-bash-library>.
+--
+
+## old-2.0.4
 
 - moving test scripts from 'bin/' to 'demo/'
 - all scripts now use shebang `/usr/bin/env bash`
 - new 'evaluate()' method and derivatives to replace internal 'eval()' catching all events
 - new 'eval.sh' demo script for the 'evaluate()' method
 
-## 2.0.3
+## old-2.0.3
 
 - renaming old 'atelierspierrot/markdown-extended' to 'piwi/markdown-extended'
 - fix bug #1: internal interface process (global install by default vs. local one)
 
-## 2.0.2
+## old-2.0.2
 
 - No more '-l' neither '-d' default short options
 - new 'release' option for the installation to choose a specific release
@@ -43,11 +48,11 @@
 - corrections in the installation/update process
 - manpage options are now in alphabetical order
 
-## 2.0.1
+## old-2.0.1
 
 - correction in the library version construction
 
-## 2.0
+## old-2.0
 
 - all methods are renamed with underscores
 - new method 'debug_echo'
@@ -56,17 +61,17 @@
 
 !! NOTE - see the `scripts/upgrade-1-2.sh` script to upgrade a project
 
-## 1.0.1 (current 1.0 branch)
+## old-1.0.1
 
 - adding missing "piwi-" prefixes
 - correcting Linux date format (missing quotes)
 
-## 1.0.0
+## old-1.0.0
 
 - corrections in the README file
 - clean of the pre-tag-hook script
 
-## 1.0-beta
+## old-1.0-beta
 
 - review of the options management
 - new options 'man', 'help' and 'usage'
