@@ -1,4 +1,4 @@
-# Documentation of 'src/piwi-bash-library.sh'
+# Documentation of 'bin/piwi-bash-library.sh'
 
 ## REFERENCES (line 1)
 
@@ -1273,4 +1273,4 @@
 
 ----
 
-[*Doc generated at 14-12-2014 19:37:41 from path 'src/piwi-bash-library.sh'*]
+[*Doc generated at 16-12-2014 19:46:57 from path 'bin/piwi-bash-library.sh'*]
