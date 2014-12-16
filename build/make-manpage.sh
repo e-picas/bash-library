@@ -2,7 +2,7 @@
 
 _here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 _source=MANPAGE.md
-_output=src/piwi-bash-library.man
+_output=man/piwi-bash-library.man
 _mde=${_here}/../modules/markdown-extended/bin/markdown-extended
 
 ${_mde} -f man -o "$_output" "${_source}" \

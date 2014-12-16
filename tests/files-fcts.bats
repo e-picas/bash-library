@@ -37,13 +37,13 @@ fi
 }
 
 @test "resolving absolute path ('get_absolute_path()' method)" {
-    run get_absolute_path "$(pwd)/src/../tests/tests_loader.bash"
+    run get_absolute_path "$(pwd)/bin/../tests/tests_loader.bash"
     [ "$output" = "$PBL_TESTFILE" ]
     [ "$status" -eq 0 ]
 }
 
 @test "test of the 'realpath()' alias (previous test)" {
-    run realpath "$(pwd)/src/../tests/tests_loader.bash"
+    run realpath "$(pwd)/bin/../tests/tests_loader.bash"
     [ "$output" = "$PBL_TESTFILE" ]
     [ "$status" -eq 0 ]
 }

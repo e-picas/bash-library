@@ -25,11 +25,11 @@ the best practice is to use **the internal interface** as it presents facilities
 
     wget --no-check-certificate https://github.com/piwi/bash-library/archive/master.tar.gz
     tar -xvf master.tar.gz
-    ./piwi-bash-library-master/src/piwi-bash-library.sh help
+    ./piwi-bash-library-master/bin/piwi-bash-library.sh help
 
 To read the library's manpage, run:
 
-    man ./piwi-bash-library-master/piwi-bash-library.man
+    man ./piwi-bash-library-master/man/piwi-bash-library.man
 
 Usage
 -----

@@ -3476,8 +3476,8 @@ intlib_prepare_install () {
     intlib_prepare_libclone
     local tmpdir="${LIBINST_CLONE}/tmp"
     rm -rf "$tmpdir" && mkdir "$tmpdir"
-    cp -f "${LIBINST_CLONE}/src/piwi-bash-library.sh" "${tmpdir}/${INTLIB_BIN_FILENAME}"
-    cp -f "${LIBINST_CLONE}/src/piwi-bash-library.man" "${tmpdir}/${INTLIB_MAN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/bin/piwi-bash-library.sh" "${tmpdir}/${INTLIB_BIN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/man/piwi-bash-library.man" "${tmpdir}/${INTLIB_MAN_FILENAME}"
     cp -f "${LIBINST_CLONE}/DOCUMENTATION.md" "${tmpdir}/${INTLIB_DEVDOC_FILENAME}"
     cp -f "${LIBINST_CLONE}/README.md" "${tmpdir}/${INTLIB_README_FILENAME}"
     export LIBINST_CLONE="$tmpdir"

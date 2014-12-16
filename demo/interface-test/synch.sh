@@ -16,7 +16,7 @@ BASETARGET="${_TARGET%%/$_BASEDIR}"
 if [ ! -d "$BASETARGET" ]; then path_error "${BASETARGET}"; fi
 
 BASESCRIPT=$(basename "$0")
-BASELIB_DIR="${_BASEDIR}/../../src/"
+BASELIB_DIR="${_BASEDIR}/../../bin/"
 
 iexec "rsync -rP ${_BASEDIR} ${BASETARGET}"
 iexec "cp -f $0 ${BASETARGET} && chmod +x ${BASETARGET}/${BASESCRIPT}"

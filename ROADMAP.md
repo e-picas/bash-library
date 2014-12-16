@@ -28,12 +28,12 @@ To run the test suite:
 To generate the manpage from `MANPAGE.md`:
 
     chmod a+x modules/markdown-extended/bin/markdown-extended
-    php modules/markdown-extended/bin/markdown-extended -f man -o src/piwi-bash-library.man MANPAGE.md
-    man src/piwi-bash-library.man
+    php modules/markdown-extended/bin/markdown-extended -f man -o man/piwi-bash-library.man MANPAGE.md
+    man man/piwi-bash-library.man
 
 To generate the documentation to `DOCUMENTATION.md`:
 
-    src/piwi-bash-library.sh -v mddocumentation > DOCUMENTATION.md
+    bin/piwi-bash-library.sh -v mddocumentation > DOCUMENTATION.md
 
 
 ## TODO
