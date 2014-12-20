@@ -22,7 +22,7 @@ VERSION="$1"
 
 sed -i -e "s| LIB_VERSION=\".*\"| LIB_VERSION=\"${VERSION}\"|;s| LIB_DATE=\".*\"| LIB_DATE=\"${DATE}\"|;s| LIB_VCSVERSION=\".*\"| LIB_VCSVERSION=\"${GIT_VERSION}\"|" "$LIB_FILE" \
     && sed -i -e "s|^Version: .*$|Version: ${VERSION}|;s|^Date: .*$|Date: ${DATE}|" "$MDMAN_FILE" \
-    && echo "version number updated in '${LIB_FILE}' ad '${MDMAN_FILE}'" \
+    && echo "version number updated in '${LIB_FILE}' and '${MDMAN_FILE}'" \
     || echo "an error occurred!" ;
 
 exit 0
