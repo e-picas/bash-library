@@ -10,18 +10,18 @@ _comment='## This will load the final local path into the `SOURCE_PATH` environm
 _nocomment='##! This will load the final local path into the `SOURCE_PATH` environment variable.'
 
 test () {
-	local str="$1"
-	echo "string is: '$str'"
-	echo "> grep function:"
-	echo "$str" | grep '^#### [^#]*$'
-	echo "> grep title:"
-	echo "$str" | grep '^#### [^#]* #*$'
-	echo "> grep param:"
-	echo "$str" | grep '^##@[^ ]* .*$'
-	echo "> grep var:"
-	echo "$str" | grep '^##@ .*$'
-	echo "> grep comment:"
-	echo "$str" | grep '^## .*$'
+    local str="$1"
+    echo "string is: '$str'"
+    echo "> grep function:"
+    echo "$str" | grep '^#### [^#]*$'
+    echo "> grep title:"
+    echo "$str" | grep '^#### [^#]* #*$'
+    echo "> grep param:"
+    echo "$str" | grep '^##@[^ ]* .*$'
+    echo "> grep var:"
+    echo "$str" | grep '^##@ .*$'
+    echo "> grep comment:"
+    echo "$str" | grep '^## .*$'
 }
 
 test "$_title"
@@ -33,7 +33,7 @@ test "$_nocomment"
 
 # find_binstaller_file ( package_name / binstall_file ) : void
 find_binstaller_file () {
-	return 0
+    return 0
 }
 
 #### API methods ###############################
@@ -49,7 +49,7 @@ find_binstaller_file () {
 ##
 ##! no comment
 get_sources () {
-	return 0
+    return 0
 }
 
 #### install_binary ( source_path , symlink_without_extension=false , target_filename=source_filename ) : void
@@ -59,7 +59,7 @@ get_sources () {
 ##
 ##@param qsdf qmsdlkfjqmlsdkfmqlsdjf
 install_binary () {
-	return 0
+    return 0
 }
 
 #### install_manpage ( source_path , symlink_without_extension=false , target_filename=source_filename , manpage_section=3 ) : void
@@ -69,7 +69,7 @@ install_binary () {
 ## to install this manpage in with the `manpage_section` argument.
 ##@error qsdf qsdmflkqjsmdlkfjqmsldfjm
 install_manpage () {
-	return 0
+    return 0
 }
 
 #### install_config ( source_path , target_filename=source_filename ) : void
@@ -77,20 +77,20 @@ install_manpage () {
 ## the `target_filename` argument.
 ##@return qsdf qsdmflkqjsmdlkfjqmsldfjm
 install_config () {
-	return 0
+    return 0
 }
 
 #### install_library ( source_path , target_filename=source_filename ) : void
 ## Install a library into `INSTALLDIR_LIB`. You can specify a specific final filename with
 ## the `target_filename` argument.
 install_library () {
-	return 0
+    return 0
 }
 
 #### make_install ( package_name / binstall_file ) : void
 ## Install a package or dependency. This requires that you provide a `binstall_file` script with your own one.
 make_install () {
-	return 0
+    return 0
 }
 
 #### Internal API methods ###############################
@@ -100,13 +100,13 @@ make_install () {
 #### prepare_binstaller () : void
 ## This will "prepare" the environment for an installation (e.g. create the temporary directory ...).
 prepare_binstaller () {
-	return 0
+    return 0
 }
 
 #### shutdown_binstaller () : void
 ## This will "clean" the environment after an installation (e.g. clean the temporary directory, launch final actions ...).
 shutdown_binstaller () {
-	return 0
+    return 0
 }
 
 # Environment #############################
