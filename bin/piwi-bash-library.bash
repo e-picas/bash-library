@@ -244,9 +244,9 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL (read-only)
 ## Library internal setup
 declare -rx LIB_NAME="Piwi Bash library" 2>/dev/null;
-declare -rx LIB_VERSION="0.0.1" 2>/dev/null;
-declare -rx LIB_DATE="2014-12-14" 2>/dev/null;
-declare -rx LIB_VCSVERSION="master@b88e1b20b0958b89d64db948499ae002391e970d" 2>/dev/null;
+declare -rx LIB_VERSION="0.2.0" 2>/dev/null;
+declare -rx LIB_DATE="2014-12-16" 2>/dev/null;
+declare -rx LIB_VCSVERSION="wip@54fc5fb8343a9e1dcbc020c2ddc150a881edbf44" 2>/dev/null;
 declare -rx LIB_DESCRIPTION="An open source day-to-day bash library" 2>/dev/null;
 declare -rx LIB_LICENSE_TYPE="GPL-3.0" 2>/dev/null;
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html" 2>/dev/null;
@@ -3370,7 +3370,7 @@ for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
 done
 DESCRIPTION_USAGE="${LIB_DESCRIPTION}\n\n\
-To use the library, just include its source file using: \`source path/to/piwi-bash-library.sh\` and call its methods.\n\
+To use the library, just include its source file using: \`source path/to/piwi-bash-library.bash\` and call its methods.\n\
 Try option '--man' for the library full manpage.";
 OPTIONS_USAGE="\n\
 $(parse_color_tags "<bold><action> in:</bold>")\n\
@@ -3476,7 +3476,7 @@ intlib_prepare_install () {
     intlib_prepare_libclone
     local tmpdir="${LIBINST_CLONE}/tmp"
     rm -rf "$tmpdir" && mkdir "$tmpdir"
-    cp -f "${LIBINST_CLONE}/bin/piwi-bash-library.sh" "${tmpdir}/${INTLIB_BIN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/bin/piwi-bash-library.bash" "${tmpdir}/${INTLIB_BIN_FILENAME}"
     cp -f "${LIBINST_CLONE}/man/piwi-bash-library.man" "${tmpdir}/${INTLIB_MAN_FILENAME}"
     cp -f "${LIBINST_CLONE}/DOCUMENTATION.md" "${tmpdir}/${INTLIB_DEVDOC_FILENAME}"
     cp -f "${LIBINST_CLONE}/README.md" "${tmpdir}/${INTLIB_README_FILENAME}"

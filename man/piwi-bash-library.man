@@ -1,6 +1,6 @@
 .\" author: Pierre Cassat
 
-.TH  "NAME" "3" "2014-12-14" "Version 0.0.1" "piwi-bash-library.sh Manual"
+.TH  "NAME" "3" "2014-12-16" "Version 0.2.0" "piwi-bash-library.bash Manual"
 
 .SH NAME
 
@@ -41,7 +41,7 @@ piwi-bash-library - An open source day-to-day bash library.
 \fBBash\fP, the "\fIBourne-Again-SHell\fP", is a \fIUnix shell\fP written for the GNU Project as a
 free software replacement of the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
-`\fSsource path/to/piwi-bash-library.sh\fP` and call its methods.
+`\fSsource path/to/piwi-bash-library.bash\fP` and call its methods.
 
 .PP
 The library is NOT a script doing some work itself except dealing with a copy of the library
@@ -99,7 +99,7 @@ system (3rd synopsis form). To start with this interface, you can run:
 .RS
 
 .EX
-path/to/piwi-bash-library.sh (--less) help
+path/to/piwi-bash-library.bash (--less) help
 .EE
 .RE
 
@@ -108,7 +108,7 @@ A basic synopsis of the interface is:
 .RS
 
 .EX
-path/to/piwi-bash-library.sh -[common options] --target=path --preset=default action-name
+path/to/piwi-bash-library.bash -[common options] --target=path --preset=default action-name
 .EE
 .RE
 
@@ -291,7 +291,7 @@ E_PATH=\fB83\fP
 path not found error
 .SH FILES
 .TP
-\fBpiwi-bash-library.sh\fP | \fBpiwi-bash-library\fP
+\fBpiwi-bash-library.bash\fP | \fBpiwi-bash-library\fP
 the standalone library source file 
 .TP
 \fBpiwi-bash-library.man\fP
