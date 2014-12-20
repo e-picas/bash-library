@@ -244,9 +244,9 @@ ut aut reiciendis voluptatibus maiores alias consequatur aut perferendis dolorib
 ##@ LIB_NAME LIB_VERSION LIB_DATE LIB_VCSVERSION LIB_VCSVERSION LIB_COPYRIGHT LIB_LICENSE_TYPE LIB_LICENSE_URL LIB_SOURCES_URL (read-only)
 ## Library internal setup
 declare -rx LIB_NAME="Piwi Bash library" 2>/dev/null;
-declare -rx LIB_VERSION="0.2.0-dev" 2>/dev/null;
-declare -rx LIB_DATE="2014-12-20" 2>/dev/null;
-declare -rx LIB_VCSVERSION="wip@241a0833e20f99d4bf0872ed8631b19d7181a807" 2>/dev/null;
+declare -rx LIB_VERSION="0.3.0-dev" 2>/dev/null;
+declare -rx LIB_DATE="2014-12-21" 2>/dev/null;
+declare -rx LIB_VCSVERSION="wip@c1467559ffbcfa9b4041bfd4da0564348ca9f172" 2>/dev/null;
 declare -rx LIB_DESCRIPTION="An open source day-to-day bash library" 2>/dev/null;
 declare -rx LIB_LICENSE_TYPE="GPL-3.0" 2>/dev/null;
 declare -rx LIB_LICENSE_URL="http://www.gnu.org/licenses/gpl-3.0.html" 2>/dev/null;
