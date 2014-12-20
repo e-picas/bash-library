@@ -1,15 +1,13 @@
 # ChangeLog
 
-## 0.0.3 (current dev)
+## 0.2.0 (current dev)
 
-
-## 0.0.2 (current master)
-
+- moving test scripts from 'demo/' to 'samples/'
 - new management of library's environment flags
 - review of the 'job control' and 'output control' methods according to current env flags
 - reorganization of library sections
 
-## 0.0.1
+## 0.1.0 (last release)
 
 - 'piwi/markdown-extended' is now a GIT submodule
 - new 'sstephenson/bats' submodule for unit-testing

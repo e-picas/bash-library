@@ -2,7 +2,7 @@
 # evaluate() test
 
 ######## Inclusion of the lib
-LIBFILE="$(dirname "$0")/../bin/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../bin/piwi-bash-library"
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})
     printf "\n### %*.*s\n    %s\n    %s\n%*.*s\n\n" 0 $(($(tput cols)-4)) "ERROR! ${PADDER}" \

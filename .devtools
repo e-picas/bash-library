@@ -1,6 +1,0 @@
-DEFAULT_FIXRIGHTS_BIN_DIR=.
-DEFAULT_VERSIONTAG_HOOK=build/pre-tag-hook.sh
-DEFAULT_FIXRIGHTS_BIN_MASK="*.sh"
-DEFAULT_MANPAGE_FILENAME=man/piwi-bash-library.man
-DEFAULT_MD2MAN_FILENAME=man/piwi-bash-library.man
-DEFAULT_MD2MAN_MARKDOWN_BIN=modules/markdown-extended/bin/markdown-extended

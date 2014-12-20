@@ -1,4 +1,4 @@
-Man:        piwi-bash-library.sh Manual
+Man:        piwi-bash-library.bash Manual
 Name:       Piwi Bash Library
 Author:     Pierre Cassat
 Date: 2014-12-14
@@ -39,7 +39,7 @@ piwi-bash-library - An open source day-to-day bash library.
 **Bash**, the "*Bourne-Again-SHell*", is a *Unix shell* written for the GNU Project as a
 free software replacement of the original Bourne shell (sh). The present library is a tool
 for Bash scripts facilities. To use the library, just include its source file using:
-`source path/to/piwi-bash-library.sh` and call its methods.
+`source path/to/piwi-bash-library.bash` and call its methods.
 
 The library is NOT a script doing some work itself except dealing with a copy of the library
 ; it is just a library. This manual explains the library itself, its options and
@@ -74,11 +74,11 @@ When calling the library script itself from command line, a user interface is av
 deal (install/update/uninstall) with a copy of the library locally or globally in your 
 system (3rd synopsis form). To start with this interface, you can run:
 
-    path/to/piwi-bash-library.sh (--less) help
+    path/to/piwi-bash-library.bash (--less) help
 
 A basic synopsis of the interface is:
 
-    path/to/piwi-bash-library.sh -[common options] --target=path --preset=default action-name
+    path/to/piwi-bash-library.bash -[common options] --target=path --preset=default action-name
 
 See the "Options" section below for specific options usage.
 
@@ -253,7 +253,7 @@ E_PATH=**83**
 
 ## FILES
 
-**piwi-bash-library.sh** | **piwi-bash-library**
+**piwi-bash-library.bash** | **piwi-bash-library**
 :    the standalone library source file 
 
 **piwi-bash-library.man**

@@ -3370,7 +3370,7 @@ for pres in "${INTLIB_PRESET_ALLOWED[@]}"; do
     INTLIB_PRESET_INFO+=" '${pres}'"
 done
 DESCRIPTION_USAGE="${LIB_DESCRIPTION}\n\n\
-To use the library, just include its source file using: \`source path/to/piwi-bash-library.sh\` and call its methods.\n\
+To use the library, just include its source file using: \`source path/to/piwi-bash-library.bash\` and call its methods.\n\
 Try option '--man' for the library full manpage.";
 OPTIONS_USAGE="\n\
 $(parse_color_tags "<bold><action> in:</bold>")\n\
@@ -3476,7 +3476,7 @@ intlib_prepare_install () {
     intlib_prepare_libclone
     local tmpdir="${LIBINST_CLONE}/tmp"
     rm -rf "$tmpdir" && mkdir "$tmpdir"
-    cp -f "${LIBINST_CLONE}/bin/piwi-bash-library.sh" "${tmpdir}/${INTLIB_BIN_FILENAME}"
+    cp -f "${LIBINST_CLONE}/bin/piwi-bash-library.bash" "${tmpdir}/${INTLIB_BIN_FILENAME}"
     cp -f "${LIBINST_CLONE}/man/piwi-bash-library.man" "${tmpdir}/${INTLIB_MAN_FILENAME}"
     cp -f "${LIBINST_CLONE}/DOCUMENTATION.md" "${tmpdir}/${INTLIB_DEVDOC_FILENAME}"
     cp -f "${LIBINST_CLONE}/README.md" "${tmpdir}/${INTLIB_README_FILENAME}"

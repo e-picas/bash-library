@@ -1,0 +1,9 @@
+[submodule "modules/markdown-extended"]
+	path = modules/markdown-extended
+	url = https://github.com/piwi/markdown-extended.git
+[submodule "modules/bats"]
+	path = modules/bats
+	url = https://github.com/sstephenson/bats.git
+[submodule "modules/wiki"]
+	path = modules/wiki
+	url = https://github.com/piwi/bash-library.wiki.git

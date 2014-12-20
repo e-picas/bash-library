@@ -20,7 +20,7 @@ BASELIB_DIR="${_BASEDIR}/../../bin/"
 
 iexec "rsync -rP ${_BASEDIR} ${BASETARGET}"
 iexec "cp -f $0 ${BASETARGET} && chmod +x ${BASETARGET}/${BASESCRIPT}"
-iexec "mkdir ${BASETARGET}/bin && cp ${BASELIB_DIR}/piwi-bash-library.sh ${BASETARGET}/bin/ && cp ${BASELIB_DIR}/../README.md ${BASETARGET}/bin/"
-iexec "sed -i '' -e 's/\/..\/src\/piwi-bash-library.sh/\/bin\/piwi-bash-library.sh/g' ${BASETARGET}/${BASESCRIPT}"
+iexec "mkdir ${BASETARGET}/bin && cp ${BASELIB_DIR}/piwi-bash-library.bash ${BASETARGET}/bin/ && cp ${BASELIB_DIR}/../README.md ${BASETARGET}/bin/"
+iexec "sed -i '' -e 's/\/..\/src\/piwi-bash-library.bash/\/bin\/piwi-bash-library.bash/g' ${BASETARGET}/${BASESCRIPT}"
 
 # Endfile
