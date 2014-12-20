@@ -13,7 +13,7 @@ ACTUAL_VERSION="$("$LIB_FILE" -Vq)"
 GIT_VERSION="$(git_get_version)"
 
 if [ "$#" -lt 1 ]; then
-    echo "current version is: ${ACTUAL_VERSION} (${GIT_VERSION})"
+	echo "current version is: ${ACTUAL_VERSION} (${GIT_VERSION})"
 	echo "usage: $0 <version-number> [sign=false]"
 	exit 1
 fi
