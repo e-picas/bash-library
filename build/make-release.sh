@@ -25,7 +25,7 @@ SIGN="${2:-false}"
 ./build/make-manpage.sh
 
 echo "> commiting new files ..."
-git add "$LIB_FILE" "$MAN_OUTPUT" "$DOC_OUTPUT" \
+git add "$LIB_FILE" "$MAN_FILE" "$MDDOC_FILE" \
     && git commit -m "Version ${VERSION} : automatic version number and date insertion" \
     && git commit --amend ;
 #LASTSHA=$(git log -1 --format="%H")
