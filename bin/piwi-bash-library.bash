@@ -118,7 +118,7 @@ declare -x E_PATH=83
 
 # colors settings depending on OS
 case "$USEROS" in
-    Linux|FreeBSD|OpenBSD|SunOS) 
+    Linux|FreeBSD|OpenBSD|SunOS)
         declare -x COLOR_LIGHT='yellow'
         declare -x COLOR_DARK='lightgrey'
         declare -x COLOR_INFO='green'
@@ -127,7 +127,7 @@ case "$USEROS" in
         declare -x COLOR_ERROR='bgred'
         declare -x COLOR_COMMENT='small'
         ;;
-    *) 
+    *)
         declare -x COLOR_LIGHT='yellow'
         declare -x COLOR_DARK='lightgrey'
         declare -x COLOR_INFO='green'
@@ -2659,7 +2659,7 @@ get_script_version_string () {
     if [ -n "$gitvers" ]
         then
             echo "$gitvers"
-        else 
+        else
             if [ -n "$VERSION" ]; then echo "$VERSION"; fi
     fi
     return 0
