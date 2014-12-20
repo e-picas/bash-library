@@ -6,7 +6,7 @@
 #echo "> status is: $status"
 
 # library path
-export PBL_LIBFILE="$BATS_TEST_DIRNAME/../bin/piwi-bash-library.sh"
+export PBL_LIBFILE="$BATS_TEST_DIRNAME/../bin/piwi-bash-library.bash"
 
 # load the library
 load_library() {

@@ -8,7 +8,7 @@
 ##@doc see <http://github.com/piwi/bash-library/wiki/Installation-Usage.md#usage>
 
 # you MUST (re-)define here the path of the library
-LIBFILE="$(dirname "$0")/../bin/piwi-bash-library.sh"
+LIBFILE="$(dirname "$0")/../bin/piwi-bash-library"
 
 if [ -f "$LIBFILE" ]; then source "$LIBFILE"; else
     PADDER=$(printf '%0.1s' "#"{1..1000})

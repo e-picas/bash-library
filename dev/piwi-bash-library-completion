@@ -40,4 +40,4 @@ _piwibashlib () {
 }
 
 complete -F _piwibashlib piwi-bash-library
-complete -F _piwibashlib piwi-bash-library.sh
+complete -F _piwibashlib piwi-bash-library.bash

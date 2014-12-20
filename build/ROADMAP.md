@@ -18,7 +18,7 @@ This document explains how to use the package during development and the things 
 
 To install/update dependencies:
 
-    git submodules init
+    git submodule init
     git submodule update
 
 To run the test suite:
@@ -27,13 +27,19 @@ To run the test suite:
 
 To generate the manpage from `MANPAGE.md`:
 
-    chmod a+x modules/markdown-extended/bin/markdown-extended
-    php modules/markdown-extended/bin/markdown-extended -f man -o man/piwi-bash-library.man MANPAGE.md
-    man man/piwi-bash-library.man
+    ./build/make-manpage.sh
 
 To generate the documentation to `DOCUMENTATION.md`:
 
-    bin/piwi-bash-library.sh -v mddocumentation > DOCUMENTATION.md
+    ./build/make-documentation.sh
+
+To update the version number, run:
+
+    ./build/make-version.sh new-version
+
+To build a new release tag, run:
+
+    ./build/make-release.sh release-name [sign=false]
 
 
 ## TODO

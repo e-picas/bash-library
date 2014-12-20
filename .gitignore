@@ -1,31 +1,10 @@
-### Repo ignored
-
-# the composer stuff
-composer.lock
-vendor/*
-
-# any "tmp*" file or dir anywhere
 *tmp*
-
-# user defined files
 user/*
 */user/*
-
-# specific to the "wip" branch
-#build/*
-#modules/*
-#tests/*
-#ROADMAP.md
-#.gitmodules
-#.devtools
-#pre-tag-hook.sh
-
-# specific to the "wip" branch for dev
-#dev/*
-
-# specific for the piwi-bash-lib
 piwibashlib.log
 .testconfig.conf
 
-### Hack to allow keeping an empty directory
-!.gitkeep
+# specific to the "wip" branch for dev
+#dev/*
+#modules/*
+#tests/*

@@ -1,8 +1,8 @@
 Man:        piwi-bash-library.bash Manual
 Name:       Piwi Bash Library
 Author:     Pierre Cassat
-Date: 2014-12-16
-Version: 0.2.0
+Date: 2014-12-20
+Version: 0.2.0-dev
 
 
 ## NAME

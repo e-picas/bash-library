@@ -1,31 +1,26 @@
 #!/bin/bash
 
-_here=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
-_source=bin/piwi-bash-library.sh
-_output=DOCUMENTATION.md
-_lib=${_here}/../${_source}
-_type=markdown
-#_type=terminal
+if [ "$(pwd)/build" == "$(dirname "$(realpath ${BASH_SOURCE[0]})")" ]
+then
+    source "$(dirname $0)/_settings.sh";
+else
+    echo "!! you must run shell builders from package's root directory !!"
+    exit 1
+fi
 
+source "$LIB_FILE"
+
+DOC_TYPE=markdown
+#DOC_TYPE=terminal
 # for dev
-#_source=${_here}/../dev/test-doc.sh
-#_output=${_here}/documentation.md
+#LIBSOURCE="${HERE}/../dev/test-doc.sh"
+#DOC_OUTPUT="${HERE}/documentation.md"
 
-source ${_lib} || echo "!! piwi-bash-library not found!" ;
+verbose_mode 1
 
-export VERBOSE=true
-
-build_documentation "$_type" "$_output" "$_source" \
-    && echo "documentation generated in '$_output'" \
+echo "> build_documentation '$DOC_TYPE' '$MDDOC_FILE' '$LIB_SOURCE'"
+build_documentation "$DOC_TYPE" "$MDDOC_FILE" "$LIB_SOURCE" \
+    && echo "documentation generated in '${MDDOC_FILE}'" \
     || echo "an error occurred!" ;
 
 exit 0
-
-# generate a manpage from the doc ...
-_source="$_output"
-_output=man/piwi-bash-library.7.man
-_mde=${_here}/../modules/markdown-extended/bin/markdown-extended
-
-${_mde} -f man -o "$_output" "${_source}" \
-    && echo "manpage generated in '$_output'" \
-    || echo "an error occurred!" ;
