@@ -1,6 +1,6 @@
 .\" author: Pierre Cassat
 
-.TH  "NAME" "3" "2014-12-20" "Version 0.1.0-dev" "piwi-bash-library.bash Manual"
+.TH  "NAME" "3" "2014-12-20" "Version 0.2.0" "piwi-bash-library.bash Manual"
 
 .SH NAME
 
