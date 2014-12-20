@@ -1,8 +1,8 @@
 * text=auto
 
-*.sh    eol=lf
-*.bash  eol=lf
-*.bats  eol=lf
+*.sh    text eol=lf trailing-space space-before-tab -indent-with-non-tab
+*.bash  text eol=lf trailing-space space-before-tab -indent-with-non-tab
+*.bats  text eol=lf trailing-space space-before-tab -indent-with-non-tab
 
 .git*   text export-ignore
 tests/  export-ignore
