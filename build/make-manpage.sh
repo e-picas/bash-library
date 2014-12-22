@@ -16,7 +16,7 @@ fi
 
 echo "> ${MDE_BIN} -f man -o '$MAN_FILE' '$MDMAN_FILE'"
 "${MDE_BIN}" -f man -o "$MAN_FILE" "$MDMAN_FILE" \
-    && echo "manpage generated in '${MDMAN_FILE}'" \
+    && echo "manpage generated in '${MAN_FILE}'" \
     || echo "an error occurred!" ;
 
 exit 0
