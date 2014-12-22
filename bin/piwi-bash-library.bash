@@ -690,11 +690,12 @@ get_version_string () {
         if [ -f "$fpath" ]; then
             _infile=$(head -n200 "$fpath" | grep -o -e "${cstname}=\".*\"" | sed "s|^${cstname}=\"\(.*\)\"$|\1|g")
         fi
-        if [ ! -z "$_infile" ]
-        then echo "$_infile"
+        if [ ! -z "$_infile" ]; then
+            echo "$_infile"
         elif [ "$SCRIPT_VCS" = 'git' ]; then
             if git_is_clone 2>/dev/null; then
-                git_get_version
+                local _gitvers=$(git_get_version 2>/dev/null)
+                [ ! -z "$_gitvers" ] && echo "$_gitvers";
             fi
         fi
     fi
@@ -895,8 +896,12 @@ git_get_version () {
     if git_is_clone; then
         local gitcmd="$(which git)"
         if [ -n "$gitcmd" ]; then
-            echo "$(git_get_branch)@$(git_get_commit)"
-            return 0
+            local _getbr="$(git_get_branch)"
+            local _gethash="$(git_get_commit)"
+            if [ -n "$_getbr" ] && [ -n "$_gethash" ]; then
+                echo "${_getbr}@${_gethash}"
+                return 0
+            fi
         fi
     fi
     return 1
@@ -2355,6 +2360,8 @@ get_next_argument () {
         export ARGIND ARGUMENT
         return 0
     else
+        unset ARGUMENT
+        ARGIND=0
         return 1
     fi
 }
@@ -3058,7 +3065,7 @@ library_short_version () {
             TMP_VERS+=" ${add}"
         fi
     fi
-    if [ "$_done" = 'false' ]; then
+    if [ "$_done" = 'false' ] && [ -f "$BASH_SOURCE" ]; then
         TMP_VERS+=" $(get_library_version_string "${BASH_SOURCE}")"
     fi
     echo "$TMP_VERS"
