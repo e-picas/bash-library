@@ -171,9 +171,9 @@ echo
 # loop over arguments
 echo "> arguments loop:"
 if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
-    while [[ "$ARGIND" -lt "${#SCRIPT_ARGS[@]}" ]]; do
-        get_next_argument
-        echo " - [${ARGIND}] argument is '$ARGUMENT'"
+    ARGIND=1
+    while getargs MYARG; do
+        echo " - [${ARGIND}] argument is '$MYARG'"
     done
 else
     echo " - none"
