@@ -2349,19 +2349,43 @@ parse_long_option () {
     return 0
 }
 
+#### init_arguments ()
+## init the script arguments treatment putting `ARGIND` on `1` if arguments exist
+init_arguments () {
+    if [ "${#SCRIPT_ARGS[@]}" -gt 0 ]; then
+        export ARGIND=1
+    fi
+    return 0
+}
+
+#### getargs ( VAR_NAME )
+## method to loop over command line's arguments just like `getopts` does for options
+## this will load current argument's value in `VAR_NAME` and increment `ARGIND` at each turn
+getargs () {
+    local argvar="${1:-ARGUMENT}"
+    get_next_argument
+    local _status=$?
+    if [ "$ARGIND" -eq 0 ]||[ "$_status" -ne 0 ]; then
+        return 1
+    fi
+    if [ "$argvar" != 'ARGUMENT' ]; then
+        eval "export $argvar=\"$ARGUMENT\"";
+    fi
+    return 0
+}
+
 #### get_next_argument ()
 ## get next script argument according to current `ARGIND`
 ## load it in `ARGUMENT` and let `ARGIND` incremented
 get_next_argument () {
-    if [ "$ARGIND" -lt "${#SCRIPT_ARGS[@]}" ]
+    local argsnum="${#SCRIPT_ARGS[@]}"
+    if [ "$ARGIND" -lt "$((argsnum + 1))" ]
     then
-        ARGUMENT="${SCRIPT_ARGS[${ARGIND}]}"
+        ARGUMENT="${SCRIPT_ARGS[$((ARGIND - 1))]}"
         ((ARGIND++))
         export ARGIND ARGUMENT
         return 0
     else
-        unset ARGUMENT
-        ARGIND=0
         return 1
     fi
 }
@@ -2497,6 +2521,7 @@ rearrange_script_options () {
             then SCRIPT_PARAMS="${SCRIPT_OPTS[*]} -- ${SCRIPT_ARGS[*]}";
         fi
     fi
+    init_arguments
     export OPTIND SCRIPT_OPTS SCRIPT_ARGS SCRIPT_PARAMS
     return 0
 }
