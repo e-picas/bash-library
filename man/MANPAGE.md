@@ -1,4 +1,4 @@
-Man:        Piwi Bash Library Manual
+Man:        Piwi-Bash-Library Manual
 Man-name:   piwi-bash-library
 Author:     Pierre Cassat
 Date: 2014-12-21
@@ -7,18 +7,18 @@ Version: 0.3.0-dev
 
 ## NAME
 
-piwi-bash-library - An open source day-to-day bash library.
+Piwi-Bash-Library - An open source day-to-day bash library.
 
 ## SYNOPSIS
 
-**piwi-bash-library-script [common options] [script options [=value]] [arguments] --**
+**piwi-bash-library-script** [*common options*] [*script options* [=*value*]] (*--*) [*arguments*] (*--*)
 
 **piwi-bash-library-script**  [**-h**|**-V**]  [**-x**|**-v**|**-i**|**-q**|**-f**]
     [**--help**|**--usage**|**--man**]
     [**--force**|**--help**|**--interactive**|**--quiet**|**--verbose**|**--debug**|**--dry-run**]
     [**--version**|**--libversion**]
     [**--logfile** *=filename*] [**working-dir** *=path*]
-        [script options ...]  (--)  [arguments ...]
+        [*script options ...*]  (--)  [*arguments ...*]
 
 **piwi-bash-library-script**  [*common options*] 
     [**-t**|**--target** *=path*]  [**--local**]
@@ -45,13 +45,13 @@ The library is NOT a script doing some work itself except dealing with a copy of
 ; it is just a library. This manual explains the library itself, its options and
 usage methods but you MAY keep in mind that the final manual page to read is the one of
 the real script you will call, using the tools of the library to build its own work. See the
-"Interface" section of this manual for information about the library interface (when calling
+"*Interface*" section of this manual for information about the library interface (when calling
 it directly).
 
 The following features are available using the library:
 
--   some common methods to work with strings and arrays in Bash
--   a management of information messages like warnings and errors
+-   some common methods to work with *strings*, *integers*, *files* and *arrays*
+-   a management of information messages like *warnings* and *errors*
 -   a management of a simple *help or usage information* for each script (just defining some variables
     in the script)
 -   the creation of some *colorized and stylized content* for terminal output: some methods are designed
@@ -60,7 +60,8 @@ The following features are available using the library:
 -   a management of a *configuration dotfile* for a script: some methods allow you to read, write,
     update and delete configuration values in a file
 -   a management of *temporary files* and *log files*
--   a set of *common options* (described in next "Options" section) to let the user interact
+-   a management of *script's options and arguments* (re-arrangement, loop etc)
+-   a set of *common options* (described in next "*Options*" section) to let the user interact
     with the script, such as increase or decrease verbosity, make a dry run, ask to force 
     commands or to always prompt for confirmation
 
@@ -68,9 +69,11 @@ For the library source code and messages outputs, we mostly try to follow the
 [GNU coding standards](http://www.gnu.org/prep/standards/standards.html) to keep user in
 a known environment ...
 
+For a complete information and a documentation, see <http://github.com/piwi/bash-library/wiki/>.
+
 ## INTERFACE
 
-When calling the library script itself from command line, a user interface is available to
+When calling the library script itself from the command line, a user interface is available to
 deal (install/update/uninstall) with a copy of the library locally or globally in your 
 system (3rd synopsis form). To start with this interface, you can run:
 
@@ -80,16 +83,16 @@ A basic synopsis of the interface is:
 
     path/to/piwi-bash-library.bash -[common options] --target=path --preset=default action-name
 
-See the "Options" section below for specific options usage.
+See the "*Options*" section below for specific options usage.
 
-### The following actions are available
+### The following actions are available:
 
 **check**
 :   check if your library is up-to-date
 
 **documentation**
-:   see the library documentation ; use option `verbose` to increase verbosity ; you can
-add an `md` prefix to get the documentation in Markdown format ('mddocumentation')
+:   see the library documentation ; use option **verbose** to increase verbosity ; you can
+add an `md` prefix to get the documentation in Markdown format (**mddocumentation**)
 
 **help** and **usage**
 :   get an 'help' and 'usage' information about the library
@@ -104,59 +107,59 @@ add an `md` prefix to get the documentation in Markdown format ('mddocumentation
 :   update the library with a newer version if so ; this will update the MINOR version
 
 **version**
-:   get the version information about the library ; use option `quiet` to get only
-the version number
+:   get the version information about the library ; use option **quiet** to get only
+the version number (alias of **libversion**)
 
 ## OPTIONS
 
-Each script depending on the library may define its own options. Report to the script
+Each script depending on the library may define its own options. Please report to the script's
 manpage or help string for more information.
 
-*The following common options are supported (MAY be used first):*
+### The following common options are supported:
 
 **--dry-run**
-:    see commands to run but do not run them actually ; this will define the environment variables
-`DRYRUN` on `true` and `INTERACTIVE` and `FORCED` on `false`
+:    see commands to run but do not run them actually ; this will define the environment variables 
+*DRYRUN* on *true* and *INTERACTIVE* and *FORCED* on *false*
 
 **-f**, **--force**
 :    force some commands to not prompt confirmation ; this will define the environment
-variables `FORCED` on `true` and `VERBOSE` and `DEBUG` on `false`
+variables *FORCED* on *true* and *VERBOSE* and *DEBUG* on *false*
 
 **-h**, **--help**
 :    show an information message 
 
 **-i**, **--interactive**
 :    ask for confirmation before any action ; this will define the environment variables
-`INTERACTIVE` on `true` and `FORCED` on `false`
+*INTERACTIVE* on *true* and *FORCED* on *false*
 
 **--libversion**
-:    see the library version ; use option `--quiet` to only have the version number
+:    see the library version ; use option *quiet* to only have the version number
 
-**--log** =filename
-:    define the log filename to use (default is `pwibashlib.log`) ; this will update
-the environment variable `LOGFILE`
+**--log** *filename*
+:    define the log filename to use (default is *pwibashlib.log*) ; this will update
+the environment variable *LOGFILE*
 
 **--man**
 :    try to open a manpage for current script if available, or show the help string otherwise
 
 **-q**, **--quiet**
 :    decrease script verbosity, nothing will be written unless errors ; this will define
-the environment variables `VERBOSE` on `false` and `QUIET` on `true`
+the environment variables *VERBOSE* on *false* and *QUIET* on *true*
 
 **-v**, **--verbose**
-:    increase script verbosity ; this will define the environment variables `VERBOSE` on `true`
-and `QUIET` on `false`
+:    increase script verbosity ; this will define the environment variables *VERBOSE* on *true*
+and *QUIET* on *false*
 
 **-V**, **--version**
-:    see the script version when available ; use option `--quiet` to only have the version number
+:    see the script version when available ; use option **quiet** to only have the version number
 
-**--working-dir** =path
-:    redefine the working directory (default is `pwd` - `path` must exist) ; this will update
-the environment variable `WORKINGDIR`
+**--working-dir** *path*
+:    redefine the working directory (default is *pwd*) ; the `path` argument must exist ; this will update
+the environment variable *WORKINGDIR*
 
 **-x**, **--debug**
-:    enable debug mode ; this will define the environment variables `DEBUG` and `VERBOSE` on `true`
-and `QUIET` on `false`
+:    enable debug mode ; this will define the environment variables *DEBUG* and *VERBOSE* on *true*
+and *QUIET* on *false*
 
 **--usage**
 :    show a quick usage information
@@ -173,38 +176,38 @@ option rendering. For instance, a long "help" output can be loaded via `less` ru
 
     piwi-bash-library-script -h --less
 
-### Specific options of the library's interface
+### Specific options of the library's interface:
 
 Calling the library script itself to use its interface, you can use the following options:
 
-**-b**, **--branch** =name
+**-b**, **--branch** *name*
 :    defines the GIT branch to use from the remote repository ; the branch MUST exist in the
 repository ; it defaults to "*master*"
 
-**-e**, **--exec** ='bash string to evaluate'
+**-e**, **--exec** *'bash string to evaluate'*
 :    a bash raw script string to evaluate in library's environment ; the execution will stop
 after the `evaluate` process (exclusive action) and exit with its last status
 
 **--local**
-:    defines the current directory as target directory (alias of `-t=pwd`)
+:    defines the current directory as target directory (alias of **target=pwd**)
 
-**-p**, **--preset** =type
+**-p**, **--preset** *type*
 :    defines the preset type to use for an installation ; can be "*default*" (default value),
 "*user*", "*dev*" or "*full*" ; the value of this option will be used to define the
-files to install ; see the "Files" section below for more information
+files to install ; see the "*Files*" section below for more information
 
-**-r**, **--release** =version
+**-r**, **--release** *version_number*
 :    defines the GIT version tag to use from the remote repository ; the release MUST exist in the
-repository ; default behavior follows the "--branch" option
+repository ; default behavior follows the **branch** option
 
-**-t**, **--target** =path
+**-t**, **--target** *path*
 :    defines the target directory of a copy installation ; if it does not exist, `path` will
 be created ; it defaults to current path (`$HOME/bin`)
 
 
 ## ENVIRONMENT
 
-The following environment variables are available:
+The library defines the followings environment variables:
 
 COLOR_LIGHT COLOR_DARK COLOR_INFO COLOR_NOTICE COLOR_WARNING COLOR_ERROR COLOR_COMMENT
 :    a set of predefined colors
@@ -238,16 +241,16 @@ exit STATUS of the evaluated command
 
 The library defines and uses some specific error status:
 
-E_ERROR=**90**
+*E_ERROR* = **90**
 :   classic error
 
-E_OPTS=**81**
+*E_OPTS* = **81**
 :   script options error
 
-E_CMD=**82**
+*E_CMD* = **82**
 :   missing command error
 
-E_PATH=**83**
+*E_PATH* = **83**
 :   path not found error
 
 
@@ -297,8 +300,8 @@ To transmit bugs, see <http://github.com/piwi/bash-library/issues>.
 
 ## AUTHOR
 
-Created and maintained by **Pierre Cassat** (*piwi* - <http://e-piwi.fr/> - <me [at] e-piwi.fr>)
-& contributors.
+The *piwi-bash-library* is created and maintained by Pierre Cassat 
+(piwi - <http://e-piwi.fr/> - <me [at] e-piwi.fr>) & contributors.
 
 ## SEE ALSO
 
