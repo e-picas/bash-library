@@ -1060,6 +1060,18 @@
 
 	This will parse and retrieve the name and argument of current long option.
 
+-   **init_arguments ()**
+
+
+	init the script arguments treatment putting `ARGIND` on `1` if arguments exist
+
+-   **getargs ( VAR_NAME )**
+
+
+	method to loop over command line's arguments just like `getopts` does for options
+
+	this will load current argument's value in `VAR_NAME` and increment `ARGIND` at each turn
+
 -   **get_next_argument ()**
 
 
@@ -1098,7 +1110,7 @@
 
 	this will stop options treatment at '--'
 
-## SCRIPT INFO (line 463)
+## SCRIPT INFO (line 468)
 
 
 -   **get_script_version_string ( quiet = false )**
@@ -1144,7 +1156,7 @@
 -   **script_version ( quiet = false )**
 
 
-## DOCBUILDER (line 481)
+## DOCBUILDER (line 486)
 
 
 	Documentation builder rules, tags and masks
@@ -1161,7 +1173,7 @@
 -   **generate_documentation ( filepath = BASH_SOURCE[0] , output = null )**
 
 
-## LIBRARY INFO (line 488)
+## LIBRARY INFO (line 493)
 
 
 -   **get_library_version_string ( path = $0 )**
@@ -1201,7 +1213,7 @@
 
 	alias of library_debug
 
-## LIBRARY INTERNALS (line 503)
+## LIBRARY INTERNALS (line 508)
 
 
 -   **LIBRARY_REALPATH LIBRARY_DIR LIBRARY_BASEDIR LIBRARY_SOURCEFILE**
@@ -1221,7 +1233,7 @@
 
 	clean dir '$HOME/.piwi-bash-library/cache' if it exists
 
-## INSTALLATION WIZARD (line 511)
+## INSTALLATION WIZARD (line 516)
 
 
 -   **INSTALLATION_VARS = ( SCRIPT_VCS VCSVERSION SCRIPT_REPOSITORY_URL SCRIPT_FILES SCRIPT_FILES_BIN SCRIPT_FILES_MAN SCRIPT_FILES_CONF ) (read-only)**
@@ -1268,9 +1280,9 @@
 -   **script_uninstall ( path = $HOME/bin/ )**
 
 
-## COMPATIBILITY (line 534)
+## COMPATIBILITY (line 539)
 
 
 ----
 
-[*Doc generated at 20-12-2014 21:05:56 from path 'bin/piwi-bash-library.bash'*]
+[*Doc generated at 02-1-2015 00:35:16 from path 'bin/piwi-bash-library.bash'*]

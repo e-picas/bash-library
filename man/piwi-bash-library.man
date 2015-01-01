@@ -68,7 +68,7 @@ commands or to always prompt for confirmation
 .RE
 .PP
 For the library source code and messages outputs, we mostly try to follow the
-GNU coding standards (<http://www.gnu.org/prep/standards/standards.html>) to keep user in
+GNU coding standards <http://www.gnu.org/prep/standards/standards.html> to keep user in
 a known environment ...
 .PP
 For a complete information and a documentation, see <http://github.com/piwi/bash-library/wiki/>.
@@ -275,7 +275,7 @@ the development documentation file of the version installed (Markdown syntax) ; 
 is installed by the interface using the "dev" or "full" presets
 .SH LICENSE
 .PP
-Copyright (C) 2013-2014, Pierre Cassat & contributors
+Copyleft (ↄ) 2013-2015, Pierre Cassat & contributors
 <http://e-piwi.fr/> - Some rights reserved.
 .PP
 This program is free software: you can redistribute it and/or modify
