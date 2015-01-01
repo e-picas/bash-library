@@ -1,5 +1,8 @@
 language: c
 script: build/run-tests.sh
+branches:
+  only:
+    - wip
 notifications:
   email:
     on_success: never
