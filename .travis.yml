@@ -1,0 +1,5 @@
+language: c
+script: build/travis-tests.sh
+notifications:
+  email:
+    on_success: never
