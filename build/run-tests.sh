@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(pwd)/build" == "$(dirname "$(realpath ${BASH_SOURCE[0]})")" ]
+if [ "$(pwd)/build" == "$(dirname "$(readlink -f ${BASH_SOURCE[0]})")" ]
 then
     source "$(dirname $0)/_settings.sh";
 else
