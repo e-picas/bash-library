@@ -1,11 +1,5 @@
 .\" author: Pierre Cassat
-<<<<<<< HEAD
-
-.TH  "NAME" "3" "2014-12-20" "Version 0.2.0" "piwi-bash-library.bash Manual"
-
-=======
-.TH  "piwi-bash-library" "3" "2014-12-21" "Version 0.3.0-dev" "Piwi-Bash-Library Manual"
->>>>>>> wip
+.TH  "piwi-bash-library" "3" "2014-12-20" "Version 0.2.0" "Piwi Bash Library Manual"
 .SH NAME
 .PP
 Piwi-Bash-Library - An open source day-to-day bash library.

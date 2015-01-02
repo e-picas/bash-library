@@ -1626,5 +1626,5 @@ instwiz_prepare_uninstall_cmd ()
 
 --------------------
 .PP
-[\fIDoc generated at 02-1-2015 00:35:16 from path 'bin/piwi-bash-library.bash'\fP]
+[\fIDoc generated at 02-1-2015 01:13:22 from path 'bin/piwi-bash-library.bash'\fP]
 
