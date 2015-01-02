@@ -3,6 +3,8 @@ Piwi-Bash-Library
 
 An open source day-to-day bash library.
 
+[![Build Status](https://travis-ci.org/piwi/bash-library.svg?branch=wip)](https://travis-ci.org/piwi/bash-library)
+
 Key features:
 
 -   manage strings, files, integers and arrays easily
@@ -71,7 +73,7 @@ Author & License
 
 
     Piwi Bash Library - An open source day-to-day bash library
-    Copyright (C) 2013-2014, Pierre Cassat & contributors
+    Copyleft (ↄ) 2013-2015 Pierre Cassat & contributors
     <http://e-piwi.fr/> - Some rights reserved.
     
     This program is free software: you can redistribute it and/or modify

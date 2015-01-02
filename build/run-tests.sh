@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(pwd)/build" == "$(dirname "$(realpath ${BASH_SOURCE[0]})")" ]
+if [ "$(pwd)/build" == "$(dirname "$(readlink -f ${BASH_SOURCE[0]})")" ]
 then
     source "$(dirname $0)/_settings.sh";
 else
@@ -19,10 +19,11 @@ if [ ! -f "$BATS_BIN" ]; then
     exit 1
 fi
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != 'wip' ]; then
-    echo "!! test can ONLY be ran from the 'wip' branch!"
-    exit 1
-fi
+# this breaks travis-ci auto-testing ...
+#if [ "$(git rev-parse --abbrev-ref HEAD)" != 'wip' ]; then
+#    echo "!! test can ONLY be ran from the 'wip' branch!"
+#    exit 0
+#fi
 
 _TORUN="${1:-all}"
 

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if [ "$(pwd)/build" == "$(dirname "$(realpath ${BASH_SOURCE[0]})")" ]
+if [ "$(pwd)/build" == "$(dirname "$(readlink -f ${BASH_SOURCE[0]})")" ]
 then
     source "$(dirname $0)/_settings.sh";
 else
@@ -19,7 +19,7 @@ echo "> ${MDE_BIN} -f man -o '$MAN_FILE' '$MDMAN_FILE'"
     && echo "manpage generated in '${MAN_FILE}'" \
     || echo "an error occurred!" ;
 
-exit 0
+#exit 0
 
 # generate a manpage from the doc ...
 
