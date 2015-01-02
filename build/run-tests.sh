@@ -19,10 +19,11 @@ if [ ! -f "$BATS_BIN" ]; then
     exit 1
 fi
 
-if [ "$(git rev-parse --abbrev-ref HEAD)" != 'wip' ]; then
-    echo "!! test can ONLY be ran from the 'wip' branch!"
+# this breaks travis-ci auto-testing ...
+#if [ "$(git rev-parse --abbrev-ref HEAD)" != 'wip' ]; then
+#    echo "!! test can ONLY be ran from the 'wip' branch!"
 #    exit 0
-fi
+#fi
 
 _TORUN="${1:-all}"
 
