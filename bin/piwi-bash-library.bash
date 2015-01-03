@@ -2379,7 +2379,7 @@ getargs () {
 ## load it in `ARGUMENT` and let `ARGIND` incremented
 get_next_argument () {
     local argsnum="${#SCRIPT_ARGS[@]}"
-    if [ "$ARGIND" -lt "$((argsnum + 1))" ]
+    if [ "${#SCRIPT_ARGS[@]}" -gt 0 ] && [ "$ARGIND" -lt "$((argsnum + 1))" ]
     then
         ARGUMENT="${SCRIPT_ARGS[$((ARGIND - 1))]}"
         ((ARGIND++))
