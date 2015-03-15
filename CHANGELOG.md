@@ -29,11 +29,25 @@
 
 * v0.2.0 (2014-12-20 - 9d18b07)
 
+    *   moving test scripts from 'demo/' to 'samples/'
+    *   new management of library's environment flags
+    *   review of the 'job control' and 'output control' methods according to current env flags
+    *   reorganization of library sections
     * a600215 - Version 0.2.0 : automatic version number and date insertion (piwi)
     * 7df65b1 - fixing the 'make-release' builder (piwi)
 
 * v0.1.0 (2014-12-16)
 
+    *   'piwi/markdown-extended' is now a GIT submodule
+    *   new 'sstephenson/bats' submodule for unit-testing
+    *   new test suite with BATS in 'tests/'
+    *   removing all 'doc/' contents: the documentation is now handle by the wiki on the repository at
+        <http://github.com/piwi/bash-library/wiki>
+    *   new internal builders in 'build/'
+    *   large review of the options & arguments treatments: we now try to use the 'getopt' first to re-arrange
+        everything, then the classic 'getopts'
+    *   the whole library has been verified with <http://www.shellcheck.net/>
+    *   new stack trace method
     * 34da313 - retro-upgrade to 0.0.1 (piwi)
     * 152f333 - uniformization of license blocks (piwi)
     * 7827f92 - review of the VCS methods (piwi)
@@ -42,6 +56,11 @@
     * d789bb2 - add new wiki info in ChangeLog (piwi)
     * bcd4c44 - new doc info about the 'evaluate' method (piwi)
     * 3a37fa3 - the documentation is now handled by the repo wiki (piwi)
+
+--
+!! - moving ownership of the repository to: <http://github.com/piwi/bash-library>
+NOTE - The "old-" tags referred to <http://github.com/atelierspierrot/piwi-bash-library>.
+--
 
 * old-v2.0.4 (2014-11-21 - 7263593)
 
