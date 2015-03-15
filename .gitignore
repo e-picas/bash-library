@@ -4,7 +4,7 @@ user/*
 piwibashlib.log
 .testconfig.conf
 
-# specific to the "wip" branch for dev
+# specific to the "dev" branch for dev
 #dev/*
 #modules/*
 #tests/*

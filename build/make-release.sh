@@ -39,6 +39,6 @@ else
 fi
 
 echo ">> ok, realease tag 'v${VERSION}' is done, you should now run:"
-echo "              git push origin master wip && git push origin v${VERSION}"
+echo "              git push origin master dev && git push origin v${VERSION}"
 
 exit 0
