@@ -57,8 +57,8 @@ To build a new release tag, run:
     them one by one and choose which part to execute or not (in the base of the `iexec` method)
     inspired by the GIT stuff
 
--   the library on the "wip" branch should be with a version number "X.Y.(Z+1)-dev" and a LIB_VCSVERSION
-    of "wip@last_commit_sha" (check with the 'dev-tools' that this can be handled by the 'version-tag' action)
+-   the library on the "dev" branch should be with a version number "X.Y.(Z+1)-dev" and a LIB_VCSVERSION
+    of "dev@last_commit_sha" (check with the 'dev-tools' that this can be handled by the 'version-tag' action)
 
 
 ## BUGS

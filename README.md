@@ -3,7 +3,7 @@ Piwi-Bash-Library
 
 An open source day-to-day bash library.
 
-[![Build Status](https://travis-ci.org/piwi/bash-library.svg?branch=wip)](https://travis-ci.org/piwi/bash-library)
+[![Build Status](https://travis-ci.org/piwi/bash-library.svg?branch=dev)](https://travis-ci.org/piwi/bash-library)
 
 Key features:
 
